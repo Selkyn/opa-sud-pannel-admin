@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useRouter } from 'next/navigation'; 
 
-export default function AddPatientForm() {
+export default function EditPatientForm({ params }) {
   const [formData, setFormData] = useState({
     name: "",
     birthday: "",
@@ -40,6 +41,53 @@ export default function AddPatientForm() {
   const [showCustomRace, setShowCustomRace] = useState(false);
   const [showCustomRaceStandalone, setShowCustomRaceStandalone] = useState(false);
   const [enableVetFields, setEnableVetFields] = useState(false);
+
+  const { id } = params;
+  const router = useRouter();
+
+// Charger les informations du patient existant
+useEffect(() => {
+    const fetchPatientData = async () => {
+      if (id) {
+        try {
+          const response = await axios.get(`http://localhost:4000/patients/${id}`);
+          const patient = response.data;
+          setFormData({
+            name: patient.name || "",
+            birthday: patient.birthday || "",
+            sexId: patient.sexId || "",
+            animalTypeId: patient.animalTypeId || "",
+            customAnimalType: patient.customAnimalType || "",
+            raceId: patient.raceId || "",
+            customRace: patient.customRace || "",
+            pathology: patient.pathology || "",
+            firstname: patient.client?.firstname || "",
+            lastname: patient.client?.lastname || "",
+            email: patient.client?.email || "",
+            phone: patient.client?.phone || "",
+            adress: patient.client?.adress || "",
+            city: patient.client?.city || "",
+            postal: patient.client?.postal || "",
+            department: patient.client?.department || "",
+            clientSexId: patient.client?.sexId || "",
+            vetCenterId: patient.vetCenterId || "",
+            nameVetCenter: patient.vetCenter?.name || "",
+            adressVetCenter: patient.vetCenter?.adress || "",
+            cityVetCenter: patient.vetCenter?.city || "",
+            departmentVetCenter: patient.vetCenter?.department || "",
+            postalVetCenter: patient.vetCenter?.postal || "",
+            phoneVetCenter: patient.vetCenter?.phone || "",
+            emailVetCenter: patient.vetCenter?.email || ""
+          });
+        } catch (error) {
+          console.error("Erreur lors de la récupération des données du patient :", error);
+        }
+      }
+    };
+  
+    fetchPatientData();
+  }, [id]);
+  
 
   // Gestion des changements dans le formulaire
   const handleInputChange = (e) => {
@@ -137,11 +185,12 @@ export default function AddPatientForm() {
   }
     
     try {
-      const response = await axios.post(
-        "http://localhost:4000/patients/add",
+      const response = await axios.put(
+        `http://localhost:4000/patients/${id}/edit/add`,
         formDataToSend
       );
-      alert("Patient ajouté avec succès !");
+      alert("Patient modifié avec succès !");
+      router.push("/patients");
       // Réinitialiser les données du formulaire après la soumission
       setFormData({
         name: "",
@@ -680,7 +729,7 @@ export default function AddPatientForm() {
             type="submit"
             className="bg-blue-600 text-white px-6 py-2 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
-            Ajouter le patient
+            Modifier le patient
           </button>
         </div>
       </form>

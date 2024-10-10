@@ -13,7 +13,7 @@ export default function Header() {
           />
       </div>
 
-      <nav className="bg-gray-200 p-4">
+      <nav className="bg-green-900 p-4 text-gray-200">
         <div className="container mx-auto flex justify-between items-center">
           <a className="text-xl font-semibold" href="/">Accueil</a>
           {/* <button
@@ -32,13 +32,13 @@ export default function Header() {
           <div className="hidden md:flex space-x-4" id="navbarNav">
             <ul className="flex space-x-4">
               <li className="nav-item">
-                <a className="text-gray-700 hover:text-gray-900" href="/patients">Clients</a>
+                <a className="text-gray-200 hover:text-gray-300" href="/patients">Clients</a>
               </li>
               <li className="nav-item">
-                <a className="text-gray-700 hover:text-gray-900" href="/professionnels">Professionels</a>
+                <a className="text-gray-200 hover:text-gray-300" href="/professionnels">Professionels</a>
               </li>
               <li className="nav-item">
-                <p className="text-gray-700">Bienvenue ! Pseudo</p>
+                <p className="text-gray-200">Bienvenue ! Pseudo</p>
               </li>
               <li className="nav-item">
                 <form action="/logout" method="get">

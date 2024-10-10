@@ -25,7 +25,7 @@ export default function PatientsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Patients Page</h2>
+      <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Patients</h2>
       
       {/* Lien vers le formulaire d'ajout de patient */}
       <div className="mb-6 text-center">
@@ -53,7 +53,11 @@ export default function PatientsPage() {
                   <tr key={patient.id} className="bg-gray-100 hover:bg-gray-200 border-b">
                     <td className="px-4 py-2">
                       <Link href={`/patients/${patient.id}`}>
-                          {patient.name}
+                        {patient.sex.name === "male" ? (
+                          <button className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2">{patient.name}</button>
+                        ) : (
+                          <button className="bg-pink-500 text-white px-4 py-2 rounded-md mr-2">{patient.name}</button>
+                        )}
                       </Link>
                   </td>
                     <td className="px-4 py-2">
@@ -62,7 +66,7 @@ export default function PatientsPage() {
                       ) : (
                         "Non spécifié"
                       )}{" "}
-                      {patient.client ? patient.client.firstname : "Client inconnu"}
+                      {patient.client ? patient.client.lastname : "Client inconnu"}
                     </td>
                     <td className="px-4 py-2">{patient.pathology}</td>
                     <td className="px-4 py-2">{patient.animalType ? patient.animalType.name : 'Non spécifié'}</td>

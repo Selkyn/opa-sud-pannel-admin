@@ -4,9 +4,12 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Link from "next/link";
+import { useRouter } from 'next/navigation';
 
 export default function PatientDetailsPage({ params }) {
     const { id } = params; // Récupération de l'id du patient à partir des paramètres de la route dynamique
+    const router = useRouter();
 
     const [patient, setPatient] = useState(null); // Stocke les détails du patient
     const [loading, setLoading] = useState(true); // Gère l'état de chargement
@@ -36,8 +39,26 @@ export default function PatientDetailsPage({ params }) {
         return <div>{error}</div>;
     }
 
+    const handleDelete = async () => {
+        if(confirm(`Etes-vous sûr de vouloir supprimer ${patient.name} ?`)) {
+            try {
+                await axios.delete(`http://localhost:4000/patients/${patient.id}/delete`);
+                router.push("/patients");
+            } catch (error) {
+                console.error("Erreur lors de la suppression du patient :", error);
+                alert("Une erreur est survenue lors de la suppression du patient.");
+            }
+        }
+    }
+
     return (
         <div className="container mx-auto px-4 py-8">
+            <button 
+                onClick={() => router.back()} 
+                className="bg-green-900 text-white px-4 py-2 rounded-md mb-4 hover:bg-green-700"
+            >
+                Revenir à la page précédente
+            </button>
             {patient ? (
                 <div className="flex flex-col item-center">
                     {/* Section du nom du patient */}
@@ -120,6 +141,14 @@ export default function PatientDetailsPage({ params }) {
             ) : (
                 <p className="text-center">Patient introuvable</p>
             )}
+
+            <Link href={`/patients/${patient.id}/edit`}>
+                <button className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2">Modifier</button>
+            </Link>
+            <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded-md">
+                Supprimer
+            </button>
+
         </div>
         
     );

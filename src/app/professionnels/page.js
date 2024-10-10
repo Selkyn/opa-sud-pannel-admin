@@ -67,9 +67,13 @@ export default function ProfessionnelsPage() {
                                                 <ul>
                                                     {professional.patients.map((patient) => (
                                                         <li key={patient.id}>
-                                                            <Link href={`/patients/${patient.id}`}>
-                                                                {patient.name}
-                                                            </Link>
+                                                        <Link href={`/patients/${patient.id}`}>
+                                                            {patient.sex.name === "male" ? (
+                                                            <button className="bg-blue-500 text-white px-2 py-2 rounded-md mb-2">{patient.name}</button>
+                                                            ) : (
+                                                            <button className="bg-pink-500 text-white px-2 py-2 rounded-md mb-2">{patient.name}</button>
+                                                            )}
+                                                        </Link>
                                                         </li>
                                                     ))}
                                                 </ul>
