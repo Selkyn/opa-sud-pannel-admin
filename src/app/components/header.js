@@ -38,8 +38,11 @@ export default function Header() {
                 <a className="text-gray-200 hover:text-gray-300" href="/professionnels">Professionels</a>
               </li>
               <li className="nav-item">
-                <p className="text-gray-200">Bienvenue ! Pseudo</p>
+                <a className="text-gray-200 hover:text-gray-300" href="/map">Map</a>
               </li>
+              {/* <li className="nav-item">
+                <p className="text-gray-200">Bienvenue ! Pseudo</p>
+              </li> */}
               <li className="nav-item">
                 <form action="/logout" method="get">
                   <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" type="submit">Déconnexion</button>

@@ -21,7 +21,6 @@ export default function Footer() {
                             <li><a href="#" className="hover:text-gray-400">Home</a></li>
                             <li><a href="#" className="hover:text-gray-400">About Us</a></li>
                             <li><a href="#" className="hover:text-gray-400">Services</a></li>
-                            <li><a href="#" className="hover:text-gray-400">Contact</a></li>
                         </ul>
                     </div>
 

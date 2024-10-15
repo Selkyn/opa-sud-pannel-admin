@@ -36,7 +36,7 @@ export default function PatientsPage() {
       <section>
         <div className="overflow-x-auto">
           <table className="table-auto w-full text-left bg-white shadow-lg rounded-lg">
-            <thead className="bg-gray-800 text-white">
+            <thead className="bg-green-900 text-white">
               <tr>
                 <th className="px-4 py-2">Patient</th>
                 <th className="px-4 py-2">Client</th>
@@ -66,7 +66,7 @@ export default function PatientsPage() {
                       ) : (
                         "Non spécifié"
                       )}{" "}
-                      {patient.client ? patient.client.lastname : "Client inconnu"}
+                      {patient.client ? `${patient.client.lastname} ${patient.client.firstname}` : "Client inconnu"}
                     </td>
                     <td className="px-4 py-2">{patient.pathology}</td>
                     <td className="px-4 py-2">{patient.animalType ? patient.animalType.name : 'Non spécifié'}</td>

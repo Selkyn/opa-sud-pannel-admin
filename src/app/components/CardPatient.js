@@ -1,73 +1,34 @@
-// src/app/patients/[id]/page.js
-
-"use client"; // Indique que ce composant est rendu côté client
-
-import { useState, useEffect } from "react";
+//src/app/components/CardPatient.js
+import React, { useEffect, useState} from "react";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
 
-export default function PatientDetailsPage({ params }) {
+const CardPatient = ({ params }) => {
     const { id } = params;
-    const router = useRouter();
-
-    const [patient, setPatient] = useState(null); // Stocke les détails du patient
+    const [patient, setPatient] = useState([]);
     const [loading, setLoading] = useState(true); // Gère l'état de chargement
-    const [error, setError] = useState(null); // Gère les erreurs
+    const [error, setError] = useState(null); 
 
     useEffect(() => {
         if (id) {
-            const fetchPatientDetails = async () => {
-                try {
-                    const response = await axios.get(`http://localhost:4000/patients/${id}`);
-                    setPatient(response.data);
-                    setLoading(false);
-                } catch (err) {
-                    setError("Erreur lors de la récupération des détails du patient");
-                    setLoading(false);
-                }
-            };
-            fetchPatientDetails();
-        }
-    }, [id]);
-
-    if (loading) {
-        return <div>Chargement...</div>;
-    }
-
-    if (error) {
-        return <div>{error}</div>;
-    }
-
-    const handleDelete = async () => {
-        if(confirm(`Etes-vous sûr de vouloir supprimer ${patient.name} ?`)) {
+          const fetchPatientDetails = async () => {
             try {
-                await axios.delete(`http://localhost:4000/patients/${patient.id}/delete`);
-
-                            // Mettre à jour LocalStorage en supprimant le marqueur correspondant
-            const cachedData = localStorage.getItem('patientMarkers');
-            if (cachedData) {
-                const markers = JSON.parse(cachedData);
-                const updatedMarkers = markers.filter(marker => marker.id !== patient.id);
-                localStorage.setItem('patientMarkers', JSON.stringify(updatedMarkers));
-            }
-                
-                router.push("/patients");
+              const response = await axios.get(`http://localhost:4000/patients/${id}`);
+              setPatient(response.data);
+              console.log("Détails du patient :", response.data); // Vérification
             } catch (error) {
-                console.error("Erreur lors de la suppression du patient :", error);
-                alert("Une erreur est survenue lors de la suppression du patient.");
+              console.error("Erreur lors de la récupération des détails du patient");
             }
+          };
+          fetchPatientDetails();
         }
-    }
+      }, [id]);
+
+
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <button 
-                onClick={() => router.back()} 
-                className="bg-green-900 text-white px-4 py-2 rounded-md mb-4 hover:bg-green-700"
-            >
-                Revenir à la page précédente
-            </button>
             {patient ? (
                 <div className="flex flex-col item-center">
                     {/* Section du nom du patient */}
@@ -91,10 +52,7 @@ export default function PatientDetailsPage({ params }) {
                                 <p><strong>Téléphone :</strong> {patient.client && patient.client.phone ? patient.client.phone : "Non spécifié"}</p>
                                 <p><strong>Adresse :</strong> {patient.client && patient.client.adress ? patient.client.adress : "Non spécifié"}</p>
                             </div>
-                            {/* <div>
-                                <p><strong>Attentes du client :</strong></p>
-                                <textarea className="w-full border-gray-300 rounded-md"></textarea>
-                            </div> */}
+
                         </div>
                     </div>
                     <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-sm">
@@ -134,31 +92,19 @@ export default function PatientDetailsPage({ params }) {
                                 )}
 
                             </div>
-                            {/* <div>
-                                <p><strong>Attentes du client :</strong></p>
-                                <textarea className="w-full border-gray-300 rounded-md"></textarea>
-                            </div> */}
+
                         </div>
                     </div>
-                    {/* <p><strong>Date de naissance:</strong> {patient.birthday}</p>
-                    <p><strong>Sexe:</strong> {patient.sex ? patient.sex.name : "Non spécifié"}</p>
-                    <p><strong>Pathologie:</strong> {patient.pathology}</p>
-                    <p><strong>Date d'inscription:</strong> {patient.createdAt}</p>
-                    <p><strong>Email:</strong> {patient.client && patient.client.email ? patient.client.email : "Non spécifié"}</p>
-                    <p><strong>Téléphone:</strong> {patient.client && patient.client.phone ? patient.client.phone : "Non spécifié"}</p> */}
+                    
                 </div>
             ) : (
                 <p className="text-center">Patient introuvable</p>
             )}
 
-            <Link href={`/patients/${patient.id}/edit`}>
-                <button className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2">Modifier</button>
-            </Link>
-            <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded-md">
-                Supprimer
-            </button>
 
         </div>
         
     );
 }
+
+export default CardPatient;
