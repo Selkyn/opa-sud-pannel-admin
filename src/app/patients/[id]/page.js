@@ -40,25 +40,17 @@ export default function PatientDetailsPage({ params }) {
     }
 
     const handleDelete = async () => {
-        if(confirm(`Etes-vous sûr de vouloir supprimer ${patient.name} ?`)) {
-            try {
-                await axios.delete(`http://localhost:4000/patients/${patient.id}/delete`);
-
-                            // Mettre à jour LocalStorage en supprimant le marqueur correspondant
-            const cachedData = localStorage.getItem('patientMarkers');
-            if (cachedData) {
-                const markers = JSON.parse(cachedData);
-                const updatedMarkers = markers.filter(marker => marker.id !== patient.id);
-                localStorage.setItem('patientMarkers', JSON.stringify(updatedMarkers));
-            }
-                
-                router.push("/patients");
-            } catch (error) {
-                console.error("Erreur lors de la suppression du patient :", error);
-                alert("Une erreur est survenue lors de la suppression du patient.");
-            }
+        if (confirm(`Etes-vous sûr de vouloir supprimer ${patient.name} ?`)) {
+          try {
+            await axios.delete(`http://localhost:4000/patients/${patient.id}/delete`);
+      
+            router.push("/patients");
+      
+          } catch (error) {
+            console.error("Erreur lors de la suppression du patient :", error);
+          }
         }
-    }
+      };
 
     return (
         <div className="container mx-auto px-4 py-8">

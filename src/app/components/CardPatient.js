@@ -16,7 +16,6 @@ const CardPatient = ({ params }) => {
             try {
               const response = await axios.get(`http://localhost:4000/patients/${id}`);
               setPatient(response.data);
-              console.log("Détails du patient :", response.data); // Vérification
             } catch (error) {
               console.error("Erreur lors de la récupération des détails du patient");
             }
@@ -33,7 +32,7 @@ const CardPatient = ({ params }) => {
                 <div className="flex flex-col item-center">
                     {/* Section du nom du patient */}
                     <div className="mb-6">
-                        <h1 className="text-4xl font-bold text-gray-800 mb-4">{patient.name}</h1>
+                        <h3 className="text-4xl font-bold text-gray-800 mb-4">{patient.name}</h3>
                         <p className="text-gray-600"><strong>Date du premier contact :</strong> {patient.createdAt}</p>
                     </div>
                     {/* Section Patient */}
