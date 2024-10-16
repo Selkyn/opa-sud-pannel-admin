@@ -27,86 +27,67 @@ const Map = ({ onSelectPatient, onSelectVetCenter }) => {
   const [markers, setMarkers] = useState([]);
   const [isSSR, setIsSSR] = useState(true);
   const [vetMarkers, setVetmarkers] = useState([]);
+  
 
-  const apiKey = process.env.NEXT_PUBLIC_OPENCAGE_API_KEY;
+  // const apiKey = process.env.NEXT_PUBLIC_OPENCAGE_API_KEY;
 
   useEffect(() => {
     setIsSSR(false);
-  
-    const fetchPatientsAndGeocode = async () => {
-      const newMarkers = [];
-      const patientsByAddress = {};
 
+    const fetchPatients = async () => {
       try {
-        // Récupérer les patients depuis votre API
         const response = await axios.get('http://localhost:4000/patients');
         const patients = response.data;
-
+  
         // Regrouper les patients par adresse
-        patients.forEach(patient => {
+        const patientsByAddress = {};
+        patients.forEach((patient) => {
           const client = patient.client;
-          const fullAddress = `${client.adress}, ${client.postal} ${client.city}`;
           
-          if (!patientsByAddress[fullAddress]) {
-            patientsByAddress[fullAddress] = [];
+          if (client && client.latitude && client.longitude) {
+            const addressKey = `${client.adress}, ${client.postal} ${client.city}`;
+            
+            if (!patientsByAddress[addressKey]) {
+              patientsByAddress[addressKey] = {
+                lat: client.latitude,
+                lng: client.longitude,
+                patients: []
+              };
+            }
+  
+            patientsByAddress[addressKey].patients.push(patient);
           }
-          patientsByAddress[fullAddress].push(patient);
         });
-        console.log("Patients par adresse:", patientsByAddress);
   
-        // Géocoder chaque adresse
-        for (const address in patientsByAddress) {
-          try {
-            const geocodeResponse = await axios.get(
-              `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(address)}&key=${apiKey}`
-            );
-        
-            const { lat, lng } = geocodeResponse.data.results[0].geometry;
-      
-            // Ajouter un marqueur pour chaque adresse
-            newMarkers.push({
-              lat,
-              lng,
-              patients: patientsByAddress[address]  // Tous les patients à cette adresse
-            });
-          } catch (error) {
-            console.error(`Erreur de géocodage pour l'adresse : ${address}`, error);
-          }
-        }
-
-        // Mettre à jour l'état des marqueurs
+        // Créer les marqueurs à partir des adresses groupées
+        const newMarkers = Object.values(patientsByAddress).map((group) => ({
+          lat: group.lat,
+          lng: group.lng,
+          patients: group.patients,
+        }));
+  
         setMarkers(newMarkers);
-  
       } catch (error) {
         console.error("Erreur lors de la récupération des patients :", error);
       }
     };
-  
-    fetchPatientsAndGeocode();
+
+    fetchPatients();
   }, []);
 
   useEffect(() => {
     const fetchVetCenters = async () => {
-      const newVetMarkers = [];
 
       try {
         const reponse = await axios('http://localhost:4000/professionals');
         const vetCenters = reponse.data;
-
-        for (const vetCenter of vetCenters) {
-          try {
-            const geocodeResponse = await axios.get(`https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(vetCenter.adress)}&key=${apiKey}`)
-            const {lat, lng } = geocodeResponse.data.results[0].geometry;
-
-            newVetMarkers.push({
-              ...vetCenter,
-              lat,
-              lng
-            })
-          } catch (error) {
-            console.error(`Erreur de géocodage pour le centre vétérinaire : ${vetCenter.name}`, error);
-          }
-        }
+        const newVetMarkers = vetCenters
+        .filter(vetCenter => vetCenter.latitude && vetCenter.longitude)
+        .map((vetCenter) => ({
+          lat: vetCenter.latitude,
+          lng: vetCenter.longitude,
+          ...vetCenter,
+        }));
 
         setVetmarkers(newVetMarkers);
       } catch (error) {
