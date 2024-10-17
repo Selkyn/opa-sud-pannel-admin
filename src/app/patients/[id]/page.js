@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
+import { capitalizeFirstLetter } from "@/app/utils/stringUtils";
 
 export default function PatientDetailsPage({ params }) {
     const { id } = params;
@@ -64,7 +65,7 @@ export default function PatientDetailsPage({ params }) {
                 <div className="flex flex-col item-center">
                     {/* Section du nom du patient */}
                     <div className="mb-6">
-                        <h1 className="text-4xl font-bold text-gray-800 mb-4">{patient.name}</h1>
+                        <h1 className="text-4xl font-bold text-gray-800 mb-4">{capitalizeFirstLetter(patient.name)}</h1>
                         <p className="text-gray-600"><strong>Date du premier contact :</strong> {patient.createdAt}</p>
                     </div>
                     {/* Section Patient */}
@@ -78,7 +79,7 @@ export default function PatientDetailsPage({ params }) {
                                 ) : (
                                     "Non spécifié"
                                 )}{" "} 
-                                {patient.client && patient.client.lastname ? patient.client.lastname : "Non spécifié"} {patient.client && patient.client.firstname ? patient.client.firstname : "Non spécifié"}</p>
+                                {patient.client && patient.client.lastname ? capitalizeFirstLetter(patient.client.lastname) : "Non spécifié"} {patient.client && capitalizeFirstLetter(patient.client.firstname) ? patient.client.firstname : "Non spécifié"}</p>
                                 <p><strong>Adresse mail :</strong> {patient.client && patient.client.email ? patient.client.email : "Non spécifié"}</p>
                                 <p><strong>Téléphone :</strong> {patient.client && patient.client.phone ? patient.client.phone : "Non spécifié"}</p>
                                 <p><strong>Adresse :</strong> {patient.client && patient.client.adress ? patient.client.adress : "Non spécifié"}</p>

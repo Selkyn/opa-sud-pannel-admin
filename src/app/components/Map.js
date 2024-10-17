@@ -2,6 +2,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
+import { capitalizeFirstLetter } from '../utils/stringUtils';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -124,13 +125,13 @@ const Map = ({ onSelectPatient, onSelectVetCenter }) => {
                             className="bg-blue-500 text-white px-2 py-1 rounded-md ml-2"
                             onClick={() => onSelectPatient(patient.id)}
                           >
-                            {patient.name}
+                            {capitalizeFirstLetter(patient.name)}
                           </button>
                         </li>
                       ))}
                     </ul>
-                    <p><strong>Client :</strong> {marker.patients[0].client.lastname} {marker.patients[0].client.firstname}</p>
-                    <p><strong>Adresse :</strong> {marker.patients[0].client.adress}, {marker.patients[0].client.city}</p>
+                    <p><strong>Client :</strong> {capitalizeFirstLetter(marker.patients[0].client.lastname)} {capitalizeFirstLetter(marker.patients[0].client.firstname)}</p>
+                    <p><strong>Adresse :</strong> {marker.patients[0].client.adress}, {capitalizeFirstLetter(marker.patients[0].client.city)}</p>
                   </>
                 ) : (
                   <p>Aucun patient trouvé à cette adresse.</p>
@@ -144,8 +145,8 @@ const Map = ({ onSelectPatient, onSelectVetCenter }) => {
           <Marker key={idx} position={[vetMarker.lat, vetMarker.lng]} icon={vetoIcon}>
             <Popup>
               <div>
-                <p>Centre vétérinaire : {vetMarker.name}</p>
-                <p>{vetMarker.adress}, {vetMarker.city}</p>
+                <p>Centre vétérinaire : {capitalizeFirstLetter(vetMarker.name)}</p>
+                <p>{vetMarker.adress}, {capitalizeFirstLetter(vetMarker.city)}</p>
                 <button
                     className="bg-blue-500 text-white px-2 py-1 rounded-md ml-2"
                     onClick={() => onSelectVetCenter(vetMarker.id)}

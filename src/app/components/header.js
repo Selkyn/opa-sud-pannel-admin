@@ -32,7 +32,7 @@ export default function Header() {
           <div className="hidden md:flex space-x-4" id="navbarNav">
             <ul className="flex space-x-4">
               <li className="nav-item">
-                <a className="text-gray-200 hover:text-gray-300" href="/patients">Clients</a>
+                <a className="text-gray-200 hover:text-gray-300" href="/patients">Patients</a>
               </li>
               <li className="nav-item">
                 <a className="text-gray-200 hover:text-gray-300" href="/professionnels">Professionels</a>

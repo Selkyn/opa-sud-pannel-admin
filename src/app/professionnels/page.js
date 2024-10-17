@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
+import { capitalizeFirstLetter } from '../utils/stringUtils';
 
 export default function ProfessionnelsPage() {
     const [professionals, setProfessionals] = useState([]);
@@ -26,7 +27,7 @@ export default function ProfessionnelsPage() {
             <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Professionnels</h2>
         
             <div className="mb-6 text-center">
-                <Link href="/professionals/form" className="text-white bg-blue-500 hover:bg-blue-700 font-bold py-2 px-4 rounded">
+                <Link href="/professionnels/form" className="text-white bg-blue-500 hover:bg-blue-700 font-bold py-2 px-4 rounded">
                     Ajouter un professionnel
                 </Link>
             </div>
@@ -52,13 +53,13 @@ export default function ProfessionnelsPage() {
                                     index % 2 === 0 ? 'bg-gray-100' : 'bg-gray-200'
                                 } hover:bg-gray-300 border-b`}
                             >
-                                <td className="px-4 py-4">{professional.name}</td>
+                                <td className="px-4 py-4">{capitalizeFirstLetter(professional.name)}</td>
                                 <td className="px-4 py-4">
                                     {professional.vets && professional.vets.length > 0 ? (
                                         <ul>
                                             {professional.vets.map((vet) => (
                                                 <li key={vet.id}>
-                                                    Dr {vet.firstname} {vet.lastname}
+                                                    Dr {capitalizeFirstLetter(vet.firstname)} {capitalizeFirstLetter(vet.lastname)}
                                                 </li>
                                             ))}
                                         </ul>
@@ -66,7 +67,7 @@ export default function ProfessionnelsPage() {
                                         "Aucun vétérinaire"
                                     )}
                                 </td>
-                                <td className="px-4 py-4">{professional.adress}</td>
+                                <td className="px-4 py-4">{professional.adress}, {professional.postal} {capitalizeFirstLetter(professional.city)}</td>
                                 <td className="px-4 py-4">{professional.phone}</td>
                                 <td className="px-4 py-4">{professional.email}</td>
                             </tr>
