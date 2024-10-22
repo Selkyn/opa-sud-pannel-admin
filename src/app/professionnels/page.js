@@ -53,7 +53,11 @@ export default function ProfessionnelsPage() {
                                     index % 2 === 0 ? 'bg-gray-100' : 'bg-gray-200'
                                 } hover:bg-gray-300 border-b`}
                             >
-                                <td className="px-4 py-4">{capitalizeFirstLetter(professional.name)}</td>
+                                <td className="px-4 py-4">
+                                    <Link href={`/professionnels/${professional.id}`}>
+                                    {capitalizeFirstLetter(professional.name)}
+                                    </Link>
+                                </td>
                                 <td className="px-4 py-4">
                                     {professional.vets && professional.vets.length > 0 ? (
                                         <ul>
@@ -92,7 +96,6 @@ export default function ProfessionnelsPage() {
                                     </td>
                                 </tr>
                             )}
-                            {/* Add extra spacing between different veterinary centers */}
                             <tr>
                                 <td colSpan="5" className="py-4"></td>
                             </tr>
