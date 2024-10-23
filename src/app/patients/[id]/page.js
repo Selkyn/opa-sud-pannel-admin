@@ -99,6 +99,16 @@ export default function PatientDetailsPage({ params }) {
                                 <p><strong>Date de naissance :</strong> {patient.birthday ? patient.birthday : "Non spécifié"}</p>
                                 <p><strong>Poids :</strong></p>
                                 <p><strong>Pathologie :</strong> {patient.pathology? patient.pathology: "Non spécifié"}</p>
+                                <p><strong>Membres affectés :</strong></p>
+                                {patient.Limbs.map((limb) => (
+                                    <ul>
+                                    <li
+                                    key={limb.id}
+                                    >
+                                        {limb.name}
+                                    </li>
+                                    </ul>
+                                ))}
                             </div>
                             {/* <div>
                                 <p><strong>Attentes du client :</strong></p>
@@ -107,7 +117,10 @@ export default function PatientDetailsPage({ params }) {
                         </div>
                     </div>
                     <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-sm">
-                        <h2 className="text-xl font-semibold text-gray-800 mb-2">Centre vétérinaire</h2>
+                        <Link href={`/professionnels/${patient.vetCenterId}`}>
+                            <h2 className="text-xl font-semibold text-gray-800 mb-2">Centre vétérinaire</h2>
+                        </Link>
+
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <p><strong>Nom du centre : </strong> {patient.vetCenter && patient.vetCenter.name ? patient.vetCenter.name : "Non spécifié"}</p>

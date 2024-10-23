@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Checkbox, CheckboxGroup } from "@nextui-org/react";
 
 export default function AddPatientForm() {
   const [formData, setFormData] = useState({
@@ -29,11 +30,13 @@ export default function AddPatientForm() {
     departmentVetCenter: "",
     postalVetCenter: "",
     phoneVetCenter: "",
-    emailVetCenter: ""
+    emailVetCenter: "",
+    limbs: [],
   });
 
   const [sexes, setSexes] = useState([]);
   const [animalTypes, setAnimalTypes] = useState([]);
+  const [limbs, setLimbs] = useState([]);
   const [vetCenters, setVetCenters] = useState([]);
   const [races, setRaces] = useState([]);
   const [showCustomAnimalType, setShowCustomAnimalType] = useState(false);
@@ -79,6 +82,20 @@ export default function AddPatientForm() {
     }
   };
 
+    // Gestion des changements de sélection des limbs
+    const handleLimbChange = (e) => {
+      const { value, checked } = e.target;
+      let updatedLimbs = [...formData.limbs];
+  
+      if (checked) {
+        updatedLimbs.push(value); // Ajouter l'ID du limb si coché
+      } else {
+        updatedLimbs = updatedLimbs.filter((limbId) => limbId !== value); // Retirer si décoché
+      }
+  
+      setFormData({ ...formData, limbs: updatedLimbs });
+    };
+
   // Met à jour les options de race en fonction du type d'animal
   const updateRaceOptions = (animalTypeId) => {
     const selectedAnimalType = animalTypes.find(
@@ -92,10 +109,11 @@ export default function AddPatientForm() {
     const fetchFormData = async () => {
       try {
         const response = await axios.get("http://localhost:4000/patients/form");
-        const { sexes, animalTypes, vetCenters } = response.data;
+        const { sexes, animalTypes, vetCenters, limbs } = response.data;
         setSexes(sexes);
         setAnimalTypes(animalTypes);
         setVetCenters(vetCenters);
+        setLimbs(limbs)
       } catch (error) {
         console.error(
           "Erreur lors de la récupération des données du formulaire",
@@ -169,7 +187,8 @@ export default function AddPatientForm() {
         departmentVetCenter: "",
         postalVetCenter: "",
         phoneVetCenter: "",
-        emailVetCenter: ""
+        emailVetCenter: "",
+        limbs: [],
       });
     } catch (error) {
       console.error("Erreur lors de l'ajout du patient :", error);
@@ -350,6 +369,31 @@ export default function AddPatientForm() {
                 </div>
               )}
             </div>
+
+            <div className="mb-5">
+
+          <CheckboxGroup
+            className="flex flex-wrap text-base font-medium text-[#07074D]"
+            label="Sélectionnez des membres"
+            value={formData.limbs || []}
+            onChange={(values) => setFormData({ ...formData, limbs: values })}
+            color="primary"
+            orientation="vertical"
+          >
+            <div className="grid grid-cols-2">
+            {limbs.map((limb) => (
+              <Checkbox
+                className="w-fit flex mb-2 rounded-md border border-[#e0e0e0] bg-white py-2 px-2 text-base font-medium text-[#07074D] outline-none focus:border-[#3766AB] focus:shadow-md"
+                key={limb.id}
+                value={limb.id}
+              >
+                {limb.name}
+              </Checkbox>
+              
+            ))}
+            </div>
+          </CheckboxGroup>
+        </div>
 
             <div className="md:col-span-2">
               <label

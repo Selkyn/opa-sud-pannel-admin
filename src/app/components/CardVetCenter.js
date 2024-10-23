@@ -32,7 +32,7 @@ const CardVetCenter = ({ params }) => {
                         <p>{vetCenter.adress}, {vetCenter.city}</p>
                     </div>
                     <div>
-                        {vetCenter.vets > 0 ? (
+                        {vetCenter.vets && vetCenter.vets.length > 0 ? (
                             <ul>
                                 {vetCenter.vets.map((vet) =>(
                                     <li key={vet.id}>
