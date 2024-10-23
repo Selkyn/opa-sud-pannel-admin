@@ -9,6 +9,7 @@ import { capitalizeFirstLetter } from '../utils/stringUtils';
 
 export default function PatientsPage() {
   const [patients, setPatients] = useState([]);
+  const [situations, setSituations] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   
 
@@ -28,9 +29,35 @@ export default function PatientsPage() {
     fetchPatients();
   }, []);
 
+  useEffect(() => {
+  const fetchSituations = async () => {
+    try {
+      const response = await axios.get("http://localhost:4000/patients/situation");
+      setSituations(response.data);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des situations");
+    }
+  };
+
+  fetchSituations();
+}, []);
+
   const filteredPatients = patients.filter(patient =>
     patient.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleSituationChange = async (patientId, newSituationId) => {
+    try {
+      await axios.put(`http://localhost:4000/patients/${patientId}/situation`, { situationId: newSituationId });
+      setPatients((prevPatients) =>
+        prevPatients.map((patient) =>
+          patient.id === patientId ? { ...patient, situation: { id: newSituationId, name: situations.find(s => s.id === newSituationId)?.name } } : patient
+        )
+      );
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour de la situation:", error);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -88,7 +115,20 @@ export default function PatientsPage() {
                     </td>
                     <td className="px-4 py-2">{capitalizeFirstLetter(patient.pathology)}</td>
                     <td className="px-4 py-2">{patient.animalType ? capitalizeFirstLetter(patient.animalType.name) : 'Non spécifié'}</td>
-                    <td className="px-4 py-2">{patient.status ? patient.status.name : 'Non spécifié'}</td>
+                    <td className="px-4 py-2">
+                      <select
+                        value={patient.situation ? patient.situation.id : ''}
+                        onChange={(e) => handleSituationChange(patient.id, e.target.value)}
+                        className="border border-gray-300 rounded px-2 py-1"
+                      >
+                        <option value="">Non spécifié</option>
+                        {situations.map((situation) => (
+                          <option key={situation.id} value={situation.id}>
+                            {situation.name}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
                     <td className="px-4 py-2">{patient.payment && patient.payment.paymentType ? patient.payment.paymentType.name : 'Non spécifié'}</td>
                     <td className="px-4 py-2">{patient.payment && patient.payment.paymentMode ? patient.payment.paymentMode.name : 'Non spécifié'}</td>
                   </tr>

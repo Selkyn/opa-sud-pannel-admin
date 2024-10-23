@@ -118,7 +118,7 @@ const Map = ({ onSelectPatient, onSelectVetCenter }) => {
                 {marker.patients && marker.patients.length > 0 ? (
                   <>
                     <p><strong>Patients :</strong></p>
-                    <ul>
+                    <ul className="flex flex-wrap">
                       {marker.patients.map((patient, i) => (
                         <li key={i} className="mb-2">
                           <button

@@ -37,6 +37,8 @@ export default function EditPatientForm({ params }) {
   const [animalTypes, setAnimalTypes] = useState([]);
   const [vetCenters, setVetCenters] = useState([]);
   const [races, setRaces] = useState([]);
+  const [limbs, setLimbs] = useState([]);  // Liste des limbs disponibles
+  const [selectedLimbs, setSelectedLimbs] = useState([]);
   const [showCustomAnimalType, setShowCustomAnimalType] = useState(false);
   const [showCustomRace, setShowCustomRace] = useState(false);
   const [showCustomRaceStandalone, setShowCustomRaceStandalone] = useState(false);
@@ -79,6 +81,7 @@ useEffect(() => {
             phoneVetCenter: patient.vetCenter?.phone || "",
             emailVetCenter: patient.vetCenter?.email || ""
           });
+          setSelectedLimbs(patient.Limbs ? patient.Limbs.map(limb => limb.id) : []);
         } catch (error) {
           console.error("Erreur lors de la récupération des données du patient :", error);
         }
@@ -140,10 +143,12 @@ useEffect(() => {
     const fetchFormData = async () => {
       try {
         const response = await axios.get("http://localhost:4000/patients/form");
-        const { sexes, animalTypes, vetCenters } = response.data;
+        const { sexes, animalTypes, vetCenters, limbs } = response.data;
+        console.log(limbs)
         setSexes(sexes);
         setAnimalTypes(animalTypes);
         setVetCenters(vetCenters);
+        setLimbs(limbs);
       } catch (error) {
         console.error(
           "Erreur lors de la récupération des données du formulaire",
@@ -158,7 +163,7 @@ useEffect(() => {
   const handleSubmit = async (e) => {
     e.preventDefault(); // Empêche le rechargement de la page lors de la soumission du formulaire
 
-    let formDataToSend = { ...formData }; // Clone formData
+    let formDataToSend = { ...formData, limbs: selectedLimbs }; // Clone formData
 
     // Si l'utilisateur a choisi "Autre" pour le type d'animal, ajouter le champ personnalisé
     if (formData.animalTypeId === "other") {
@@ -192,34 +197,34 @@ useEffect(() => {
       alert("Patient modifié avec succès !");
       router.push("/patients");
       // Réinitialiser les données du formulaire après la soumission
-      setFormData({
-        name: "",
-        birthday: "",
-        sexId: "",
-        animalTypeId: "",
-        customAnimalType: "",
-        raceId: "",
-        customRace: "",
-        customRaceStandalone: "",
-        pathology: "",
-        firstname: "",
-        lastname: "",
-        email: "",
-        phone: "",
-        adress: "",
-        city: "",
-        postal: "",
-        department: "",
-        clientSexId: "",
-        vetCenterId: "",
-        nameVetCenter: "",
-        adressVetCenter: "",
-        cityVetCenter: "",
-        departmentVetCenter: "",
-        postalVetCenter: "",
-        phoneVetCenter: "",
-        emailVetCenter: ""
-      });
+      // setFormData({
+      //   name: "",
+      //   birthday: "",
+      //   sexId: "",
+      //   animalTypeId: "",
+      //   customAnimalType: "",
+      //   raceId: "",
+      //   customRace: "",
+      //   customRaceStandalone: "",
+      //   pathology: "",
+      //   firstname: "",
+      //   lastname: "",
+      //   email: "",
+      //   phone: "",
+      //   adress: "",
+      //   city: "",
+      //   postal: "",
+      //   department: "",
+      //   clientSexId: "",
+      //   vetCenterId: "",
+      //   nameVetCenter: "",
+      //   adressVetCenter: "",
+      //   cityVetCenter: "",
+      //   departmentVetCenter: "",
+      //   postalVetCenter: "",
+      //   phoneVetCenter: "",
+      //   emailVetCenter: ""
+      // });
     } catch (error) {
       console.error("Erreur lors de l'ajout du patient :", error);
       alert("Erreur lors de l'ajout du patient. Veuillez réessayer.");
@@ -415,6 +420,34 @@ useEffect(() => {
                 onChange={handleInputChange}
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
+            </div>
+
+            <div className="mb-5">
+              <h4 className="text-xl text-gray-700 mb-4">
+                Membres affectés :
+              </h4>
+              {limbs.map((limb) => (
+                <div key={limb.id} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id={`limb-${limb.id}`}
+                    name="limbs"
+                    value={limb.id}
+                    checked={selectedLimbs.includes(limb.id)}  // Cocher si le limb est sélectionné
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedLimbs([...selectedLimbs, limb.id]);  // Ajouter le limb si coché
+                      } else {
+                        setSelectedLimbs(selectedLimbs.filter(id => id !== limb.id));  // Retirer si décoché
+                      }
+                    }}
+                    className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
+                  />
+                  <label htmlFor={`limb-${limb.id}`} className="ml-2 block text-sm text-gray-700">
+                    {limb.name}
+                  </label>
+                </div>
+              ))}
             </div>
           </div>
         </div>

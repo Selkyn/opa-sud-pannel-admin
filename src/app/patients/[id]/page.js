@@ -101,10 +101,10 @@ export default function PatientDetailsPage({ params }) {
                                 <p><strong>Pathologie :</strong> {patient.pathology? patient.pathology: "Non spécifié"}</p>
                                 <p><strong>Membres affectés :</strong></p>
                                 {patient.Limbs.map((limb) => (
-                                    <ul>
-                                    <li
+                                    <ul
                                     key={limb.id}
                                     >
+                                    <li>
                                         {limb.name}
                                     </li>
                                     </ul>
