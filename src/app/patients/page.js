@@ -9,7 +9,10 @@ import { capitalizeFirstLetter } from '../utils/stringUtils';
 
 export default function PatientsPage() {
   const [patients, setPatients] = useState([]);
-  const [situations, setSituations] = useState([]);
+  const [status, setStatus] = useState([]);
+  const [payments, setPayments] = useState();
+  const [paymentTypes, setPaymentTypes] = useState([]);
+  const [paymentModes, setPaymentModes] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   
 
@@ -30,32 +33,88 @@ export default function PatientsPage() {
   }, []);
 
   useEffect(() => {
-  const fetchSituations = async () => {
+  const fetchStatus = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/patients/situation");
-      setSituations(response.data);
+      const response = await axios.get("http://localhost:4000/patients/status");
+      setStatus(response.data);
     } catch (error) {
-      console.error("Erreur lors de la récupération des situations");
+      console.error("Erreur lors de la récupération des Status");
     }
   };
 
-  fetchSituations();
+  fetchStatus();
+}, []);
+
+useEffect(() => {
+  const fetchPaymentTypes = async () => {
+    try {
+      const response = await axios.get("http://localhost:4000/paymentTypes");
+      setPaymentTypes(response.data);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des types de paiements");
+    }
+  };
+
+  fetchPaymentTypes();
+}, []);
+
+useEffect(() => {
+  const fetchPaymentModes = async () => {
+    try {
+      const response = await axios.get("http://localhost:4000/paymentModes");
+      setPaymentModes(response.data);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des Modes de paiements");
+    }
+  };
+
+  fetchPaymentModes();
 }, []);
 
   const filteredPatients = patients.filter(patient =>
     patient.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleSituationChange = async (patientId, newSituationId) => {
+  const handleStatusChange = async (patientId, newStatusId) => {
     try {
-      await axios.put(`http://localhost:4000/patients/${patientId}/situation`, { situationId: newSituationId });
+      await axios.put(`http://localhost:4000/patients/${patientId}/status`, { statusId: newStatusId });
       setPatients((prevPatients) =>
         prevPatients.map((patient) =>
-          patient.id === patientId ? { ...patient, situation: { id: newSituationId, name: situations.find(s => s.id === newSituationId)?.name } } : patient
+          patient.id === patientId ? { ...patient, status: { id: newStatusId, name: status.find(s => s.id === newStatusId)?.name } } : patient
         )
       );
     } catch (error) {
-      console.error("Erreur lors de la mise à jour de la situation:", error);
+      console.error("Erreur lors de la mise à jour du status:", error);
+    }
+  };
+
+  const handlePaymentTypeChange = async (patientId, newPaymentTypeId) => {
+    try {
+      await axios.put(`http://localhost:4000/payment/${patientId}/edit`, { paymentTypeId: newPaymentTypeId });
+      setPatients((prevPatients) =>
+        prevPatients.map((patient) =>
+          patient.id === patientId
+            ? { ...patient, payment: { ...patient.payment, paymentType: { id: newPaymentTypeId, name: paymentTypes.find(pt => pt.id === newPaymentTypeId)?.name } } }
+            : patient
+        )
+      );
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour du type de paiement:", error);
+    }
+  };
+
+  const handlePaymentModeChange = async (patientId, newPaymentModeId) => {
+    try {
+      await axios.put(`http://localhost:4000/payment/${patientId}/edit`, { paymentModeId: newPaymentModeId });
+      setPatients((prevPatients) =>
+        prevPatients.map((patient) =>
+          patient.id === patientId
+            ? { ...patient, payment: { ...patient.payment, paymentMode: { id: newPaymentModeId, name: paymentModes.find(pm => pm.id === newPaymentModeId)?.name } } }
+            : patient
+        )
+      );
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour du mode de paiement:", error);
     }
   };
 
@@ -117,20 +176,48 @@ export default function PatientsPage() {
                     <td className="px-4 py-2">{patient.animalType ? capitalizeFirstLetter(patient.animalType.name) : 'Non spécifié'}</td>
                     <td className="px-4 py-2">
                       <select
-                        value={patient.situation ? patient.situation.id : ''}
-                        onChange={(e) => handleSituationChange(patient.id, e.target.value)}
+                        value={patient.status ? patient.status.id : ''}
+                        onChange={(e) => handleStatusChange(patient.id, e.target.value)}
                         className="border border-gray-300 rounded px-2 py-1"
                       >
-                        <option value="">Non spécifié</option>
-                        {situations.map((situation) => (
-                          <option key={situation.id} value={situation.id}>
-                            {situation.name}
+                        {/* <option value="">Non spécifié</option> */}
+                        {status.map((statu) => (
+                          <option key={statu.id} value={statu.id}>
+                            {statu.name}
                           </option>
                         ))}
                       </select>
                     </td>
-                    <td className="px-4 py-2">{patient.payment && patient.payment.paymentType ? patient.payment.paymentType.name : 'Non spécifié'}</td>
-                    <td className="px-4 py-2">{patient.payment && patient.payment.paymentMode ? patient.payment.paymentMode.name : 'Non spécifié'}</td>
+                    <td className="px-4 py-2">
+                      <select
+                        value={patient.payment && patient.payment.paymentType ? patient.payment.paymentType.id : ''}
+                        onChange={(e) => handlePaymentTypeChange(patient.id, e.target.value)}
+                        className="border border-gray-300 rounded px-2 py-1"
+                      >
+                        {/* <option value="">Non spécifié</option> */}
+                        {paymentTypes.map((paymentType) => (
+                          <option key={paymentType.id} value={paymentType.id}>
+                            {paymentType.name}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="px-4 py-2">
+                      <select
+                        value={patient.payment && patient.payment.paymentMode ? patient.payment.paymentMode.id : ''}
+                        onChange={(e) => handlePaymentModeChange(patient.id, e.target.value)}
+                        className="border border-gray-300 rounded px-2 py-1"
+                      >
+                        {/* <option value="">Non spécifié</option> */}
+                        {paymentModes.map((paymentMode) => (
+                          <option key={paymentMode.id} value={paymentMode.id}>
+                            {paymentMode.name}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    {/* <td className="px-4 py-2">{patient.payment && patient.payment.paymentType ? patient.payment.paymentType.name : 'Non spécifié'}</td> */}
+                    {/* <td className="px-4 py-2">{patient.payment && patient.payment.paymentMode ? patient.payment.paymentMode.name : 'Non spécifié'}</td> */}
                   </tr>
                 ))
               ) : (
