@@ -57,6 +57,11 @@ export default function ProfessionalDetailsPage({ params }) {
                     <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded-md">
                 Supprimer
             </button>
+            <Link href={`/map?professionnelId=${id}`}>
+                <button className="bg-blue-500 text-white px-4 py-2 rounded-md mb-4 hover:bg-blue-700">
+                    Voir sur la carte
+                </button>
+            </Link>
                 </div>
                 
             ) : (
