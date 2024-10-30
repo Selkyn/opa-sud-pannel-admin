@@ -16,6 +16,7 @@ export default function PatientDetailsPage({ params }) {
     const [loading, setLoading] = useState(true); // Gère l'état de chargement
     const [error, setError] = useState(null); // Gère les erreurs
 
+
     useEffect(() => {
         if (id) {
             const fetchPatientDetails = async () => {
@@ -163,6 +164,11 @@ export default function PatientDetailsPage({ params }) {
             <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded-md">
                 Supprimer
             </button>
+            <Link href={`/map?patientId=${id}`}>
+        <button className="bg-blue-500 text-white px-4 py-2 rounded-md mb-4 hover:bg-blue-700">
+          Voir sur la carte
+        </button>
+      </Link>
 
         </div>
         

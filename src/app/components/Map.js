@@ -1,5 +1,5 @@
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import { useEffect, useState } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvent, useMap } from 'react-leaflet';
+import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
 import { capitalizeFirstLetter } from '../utils/stringUtils';
@@ -22,19 +22,27 @@ const vetoIcon = new L.Icon({
   popupAnchor: [0, -45],
   shadowSize: [45, 45], 
   shadowAnchor: [15, 45] 
-})
+});
 
-const Map = ({ onSelectPatient, onSelectVetCenter }) => {
-  const [markers, setMarkers] = useState([]);
-  const [isSSR, setIsSSR] = useState(true);
-  const [vetMarkers, setVetmarkers] = useState([]);
-  
-
-  // const apiKey = process.env.NEXT_PUBLIC_OPENCAGE_API_KEY;
+const CenterMap = ({ position, zoomLevel }) => {
+  const map = useMap();
 
   useEffect(() => {
-    setIsSSR(false);
+    if (position) {
+      map.flyTo(position, zoomLevel, { animate: true });
+    }
+  }, [position, zoomLevel, map]);
 
+  return null;
+};
+
+const Map = ({ onSelectPatient, onSelectVetCenter, focusedPatientId }) => {
+  const [markers, setMarkers] = useState([]);
+  const [vetMarkers, setVetMarkers] = useState([]);
+  const [centerPosition, setCenterPosition] = useState(null);
+  const zoomLevel = 17;
+
+  useEffect(() => {
     const fetchPatients = async () => {
       try {
         const response = await axios.get('http://localhost:4000/patients');
@@ -44,10 +52,8 @@ const Map = ({ onSelectPatient, onSelectVetCenter }) => {
         const patientsByAddress = {};
         patients.forEach((patient) => {
           const client = patient.client;
-          
           if (client && client.latitude && client.longitude) {
             const addressKey = `${client.adress}, ${client.postal} ${client.city}`;
-            
             if (!patientsByAddress[addressKey]) {
               patientsByAddress[addressKey] = {
                 lat: client.latitude,
@@ -55,7 +61,6 @@ const Map = ({ onSelectPatient, onSelectVetCenter }) => {
                 patients: []
               };
             }
-  
             patientsByAddress[addressKey].patients.push(patient);
           }
         });
@@ -78,38 +83,53 @@ const Map = ({ onSelectPatient, onSelectVetCenter }) => {
 
   useEffect(() => {
     const fetchVetCenters = async () => {
-
       try {
-        const reponse = await axios('http://localhost:4000/professionals');
-        const vetCenters = reponse.data;
+        const response = await axios.get('http://localhost:4000/professionals');
+        const vetCenters = response.data;
         const newVetMarkers = vetCenters
-        .filter(vetCenter => vetCenter.latitude && vetCenter.longitude)
-        .map((vetCenter) => ({
-          lat: vetCenter.latitude,
-          lng: vetCenter.longitude,
-          ...vetCenter,
-        }));
+          .filter(vetCenter => vetCenter.latitude && vetCenter.longitude)
+          .map((vetCenter) => ({
+            lat: vetCenter.latitude,
+            lng: vetCenter.longitude,
+            ...vetCenter,
+          }));
 
-        setVetmarkers(newVetMarkers);
+        setVetMarkers(newVetMarkers);
       } catch (error) {
-        console.error("Erreur lors de la récupération des centres vétérinaires :", error)
+        console.error("Erreur lors de la récupération des centres vétérinaires :", error);
       }
     };
 
     fetchVetCenters();
   }, []);
 
-  if (isSSR) {
-    return null;
-  }
+  useEffect(() => {
+    console.log("ID du patient reçu dans Map :", focusedPatientId);
+
+    if (focusedPatientId && markers.length > 0) {
+      const patientMarker = markers.find(marker =>
+        marker.patients.some(patient => patient.id === parseInt(focusedPatientId))
+      );
+
+      if (patientMarker) {
+        setCenterPosition([patientMarker.lat, patientMarker.lng]);
+      }
+    }
+  }, [focusedPatientId, markers]);
 
   return (
     <div>
-      <MapContainer center={[43.683333, 4.133333]} zoom={7} style={{ height: '900px', width: '100%' }}>
+      <MapContainer
+        center={[43.683333, 4.133333]}
+        zoom={7}
+        style={{ height: '900px', width: '100%' }}
+      >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
+
+        {centerPosition && <CenterMap position={centerPosition} zoomLevel={zoomLevel} />}
 
         {markers.map((marker, idx) => (
           <Marker key={idx} position={[marker.lat, marker.lng]} icon={customIcon}>
@@ -148,14 +168,13 @@ const Map = ({ onSelectPatient, onSelectVetCenter }) => {
                 <p>Centre vétérinaire : {capitalizeFirstLetter(vetMarker.name)}</p>
                 <p>{vetMarker.adress}, {capitalizeFirstLetter(vetMarker.city)}</p>
                 <button
-                    className="bg-blue-500 text-white px-2 py-1 rounded-md ml-2"
-                    onClick={() => onSelectVetCenter(vetMarker.id)}
+                  className="bg-blue-500 text-white px-2 py-1 rounded-md ml-2"
+                  onClick={() => onSelectVetCenter(vetMarker.id)}
                 >
-                    Détails
+                  Détails
                 </button>
               </div>
             </Popup>
-
           </Marker>
         ))}
       </MapContainer>
