@@ -4,27 +4,38 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
 import { capitalizeFirstLetter } from '../utils/stringUtils';
+import SearchBar from '../components/SearchBar';
+import useProfessionalFilters from './hooks/useProfessionalFilter';
 
 export default function ProfessionnelsPage() {
     const [professionals, setProfessionals] = useState([]);
 
-    useEffect(() => {
-        const fetchProfessionals = async () => {
-            try {
-                const response = await axios.get("http://localhost:4000/professionals");
-                console.log("Données récupérées :", response.data); 
-                setProfessionals(response.data);
-            } catch (error) {
-                console.error("Erreur lors de la récupération des professionnels");
-            }
-        };
+    const {
+        searchTerm,
+        setSearchTerm,
+        filteredProfessionals
+      } = useProfessionalFilters(professionals);
+    
+      useEffect(() => {
         fetchProfessionals();
-    }, []);
-   
+      }, []);
+    
+      const fetchProfessionals = async () => {
+        try {
+          const response = await axios.get("http://localhost:4000/professionals");
+          setProfessionals(response.data);
+        } catch (error) {
+          console.error("Erreur lors de la récupération des professionnels", error);
+        }
+      };
+
 
     return (
         <div className="container mx-auto px-4 py-8">
             <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Professionnels</h2>
+
+            <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm}/>
+
         
             <div className="mb-6 text-center">
                 <Link href="/professionnels/form" className="text-white bg-blue-500 hover:bg-blue-700 font-bold py-2 px-4 rounded">
@@ -45,8 +56,8 @@ export default function ProfessionnelsPage() {
                 </tr>
             </thead>
             <tbody>
-                {professionals.length > 0 ? (
-                    professionals.map((professional, index) => (
+                {filteredProfessionals.length > 0 ? (
+                    filteredProfessionals.map((professional, index) => (
                         <React.Fragment key={professional.id}>
                             <tr 
                                 className={`${

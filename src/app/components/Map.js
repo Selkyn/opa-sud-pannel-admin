@@ -56,6 +56,7 @@ const Map = ({ onSelectPatient, onSelectVetCenter, focusedPatientId, focusedProf
   const [userLocation, setUserLocation] = useState(null);
   const [route, setRoute] = useState(null);
   const [routeDetails, setRouteDetails] = useState(null);
+  const [priceGas, setPriceGas] = useState(null);
   const zoomLevel = 14;
   const apiKeyGraphHopper = process.env.NEXT_PUBLIC_GRAPHHOPPER_API_KEY;
 
@@ -183,7 +184,7 @@ const Map = ({ onSelectPatient, onSelectVetCenter, focusedPatientId, focusedProf
     }, []);
 
     const getRoute = async (start, end) => {
-      const url = `https://graphhopper.com/api/1/route?point=${start[0]},${start[1]}&point=${end[0]},${end[1]}&vehicle=car&locale=fr&instructions=false&points_encoded=false&key=${apiKeyGraphHopper}`;
+      const url = `https://graphhopper.com/api/1/route?point=${start[0]},${start[1]}&point=${end[0]},${end[1]}&vehicle=car&locale=fr&instructions=false&points_encoded=false&key=${apiKeyGraphHopper}&avoid=toll,motorway,ferry`;
       
       try {
         const response = await axios.get(url);
@@ -215,6 +216,13 @@ const Map = ({ onSelectPatient, onSelectVetCenter, focusedPatientId, focusedProf
     };
 
     const formatDistance = (distance) => (distance / 1000).toFixed(2) + " km";
+    const costGas = (distance) => {
+      const distanceInKm = distance / 1000;
+      const fuelConsumption = 8;
+      const fuelPricePerLitre = 1.6;
+    
+      return ((distanceInKm / 100) * fuelConsumption * fuelPricePerLitre).toFixed(2) + " €";
+    };
     const formatTime = (time) => {
       const totalMinutes = Math.floor(time / 60000);
       const hours = Math.floor(totalMinutes / 60);
@@ -251,6 +259,8 @@ const Map = ({ onSelectPatient, onSelectVetCenter, focusedPatientId, focusedProf
         <div style={{ position: 'absolute', top: '100px', left: '10px', backgroundColor: 'white', padding: '10px', borderRadius: '5px', zIndex: 1000 }}>
           <p>Distance : {formatDistance(routeDetails.distance)}</p>
           <p>Durée estimée : {formatTime(routeDetails.time)}</p>
+          <p>Prix du carburant : {costGas(routeDetails.distance)}</p>
+
         </div>
       )}
 
