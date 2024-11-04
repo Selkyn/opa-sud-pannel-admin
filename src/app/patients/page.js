@@ -6,6 +6,8 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
 import { capitalizeFirstLetter } from '../utils/stringUtils';
+import CheckboxFilter from '../components/CheckBoxFilter';
+import usePatientFilters from './hooks/usePatientFilters';
 
 export default function PatientsPage() {
   const [patients, setPatients] = useState([]);
@@ -13,8 +15,18 @@ export default function PatientsPage() {
   const [payments, setPayments] = useState();
   const [paymentTypes, setPaymentTypes] = useState([]);
   const [paymentModes, setPaymentModes] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  
+
+  const {
+    searchTerm,
+    setSearchTerm,
+    filteredPatients,
+    handleStatusFilterChange,
+    handlePaymentTypeFilterChange,
+    handlePaymentModeFilterChange,
+    selectedStatusFilters,
+    selectedPaymentTypeFilters,
+    selectedPaymentModeFilters,
+  } = usePatientFilters(patients);
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -71,9 +83,6 @@ useEffect(() => {
   fetchPaymentModes();
 }, []);
 
-  const filteredPatients = patients.filter(patient =>
-    patient.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const handleStatusChange = async (patientId, newStatusId) => {
     try {
@@ -122,14 +131,49 @@ useEffect(() => {
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Patients</h2>
 
-      <div>
-        <input
-          type="text"
-          placeholder="Rechercher ..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
+      <div className="relative w-full max-w-xs mx-auto">
+  <input
+    type="text"
+    placeholder="Rechercher ..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className="w-full px-4 py-2 pl-10 text-gray-700 bg-white border border-gray-300 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+  <svg
+    className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="11" cy="11" r="8"></circle>
+    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+  </svg>
+</div>
+
+      <CheckboxFilter
+        title="Filtrer par statut"
+        options={status}
+        selectedFilters={selectedStatusFilters}
+        onFilterChange={handleStatusFilterChange}
+      />
+
+      <CheckboxFilter
+        title="Filtrer par type de paiement"
+        options={paymentTypes}
+        selectedFilters={selectedPaymentTypeFilters}
+        onFilterChange={handlePaymentTypeFilterChange}
+      />
+
+      <CheckboxFilter
+        title="Filtrer par mode de paiement"
+        options={paymentModes}
+        selectedFilters={selectedPaymentModeFilters}
+        onFilterChange={handlePaymentModeFilterChange}
+      />
       
       {/* Lien vers le formulaire d'ajout de patient */}
       <div className="mb-6 text-center">
