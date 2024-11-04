@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
 export default function usePatientFilters(patients) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,6 +16,7 @@ export default function usePatientFilters(patients) {
       (selectedPaymentModeFilters.length === 0 || selectedPaymentModeFilters.includes(patient.payment?.paymentMode?.id))
     );
   }, [patients, searchTerm, selectedStatusFilters, selectedPaymentTypeFilters, selectedPaymentModeFilters]);
+  
 
   const handleStatusFilterChange = (statusId) => {
     setSelectedStatusFilters(prevFilters =>
