@@ -4,6 +4,7 @@ import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
 import LocateButton from './LocateButton';
 import { capitalizeFirstLetter } from '../utils/stringUtils';
+import MapControls from './MapControls';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -49,16 +50,28 @@ const CenterMap = ({ position, zoomLevel }) => {
   return null;
 };
 
-const Map = ({ onSelectPatient, onSelectVetCenter, focusedPatientId, focusedProfessionalId }) => {
+const Map = ({ 
+  onSelectPatient, 
+  onSelectVetCenter, 
+  focusedPatientId, 
+  focusedProfessionalId, 
+}) => {
   const [markers, setMarkers] = useState([]);
   const [vetMarkers, setVetMarkers] = useState([]);
   const [centerPosition, setCenterPosition] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [route, setRoute] = useState(null);
   const [routeDetails, setRouteDetails] = useState(null);
+  const [destination, setDestination] = useState(null);
+
   const [priceGas, setPriceGas] = useState(null);
+  const [avoidMotorways, setAvoidMotorways] = useState(false);
+  const [isCreatingRoute, setIsCreatingRoute] = useState(false);
+  const [selectedPoints, setSelectedPoints] = useState([]);
+  const [stepDetails, setStepDetails] = useState([]);
+  const [namePoints, setNamePoints] = useState([])
   const zoomLevel = 14;
-  const apiKeyGraphHopper = process.env.NEXT_PUBLIC_GRAPHHOPPER_API_KEY;
+  const apiKeyTomTom = process.env.NEXT_PUBLIC_TOMTOM_API_KEY;
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -76,7 +89,7 @@ const Map = ({ onSelectPatient, onSelectVetCenter, focusedPatientId, focusedProf
               patientsByAddress[addressKey] = {
                 lat: client.latitude,
                 lng: client.longitude,
-                patients: []
+                patients: [],
               };
             }
             patientsByAddress[addressKey].patients.push(patient);
@@ -183,42 +196,96 @@ const Map = ({ onSelectPatient, onSelectVetCenter, focusedPatientId, focusedProf
       }
     }, []);
 
-    const getRoute = async (start, end) => {
-      const url = `https://graphhopper.com/api/1/route?point=${start[0]},${start[1]}&point=${end[0]},${end[1]}&vehicle=car&locale=fr&instructions=false&points_encoded=false&key=${apiKeyGraphHopper}&avoid=toll,motorway,ferry`;
-      
+    const calculateRoute = async () => {
+      if (selectedPoints.length < 2) {
+        alert("Veuillez sélectionner au moins deux points.");
+        return;
+      }
+    
+      const start = selectedPoints[0];
+      const end = selectedPoints[selectedPoints.length - 1];
+      const waypoints = selectedPoints.slice(1, -1);
+      const waypointsParam = waypoints.map((point) => `${point[0]},${point[1]}`).join(':');
+      const avoidParam = avoidMotorways ? '&avoid=tollRoads' : ''; // Paramètre pour éviter les autoroutes
+      const url = `https://api.tomtom.com/routing/1/calculateRoute/${start[0]},${start[1]}:${waypointsParam}:${end[0]},${end[1]}/json?avoid=unpavedRoads${avoidParam}&key=${apiKeyTomTom}`;
+    
       try {
         const response = await axios.get(url);
-        console.log("Réponse complète de l'API GraphHopper :", response.data);
+        const routeData = response.data.routes[0];
+        const decodedPolyline = routeData.legs.flatMap((leg) => leg.points.map((point) => [point.latitude, point.longitude]));
+        setRoute(decodedPolyline);
+        setRouteDetails({ distance: routeData.summary.lengthInMeters, duration: routeData.summary.travelTimeInSeconds * 1000 });
+    
+        // Récupérer les distances et durées pour chaque étape
+        const steps = routeData.legs.map((leg, index) => ({
+          distance: leg.summary.lengthInMeters,
+          duration: leg.summary.travelTimeInSeconds * 1000,
+          from: selectedPoints[index],
+          to: selectedPoints[index + 1],
+        }));
         
-        const paths = response.data.paths;
-        if (paths && paths.length > 0) {
-          const points = paths[0].points;
-          const distance = paths[0].distance;
-          const time = paths[0].time;
-          
-          setRoute(points);
-          setRouteDetails({ distance, time });
-        } else {
-          console.error("Aucun chemin trouvé dans la réponse de l'API.");
-        }
+        setStepDetails(steps);
       } catch (error) {
-        console.error("Erreur lors de la récupération de l'itinéraire :", error);
+        console.error("Erreur lors de la récupération de l'itinéraire TomTom :", error);
+      }
+    };
+
+    const handleMarkerClick = (lat, lng) => {
+      if (isCreatingRoute) {
+        setSelectedPoints((prevPoints) => [...prevPoints, [lat, lng]]);
+      }
+    };
+
+    const toggleCreateRoute = () => {
+      setIsCreatingRoute((prev) => !prev);
+      setSelectedPoints(userLocation ? [userLocation] : []); // Initialiser le point de départ avec la géolocalisation
+      setRoute(null); // Réinitialiser le parcours
+      setStepDetails([]);
+    };
+
+    const getRoute = async (start, end) => {
+      const avoidParam = avoidMotorways ? '&avoid=tollRoads' : '';
+      const url = `https://api.tomtom.com/routing/1/calculateRoute/${start[0]},${start[1]}:${end[0]},${end[1]}/json?avoid=unpavedRoads${avoidParam}&key=${apiKeyTomTom}`;      
+      try {
+        const response = await axios.get(url);
+        const routeData = response.data.routes[0];
+        const distance = routeData.summary.lengthInMeters;
+        const duration = routeData.summary.travelTimeInSeconds * 1000;
+  
+        // Les points de l’itinéraire sont stockés dans `legs[0].points`
+        const decodedPolyline = routeData.legs[0].points.map(point => [point.latitude, point.longitude]);
+        
+        setRoute(decodedPolyline);
+        setRouteDetails({ distance, duration });
+      } catch (error) {
+        console.error("Erreur lors de la récupération de l'itinéraire TomTom :", error);
       }
     };
     
+    const handleAvoidMotorwaysChange = (shouldAvoid) => {
+      setAvoidMotorways(shouldAvoid);
+    };
+
+    useEffect(() => {
+      if (userLocation && destination && !isCreatingRoute) {
+        getRoute(userLocation, destination, avoidMotorways);
+      }
+    }, [avoidMotorways, destination, userLocation]);
+
+    useEffect(() => {
+      if (isCreatingRoute && selectedPoints.length > 1) {
+        calculateRoute();
+      }
+    }, [avoidMotorways]);
 
     const handleRouteToMarker = (markerPosition) => {
-      if (userLocation) {
-        getRoute(userLocation, markerPosition);
-      } else {
-        alert("Veuillez activer la géolocalisation pour obtenir votre position actuelle.");
-      }
+      setDestination(markerPosition);
     };
 
     const formatDistance = (distance) => (distance / 1000).toFixed(2) + " km";
     const costGas = (distance) => {
       const distanceInKm = distance / 1000;
-      const fuelConsumption = 8;
+      const fuelConsumption = 10;
       const fuelPricePerLitre = 1.6;
     
       return ((distanceInKm / 100) * fuelConsumption * fuelPricePerLitre).toFixed(2) + " €";
@@ -243,26 +310,42 @@ const Map = ({ onSelectPatient, onSelectVetCenter, focusedPatientId, focusedProf
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
-
+        <MapControls onAvoidMotorwaysChange={handleAvoidMotorwaysChange} />
         <LocateButton onLocate={(location) => setUserLocation(location)} />
 
-        {route && route.coordinates && (
-          <Polyline
-            positions={route.coordinates.map(([lng, lat]) => [lat, lng])}
-            color="blue"
-            weight={4}
-            opacity={0.7}
-          />
+        {route && (
+        <Polyline positions={route} color="blue" weight={4} />
+      )}
+
+{routeDetails && (
+          <div style={{ position: 'absolute', top: '100px', left: '10px', backgroundColor: 'white', padding: '10px', borderRadius: '5px', zIndex: 1000 }}>
+            <h3>Détails du parcours</h3>
+            <p>Distance totale : {formatDistance(routeDetails.distance)}</p>
+            <p>Durée totale : {formatTime(routeDetails.duration)}</p>
+            <p>Prix essence : {costGas(routeDetails.distance)}</p>
+            <h4>Étapes :</h4>
+            <ul>
+              {stepDetails.map((step, index) => (
+                <li key={index}>
+                  De {step.from[0].toFixed(3)}, {step.from[1].toFixed(3)} à {step.to[0].toFixed(3)}, {step.to[1].toFixed(3)} :<br />
+                  Distance : {formatDistance(step.distance)}, Durée : {formatTime(step.duration)}
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
 
-      {routeDetails && (
-        <div style={{ position: 'absolute', top: '100px', left: '10px', backgroundColor: 'white', padding: '10px', borderRadius: '5px', zIndex: 1000 }}>
-          <p>Distance : {formatDistance(routeDetails.distance)}</p>
-          <p>Durée estimée : {formatTime(routeDetails.time)}</p>
-          <p>Prix du carburant : {costGas(routeDetails.distance)}</p>
-
-        </div>
-      )}
+            {/* Route creation controls */}
+            <div style={{ position: 'absolute', top: '500px', left: '10px', zIndex: 1000, backgroundColor: 'white' }}>
+        <button onClick={toggleCreateRoute} style={{ padding: '10px', marginRight: '5px' }}>
+          {isCreatingRoute ? "Annuler" : "Créer un parcours"}
+        </button>
+        {isCreatingRoute && (
+          <button onClick={calculateRoute} style={{ padding: '10px' }}>
+            Calculer le parcours
+          </button>
+        )}
+      </div>
 
         {userLocation && (
           <Marker position={userLocation} icon={geolocIcon}>
@@ -303,6 +386,12 @@ const Map = ({ onSelectPatient, onSelectVetCenter, focusedPatientId, focusedProf
                 >
                   Itinéraire
                 </button>
+                <button
+                  className="bg-blue-500 text-white px-2 py-1 rounded-md ml-2"
+                  onClick={() => handleMarkerClick(marker.lat, marker.lng)}
+                  >
+                    ajouter
+                </button>
                   </>
                 ) : (
                   <p>Aucun patient trouvé à cette adresse.</p>
@@ -335,6 +424,15 @@ const Map = ({ onSelectPatient, onSelectVetCenter, focusedPatientId, focusedProf
                 >
                   Itinéraire
                 </button>
+                <button
+  className="bg-blue-500 text-white px-2 py-1 rounded-md ml-2"
+  onClick={() => {
+    console.log(vetMarker.name); // Affichez le nom du centre vétérinaire dans la console
+    handleMarkerClick(vetMarker.lat, vetMarker.lng); // Passez le nom du centre vétérinaire
+  }}
+>
+  ajouter
+</button>
               </div>
             </Popup>
           </Marker>
