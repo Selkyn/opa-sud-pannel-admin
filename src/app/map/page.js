@@ -10,7 +10,7 @@ const Map = dynamic(() => import('../components/Map'), { ssr: false });
 
 const MapPage = ({ searchParams }) => {
   const patientId = searchParams.patientId;
-  const professionalId = searchParams.professionnelId;
+  const vetCenterId = searchParams.vetCenterId;
   const [selectedPatientId, setSelectedPatientId] = useState(null);
   const [selectedVetCenterId, setSelectedVetCenterId] = useState(null);
 
@@ -47,7 +47,7 @@ const MapPage = ({ searchParams }) => {
           onSelectPatient={handleSelectPatient}
           onSelectVetCenter={handleSelectVetCenter}
           focusedPatientId={patientId}
-          focusedProfessionalId={professionalId}
+          focusedVetCenterId={vetCenterId}
         />
       </div>
       <div className="w-1/5 bg-gray-100 p-4">

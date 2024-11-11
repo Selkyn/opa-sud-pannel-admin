@@ -3,6 +3,7 @@ import React, { useEffect, useState} from "react";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
+import { calculateAge } from "../utils/ageUtils";
 
 const CardPatient = ({ params }) => {
     const { id } = params;
@@ -23,6 +24,9 @@ const CardPatient = ({ params }) => {
           fetchPatientDetails();
         }
       }, [id]);
+
+      const age = patient && patient.birthYear ? calculateAge(patient.birthYear) : "Non spécifié";
+
 
 
 
@@ -60,8 +64,8 @@ const CardPatient = ({ params }) => {
                             <div>
                                 <p><strong>Espece : </strong> {patient.animalType && patient.animalType.name ? patient.animalType.name : "Non spécifié"}</p>
                                 <p><strong>Race : </strong> {patient.race && patient.race.name ? patient.race.name : "Non spécifié"}</p>
-                                <p><strong>Date de naissance :</strong> {patient.birthday ? patient.birthday : "Non spécifié"}</p>
-                                <p><strong>Poids :</strong></p>
+                                <p><strong>Age : </strong> {age < 1 ? "Moins de 1 an" : age + " ans" }</p>
+                                <p><strong>Poids :</strong> {patient.weight ? patient.weight + " grammes" : "Non spécifié"}</p>
                                 <p><strong>Pathologie :</strong> {patient.pathology? patient.pathology: "Non spécifié"}</p>
                             </div>
                             {/* <div>

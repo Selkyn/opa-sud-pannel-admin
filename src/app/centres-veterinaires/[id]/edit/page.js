@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
-export default function EditProfessionalForm({ params }) {
+export default function EditVetCenterForm({ params }) {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -25,7 +25,7 @@ export default function EditProfessionalForm({ params }) {
         if (id) {
             const fetchData = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:4000/professionals/${id}`);
+                    const response = await axios.get(`http://localhost:4000/vet-centers/${id}`);
                     const data = response.data;
     
                     // Charger les informations du centre et les vétérinaires
@@ -84,7 +84,7 @@ export default function EditProfessionalForm({ params }) {
         let formDataToSend = { ...formData, vets };
 
         try {
-            const response = await axios.put(`http://localhost:4000/professionals/${id}/edit`, formDataToSend);
+            const response = await axios.put(`http://localhost:4000/vet-centers/${id}/edit`, formDataToSend);
             alert("Centre vétérinaire mis à jour avec succès !");
         } catch (error) {
             console.error("Erreur lors de la mise à jour :", error);

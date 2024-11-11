@@ -1,4 +1,4 @@
-// src/app/professionnels/[id]/page.js
+// src/app/centres-veterinaires/[id]/page.js
 
 "use client";
 
@@ -7,35 +7,35 @@ import axios from "axios";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
 
-export default function ProfessionalDetailsPage({ params }) {
+export default function vetCenterDetailsPage({ params }) {
     const { id } = params;
     const router = useRouter();
 
-    const [professional, setProfessional] = useState(null);
+    const [vetCenter, setvetCenter] = useState(null);
 
     useEffect(() => {
         if(id) {
-            const fetchProfessionalDetails = async () => {
+            const fetchVetCenterDetails = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:4000/professionals/${id}`)
-                    setProfessional(response.data);
+                    const response = await axios.get(`http://localhost:4000/vet-centers/${id}`)
+                    setvetCenter(response.data);
                 } catch (error) {
                     console.error("Erreur lors de la récupération des détails du centre vétérinaire");
                 }
             };
-            fetchProfessionalDetails();
+            fetchVetCenterDetails();
         }
     }, [id]);
 
     const handleDelete = async () => {
-        if (confirm(`Etes-vous sûr de vouloir supprimer ${professional.name} ?`)) {
+        if (confirm(`Etes-vous sûr de vouloir supprimer ${vetCenter.name} ?`)) {
           try {
-            await axios.delete(`http://localhost:4000/professionals/${professional.id}/delete`);
+            await axios.delete(`http://localhost:4000/vet-centers/${vetCenter.id}/delete`);
       
-            router.push("/professionnels");
+            router.push("/centres-veterinaires");
       
           } catch (error) {
-            console.error("Erreur lors de la suppression du professional :", error);
+            console.error("Erreur lors de la suppression du vetCenter :", error);
           }
         }
       };
@@ -48,16 +48,16 @@ export default function ProfessionalDetailsPage({ params }) {
             >
                 Revenir à la page précédente
             </button>
-            {professional ? (
+            {vetCenter ? (
                 <div>
-                    <h1>{professional.name}</h1>
-                    <Link href={`/professionnels/${professional.id}/edit`}>
+                    <h1>{vetCenter.name}</h1>
+                    <Link href={`/centres-veterinaires/${vetCenter.id}/edit`}>
                         <button className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2">Modifier</button>
                     </Link>
                     <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded-md">
                 Supprimer
             </button>
-            <Link href={`/map?professionnelId=${id}`}>
+            <Link href={`/map?vetCenterId=${id}`}>
                 <button className="bg-blue-500 text-white px-4 py-2 rounded-md mb-4 hover:bg-blue-700">
                     Voir sur la carte
                 </button>

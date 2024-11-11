@@ -7,7 +7,8 @@ import { Checkbox, CheckboxGroup } from "@nextui-org/react";
 export default function AddPatientForm() {
   const [formData, setFormData] = useState({
     name: "",
-    birthday: "",
+    birthYear: "",
+    weight: "",
     sexId: "",
     animalTypeId: "",
     customAnimalType: "",
@@ -163,7 +164,8 @@ export default function AddPatientForm() {
       // Réinitialiser les données du formulaire après la soumission
       setFormData({
         name: "",
-        birthday: "",
+        birthYear: "",
+        weigth: "",
         sexId: "",
         animalTypeId: "",
         customAnimalType: "",
@@ -229,16 +231,34 @@ export default function AddPatientForm() {
 
             <div>
               <label
-                htmlFor="birthday"
+                htmlFor="birthYear"
                 className="block text-sm font-medium text-gray-700"
               >
                 Date de naissance
               </label>
               <input
-                type="date"
-                name="birthday"
-                id="birthday"
-                value={formData.birthday}
+                type="text"
+                name="birthYear"
+                id="birthYear"
+                value={formData.birthYear}
+                onChange={handleInputChange}
+                required
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="weight"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Poids
+              </label>
+              <input
+                type="text"
+                name="weight"
+                id="weight"
+                value={formData.weight}
                 onChange={handleInputChange}
                 required
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"

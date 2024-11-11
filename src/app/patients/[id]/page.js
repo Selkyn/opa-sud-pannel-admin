@@ -7,6 +7,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { capitalizeFirstLetter } from "@/app/utils/stringUtils";
+import { calculateAge  } from "@/app/utils/ageUtils";
 
 export default function PatientDetailsPage({ params }) {
     const { id } = params;
@@ -40,6 +41,9 @@ export default function PatientDetailsPage({ params }) {
     if (error) {
         return <div>{error}</div>;
     }
+
+    const age = patient && patient.birthYear ? calculateAge(patient.birthYear) : "Non spécifié";
+
 
     const handleDelete = async () => {
         if (confirm(`Etes-vous sûr de vouloir supprimer ${patient.name} ?`)) {
@@ -97,8 +101,9 @@ export default function PatientDetailsPage({ params }) {
                             <div>
                                 <p><strong>Espece : </strong> {patient.animalType && patient.animalType.name ? patient.animalType.name : "Non spécifié"}</p>
                                 <p><strong>Race : </strong> {patient.race && patient.race.name ? patient.race.name : "Non spécifié"}</p>
-                                <p><strong>Date de naissance :</strong> {patient.birthday ? patient.birthday : "Non spécifié"}</p>
-                                <p><strong>Poids :</strong></p>
+                                <p><strong>Année de naissance :</strong> {patient.birthYear ? patient.birthYear : "Non spécifié"}</p>
+                                <p><strong>Age : </strong> {age < 1 ? "Moins de 1 an" : age + " ans" }</p>
+                                <p><strong>Poids :</strong> {patient.weight ? patient.weight + " grammes" : "Non spécifié"}</p>
                                 <p><strong>Pathologie :</strong> {patient.pathology? patient.pathology: "Non spécifié"}</p>
                                 <p><strong>Membres affectés :</strong></p>
                                 {patient.Limbs.map((limb) => (
@@ -118,7 +123,7 @@ export default function PatientDetailsPage({ params }) {
                         </div>
                     </div>
                     <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-sm">
-                        <Link href={`/professionnels/${patient.vetCenterId}`}>
+                        <Link href={`/centres-veterinaires/${patient.vetCenterId}`}>
                             <h2 className="text-xl font-semibold text-gray-800 mb-2">Centre vétérinaire</h2>
                         </Link>
 
@@ -147,7 +152,7 @@ export default function PatientDetailsPage({ params }) {
                             </div> */}
                         </div>
                     </div>
-                    {/* <p><strong>Date de naissance:</strong> {patient.birthday}</p>
+                    {/* <p><strong>Date de naissance:</strong> {patient.birthYear}</p>
                     <p><strong>Sexe:</strong> {patient.sex ? patient.sex.name : "Non spécifié"}</p>
                     <p><strong>Pathologie:</strong> {patient.pathology}</p>
                     <p><strong>Date d'inscription:</strong> {patient.createdAt}</p>
@@ -165,10 +170,10 @@ export default function PatientDetailsPage({ params }) {
                 Supprimer
             </button>
             <Link href={`/map?patientId=${id}`}>
-        <button className="bg-blue-500 text-white px-4 py-2 rounded-md mb-4 hover:bg-blue-700">
-          Voir sur la carte
-        </button>
-      </Link>
+                <button className="bg-blue-500 text-white px-4 py-2 rounded-md mb-4 hover:bg-blue-700">
+                    Voir sur la carte
+                </button>
+            </Link>
 
         </div>
         

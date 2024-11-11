@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-export default function ProfessionnelsLayout({ children }) {
+export default function VetCentersLayout({ children }) {
   return (
     <div>
       {children}

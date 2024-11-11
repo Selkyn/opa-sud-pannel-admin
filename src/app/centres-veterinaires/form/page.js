@@ -3,7 +3,7 @@
 import React, { useEffect, useState} from "react";
 import axios from "axios";
 
-export default function addProfessionalForm() {
+export default function addVetCenterForm() {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -51,7 +51,7 @@ export default function addProfessionalForm() {
         let formDataToSend = { ...formData, vets };
 
         try {
-            const response = await axios.post("http://localhost:4000/professionals/add", formDataToSend);
+            const response = await axios.post("http://localhost:4000/vet-centers/add", formDataToSend);
             alert("Centre vétérinaire ajouté avec succès !");
 
             setFormData({
@@ -116,7 +116,6 @@ export default function addProfessionalForm() {
                                 id="email"
                                 value={formData.email}
                                 onChange={handleInputChange}
-                                required
                                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                             />
                         </div>
@@ -194,7 +193,6 @@ export default function addProfessionalForm() {
                                 id="department"
                                 value={formData.department}
                                 onChange={handleInputChange}
-                                required
                                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                             />
                         </div>
@@ -215,7 +213,6 @@ export default function addProfessionalForm() {
                                 id="phone"
                                 value={formData.phone}
                                 onChange={handleInputChange}
-                                required
                                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                             />
                         </div>
@@ -236,14 +233,13 @@ export default function addProfessionalForm() {
                                 id="infos"
                                 value={formData.infos}
                                 onChange={handleInputChange}
-                                required
                                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                             />
                         </div>
                     </div>
                 </div>
-{/* Section pour les vétérinaires */}
-{vets.map((vet, index) => (
+                    {/* Section pour les vétérinaires */}
+                    {vets.map((vet, index) => (
                         <div key={index} className="bg-white p-6 rounded-lg shadow-md mt-6">
                             <h3 className="text-xl font-semibold mb-4">Vétérinaire {index + 1}</h3>
 
@@ -258,7 +254,6 @@ export default function addProfessionalForm() {
                                         id={`lastnameVet-${index}`}
                                         value={vet.lastnameVet}
                                         onChange={(e) => handleVetChange(index, e)}
-                                        required
                                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm"
                                     />
                                 </div>
@@ -273,7 +268,6 @@ export default function addProfessionalForm() {
                                         id={`firstnameVet-${index}`}
                                         value={vet.firstnameVet}
                                         onChange={(e) => handleVetChange(index, e)}
-                                        required
                                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm"
                                     />
                                 </div>
@@ -288,7 +282,6 @@ export default function addProfessionalForm() {
                                         id={`emailVet-${index}`}
                                         value={vet.emailVet}
                                         onChange={(e) => handleVetChange(index, e)}
-                                        required
                                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm"
                                     />
                                 </div>

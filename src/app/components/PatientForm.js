@@ -6,7 +6,7 @@ import axios from "axios";
 export default function PatientForm({ initialData = {}, isEditMode = false }) {
     const [formData, setFormData] = useState({
       name: initialData.name || "",
-      birthday: initialData.birthday || "",
+      birthYear: initialData.birthYear || "",
       sexId: initialData.sexId || "",
       animalTypeId: initialData.animalTypeId || "",
       customAnimalType: initialData.customAnimalType || "",
@@ -144,7 +144,7 @@ export default function PatientForm({ initialData = {}, isEditMode = false }) {
       // Réinitialiser les données du formulaire après la soumission
       setFormData({
         name: "",
-        birthday: "",
+        birthYear: "",
         sexId: "",
         animalTypeId: "",
         customAnimalType: "",
@@ -206,16 +206,16 @@ export default function PatientForm({ initialData = {}, isEditMode = false }) {
 
                 <div>
                     <label
-                        htmlFor="birthday"
+                        htmlFor="birthYear"
                         className="block text-sm font-medium text-gray-700"
                     >
                         Date de naissance
                     </label>
                     <input
-                        type="date"
-                        name="birthday"
-                        id="birthday"
-                        value={formData.birthday}
+                        type="text"
+                        name="birthYear"
+                        id="birthYear"
+                        value={formData.birthYear}
                         onChange={handleInputChange}
                         required
                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
