@@ -38,6 +38,9 @@ export default function Header() {
                 <a className="text-gray-200 hover:text-gray-300" href="/centres-veterinaires">Centres vétérinaires</a>
               </li>
               <li className="nav-item">
+                <a className="text-gray-200 hover:text-gray-300" href="/centres-osteopathes">Centres ostéopathes</a>
+              </li>
+              <li className="nav-item">
                 <a className="text-gray-200 hover:text-gray-300" href="/map">Map</a>
               </li>
               {/* <li className="nav-item">

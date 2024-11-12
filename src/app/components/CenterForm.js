@@ -137,6 +137,21 @@ export default function CenterForm({
                                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                             />
                         </div>
+
+                        <div>
+                            <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                                Téléphone
+                            </label>
+                            <input
+                                type="text"
+                                name="phone"
+                                id="phone"
+                                value={formData.phone}
+                                onChange={handleInputChange}
+                                required
+                                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            />
+                        </div>
                     </div>
 
                     {/* Staff Section */}
@@ -181,6 +196,20 @@ export default function CenterForm({
                                         name="email"
                                         id={`email-${index}`}
                                         value={staff.email}
+                                        onChange={(e) => handleStaffChange(index, e)}
+                                        className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label htmlFor={`phone-${index}`} className="block text-sm font-medium text-gray-700">
+                                        Téléphone
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="phone"
+                                        id={`phone-${index}`}
+                                        value={staff.phone}
                                         onChange={(e) => handleStaffChange(index, e)}
                                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm"
                                     />
