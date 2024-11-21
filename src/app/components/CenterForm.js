@@ -6,7 +6,8 @@ import React, { useState } from "react";
 export default function CenterForm({
     centerType,  // Type de centre (ex. : veterinary, osteopathy)
     staffLabel, // Label pour les membres du personnel (ex. : Veterinarian, Osteopath)
-    onSubmit,                    // Fonction de soumission du formulaire
+    onSubmit,
+    enableSubmitBtn = false,                    // Fonction de soumission du formulaire
     initialData = {},            // Données initiales pour les champs du formulaire
 }) {
     const [formData, setFormData] = useState({
@@ -240,15 +241,17 @@ export default function CenterForm({
                         </button>
                     </div>
                 </div>
+                {enableSubmitBtn && (
+                    <div className="mt-6 flex justify-end">
+                        <button
+                            type="submit"
+                            className="bg-blue-600 text-white px-6 py-2 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        >
+                            Submit {centerType} Center
+                        </button>
+                    </div>
+                )}
 
-                <div className="mt-6 flex justify-end">
-                    <button
-                        type="submit"
-                        className="bg-blue-600 text-white px-6 py-2 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
-                        Submit {centerType} Center
-                    </button>
-                </div>
             </form>
         </section>
         </>

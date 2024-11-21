@@ -379,6 +379,7 @@ export default function AddVetCenterForm() {
             centerType="vétérinaire"
             staffLabel="Vétérinaire"
             initialData={{ ...formData, staff: vets }}
+            // enableSubmitBtn= {true}
             onSubmit={handleSubmit}
         />
     );

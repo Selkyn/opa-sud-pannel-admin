@@ -35,6 +35,15 @@ const geolocIcon = new L.Icon({
   shadowAnchor: [15, 45] 
 });
 
+const osteolocIcon = new L.Icon({
+  iconUrl: '/icons/geoloc.png',
+  iconSize: [30, 35],
+  iconAnchor: [17, 45],
+  popupAnchor: [0, -45],
+  shadowSize: [45, 45], 
+  shadowAnchor: [15, 45] 
+});
+
 const CenterMap = ({ position, zoomLevel }) => {
   const map = useMap();
 
@@ -52,12 +61,15 @@ const CenterMap = ({ position, zoomLevel }) => {
 
 const Map = ({ 
   onSelectPatient, 
-  onSelectVetCenter, 
+  onSelectVetCenter,
+  onSelectOsteoCenter, 
   focusedPatientId, 
-  focusedVetCenterId, 
+  focusedVetCenterId,
+  focusedOsteoCenterId 
 }) => {
   const [markers, setMarkers] = useState([]);
   const [vetMarkers, setVetMarkers] = useState([]);
+  const [osteoMarkers, setOsteMarkers] = useState([]);
   const [centerPosition, setCenterPosition] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [route, setRoute] = useState(null);

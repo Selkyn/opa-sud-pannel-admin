@@ -5,7 +5,14 @@ import Link from 'next/link';
 import axios from 'axios';
 import SearchBar from './SearchBar';
 
-export default function EntityList({ title, data, columns, entityType, searchTerm, onSearchChange,staffs, staffLabel }) {
+export default function EntityList({ 
+    title, 
+    data, columns, 
+    entityType, searchTerm, 
+    onSearchChange,
+    staffs, 
+    staffLabel 
+}) {
     return (
         <div className="container mx-auto px-4 py-8">
             <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">{title}</h2>

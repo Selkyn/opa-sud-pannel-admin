@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { capitalizeFirstLetter } from "@/app/utils/stringUtils";
 import { calculateAge  } from "@/app/utils/ageUtils";
+import ContactEmail from "@/app/components/ContactEmail";
 
 export default function PatientDetailsPage({ params }) {
     const { id } = params;
@@ -89,6 +90,11 @@ export default function PatientDetailsPage({ params }) {
                                 <p><strong>Téléphone :</strong> {patient.client && patient.client.phone ? patient.client.phone : "Non spécifié"}</p>
                                 <p><strong>Adresse :</strong> {patient.client && patient.client.adress ? patient.client.adress : "Non spécifié"}</p>
                             </div>
+                            <div>
+                                {patient.client && patient.client.email && (
+                                    <ContactEmail email={patient.client.email} />
+                                )}
+                            </div>
                             {/* <div>
                                 <p><strong>Attentes du client :</strong></p>
                                 <textarea className="w-full border-gray-300 rounded-md"></textarea>
@@ -145,6 +151,47 @@ export default function PatientDetailsPage({ params }) {
                                     "Aucun vétérinaire"
                                 )}
 
+                            </div>
+                            <div>
+                                {patient.vetCenter && patient.vetCenter.email && (
+                                    <ContactEmail email={patient.vetCenter.email} />
+                                )}
+                            </div>
+                            {/* <div>
+                                <p><strong>Attentes du client :</strong></p>
+                                <textarea className="w-full border-gray-300 rounded-md"></textarea>
+                            </div> */}
+                        </div>
+                    </div>
+
+                    <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-sm">
+                        <Link href={`/centres-osteopathe/${patient.vetCenterId}`}>
+                            <h2 className="text-xl font-semibold text-gray-800 mb-2">Centre ostéopathe</h2>
+                        </Link>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <p><strong>Nom du centre : </strong> {patient.osteoCenter && patient.osteoCenter.name ? patient.osteoCenter.name : "Non spécifié"}</p>
+                                <p><strong>Adresse mail :</strong> {patient.osteoCenter && patient.osteoCenter.email ? patient.osteoCenter.email : "Non spécifié"}</p>
+                                <p><strong>Téléphone :</strong> {patient.osteoCenter && patient.osteoCenter.phone ? patient.osteoCenter.phone : "Non spécifié"}</p>
+                                <p><strong>Vétérinaire :</strong></p>
+                                {patient.osteoCenter?.osteos && patient.osteoCenter.osteos.length > 0 ? (
+                                    <ul>
+                                        {patient.osteoCenter.osteos.map((osteo) => (
+                                            <li key={osteo.id}>
+                                                Dr {osteo.firstname} {osteo.lastname}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    "Aucun ostéopathe"
+                                )}
+
+                            </div>
+                            <div>
+                                {patient.osteoCenter && patient.osteoCenter.email && (
+                                    <ContactEmail email={patient.osteoCenter.email} />
+                                )}
                             </div>
                             {/* <div>
                                 <p><strong>Attentes du client :</strong></p>

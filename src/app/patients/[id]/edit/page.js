@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from 'next/navigation'; 
+import CenterFormSection from "@/app/components/CenterFormSection";
 
 export default function EditPatientForm({ params }) {
   const [formData, setFormData] = useState({
@@ -31,12 +32,23 @@ export default function EditPatientForm({ params }) {
     departmentVetCenter: "",
     postalVetCenter: "",
     phoneVetCenter: "",
-    emailVetCenter: ""
+    emailVetCenter: "",
+    osteoCenterId: "",
+    nameOsteoCenter: "",
+    adressOsteoCenter: "",
+    cityOsteoCenter: "",
+    departmentOsteoCenter: "",
+    postalOsteoCenter: "",
+    phoneOsteoCenter: "",
+    emailOsteoCenter: "",
+    vets: [],
+    osteos: []
   });
 
   const [sexes, setSexes] = useState([]);
   const [animalTypes, setAnimalTypes] = useState([]);
   const [vetCenters, setVetCenters] = useState([]);
+  const [osteoCenters, setOsteoCenters] = useState([]);
   const [races, setRaces] = useState([]);
   const [limbs, setLimbs] = useState([]);  // Liste des limbs disponibles
   const [selectedLimbs, setSelectedLimbs] = useState([]);
@@ -44,9 +56,23 @@ export default function EditPatientForm({ params }) {
   const [showCustomRace, setShowCustomRace] = useState(false);
   const [showCustomRaceStandalone, setShowCustomRaceStandalone] = useState(false);
   const [enableVetFields, setEnableVetFields] = useState(false);
+  const [enableOsteoFields, setEnableOsteoFields] = useState(false);
+  const [disabledRace, setDisabledRace] = useState(true);
+  const [vetStaffList, setVetStaffList] = useState([]);
+  const [osteoStaffList, setOsteoStaffList] = useState([]);
 
   const { id } = params;
   const router = useRouter();
+
+    const setVetsList = (vetsList) => {
+    setVetStaffList(vetsList); // Mise à jour de vetStaffList avec les données des vétérinaires
+    setFormData((prevData) => ({ ...prevData, vets: vetsList }));
+  };
+
+  const setOsteosList = (osteosList) => {
+    setOsteoStaffList(osteosList); // Mise à jour de osteoStaffList avec les données des vétérinaires
+    setFormData((prevData) => ({ ...prevData, osteos: osteosList }));
+  };
 
 // Charger les informations du patient existant
 useEffect(() => {
@@ -75,14 +101,30 @@ useEffect(() => {
             department: patient.client?.department || "",
             clientSexId: patient.client?.sexId || "",
             vetCenterId: patient.vetCenterId || "",
-            nameVetCenter: patient.vetCenter?.name || "",
-            adressVetCenter: patient.vetCenter?.adress || "",
-            cityVetCenter: patient.vetCenter?.city || "",
-            departmentVetCenter: patient.vetCenter?.department || "",
-            postalVetCenter: patient.vetCenter?.postal || "",
-            phoneVetCenter: patient.vetCenter?.phone || "",
-            emailVetCenter: patient.vetCenter?.email || ""
+            osteoCenterId: patient.osteoCenterId || "",
+            // nameVetCenter: patient.vetCenter?.name || "",
+            // adressVetCenter: patient.vetCenter?.adress || "",
+            // cityVetCenter: patient.vetCenter?.city || "",
+            // departmentVetCenter: patient.vetCenter?.department || "",
+            // postalVetCenter: patient.vetCenter?.postal || "",
+            // phoneVetCenter: patient.vetCenter?.phone || "",
+            // emailVetCenter: patient.vetCenter?.email || "",
+            // osteoCenterId: patient.osteoCenterId || "",
+            // nameVetCenter: patient.vetCenter?.name || "",
+            // adressOsteoCenter: patient.osteoCenter?.adress || "",
+            // cityOsteoCenter: patient.osteoCenter?.city || "",
+            // departmentOsteoCenter: patient.osteoCenter?.department || "",
+            // postalOsteoCenter: patient.osteoCenter?.postal || "",
+            // phoneOsteoCenter: patient.osteoCenter?.phone || "",
+            // emailOsteoCenter: patient.osteoCenter?.email || ""
           });
+
+          // if (patient.animalType?.races) {
+          //   console.log("Races fetched for animal type:", patient.animalType.races);
+
+          //   setRaces(patient.animalType.races);
+          // }
+
           setSelectedLimbs(patient.Limbs ? patient.Limbs.map(limb => limb.id) : []);
         } catch (error) {
           console.error("Erreur lors de la récupération des données du patient :", error);
@@ -102,33 +144,54 @@ useEffect(() => {
     // Gérer le champ "Autre" pour le type d'animal
     if (name === "animalTypeId") {
       if (value === "other") {
-        setShowCustomAnimalType(true);
-        // setShowCustomRace(true); // Afficher également la nouvelle race si "Autre"
-        setRaces([]); // Réinitialiser les races
-        setFormData({
-          ...formData,
-          raceId: "",
-          customRace: "",
-          customAnimalType: ""
-        });
+          setShowCustomAnimalType(true);
+          setRaces([]);
+          setFormData({
+              ...formData,
+              animalTypeId: value,
+              raceId: "",
+              customAnimalType: "",
+              customRace: ""
+          });
+      } else if (value === "") {
+          setShowCustomAnimalType(false);
+          setFormData({
+              ...formData,
+              animalTypeId: "",
+              raceId: "",
+              customAnimalType: "",
+              customRace: ""
+          });
       } else {
-        setShowCustomAnimalType(false);
-        updateRaceOptions(value); // Met à jour les races pour le type d'animal sélectionné
+          setShowCustomAnimalType(false);
+          updateRaceOptions(value);
+          setFormData({
+              ...formData,
+              animalTypeId: value,
+              raceId: "",
+              customAnimalType: "",
+              customRace: ""
+          });
       }
-    }
+  }
 
-    // Si la race sélectionnée est "Autre"
-    if (name === "raceId" && value === "other") {
-      setShowCustomRace(true);
-    } else if (name === "raceId") {
-      setShowCustomRace(false);
-    }
+  if (name === "raceId") {
+      if (value === "other") {
+          setShowCustomRace(true);
+      } else {
+          setShowCustomRace(false);
+      }
+  }
 
     // Gestion des centres vétérinaires
     if (name === "vetCenterId" && value === "other") {
       setEnableVetFields(true); // Active les champs du centre vétérinaire si "Autre" est sélectionné
     } else if (name === "vetCenterId") {
       setEnableVetFields(false);
+    }
+
+    if (name === "osteoCenterId") {
+      setEnableOsteoFields(value === "other");
     }
   };
 
@@ -145,11 +208,13 @@ useEffect(() => {
     const fetchFormData = async () => {
       try {
         const response = await axios.get("http://localhost:4000/patients/form");
-        const { sexes, animalTypes, vetCenters, limbs } = response.data;
+        const { sexes, animalTypes, vetCenters, osteoCenters, limbs, races } = response.data;
         console.log(limbs)
         setSexes(sexes);
         setAnimalTypes(animalTypes);
+        setRaces(races);
         setVetCenters(vetCenters);
+        setOsteoCenters(osteoCenters)
         setLimbs(limbs);
       } catch (error) {
         console.error(
@@ -165,7 +230,11 @@ useEffect(() => {
   const handleSubmit = async (e) => {
     e.preventDefault(); // Empêche le rechargement de la page lors de la soumission du formulaire
 
-    let formDataToSend = { ...formData, limbs: selectedLimbs }; // Clone formData
+    let formDataToSend = { ...formData, 
+      limbs: selectedLimbs,
+      vets: vetStaffList,
+      osteos: osteoStaffList
+      }; // Clone formData
 
     // Si l'utilisateur a choisi "Autre" pour le type d'animal, ajouter le champ personnalisé
     if (formData.animalTypeId === "other") {
@@ -190,6 +259,17 @@ useEffect(() => {
     formDataToSend.phoneVetCenter = formData.phoneVetCenter;
     formDataToSend.emailVetCenter = formData.emailVetCenter;
   }
+
+  if (formData.osteoCenterId === "other") {
+    formDataToSend.OsteoCenterId = null; // On met OsteoCenterId à null car on va utiliser les champs personnalisés pour le centre
+    formDataToSend.nameOsteoCenter = formData.nameOsteoCenter;
+    formDataToSend.adressOsteoCenter = formData.adressOsteoCenter;
+    formDataToSend.cityOsteoCenter = formData.cityOsteoCenter;
+    formDataToSend.departmentOsteoCenter = formData.departmentOsteoCenter;
+    formDataToSend.postalOsteoCenter = formData.postalOsteoCenter;
+    formDataToSend.phoneOsteoCenter = formData.phoneOsteoCenter;
+    formDataToSend.emailOsteoCenter = formData.emailOsteoCenter;
+  }
     
     try {
       const response = await axios.put(
@@ -198,35 +278,6 @@ useEffect(() => {
       );
       alert("Patient modifié avec succès !");
       router.push("/patients");
-      // Réinitialiser les données du formulaire après la soumission
-      // setFormData({
-      //   name: "",
-      //   birthYear: "",
-      //   sexId: "",
-      //   animalTypeId: "",
-      //   customAnimalType: "",
-      //   raceId: "",
-      //   customRace: "",
-      //   customRaceStandalone: "",
-      //   pathology: "",
-      //   firstname: "",
-      //   lastname: "",
-      //   email: "",
-      //   phone: "",
-      //   adress: "",
-      //   city: "",
-      //   postal: "",
-      //   department: "",
-      //   clientSexId: "",
-      //   vetCenterId: "",
-      //   nameVetCenter: "",
-      //   adressVetCenter: "",
-      //   cityVetCenter: "",
-      //   departmentVetCenter: "",
-      //   postalVetCenter: "",
-      //   phoneVetCenter: "",
-      //   emailVetCenter: ""
-      // });
     } catch (error) {
       console.error("Erreur lors de l'ajout du patient :", error);
       alert("Erreur lors de l'ajout du patient. Veuillez réessayer.");
@@ -324,64 +375,41 @@ useEffect(() => {
             </div>
 
             <div>
-              <label
-                htmlFor="animalType"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Type d'animal
+              <label htmlFor="animalType" className="block text-sm font-medium text-gray-700">
+                  Type d'animal
               </label>
               <select
-                name="animalTypeId"
-                id="animalType"
-                value={formData.animalTypeId}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  name="animalTypeId"
+                  id="animalType"
+                  value={formData.animalTypeId}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               >
-                <option value="">Sélectionnez un type</option>
-                {animalTypes.map((animalType) => (
-                  <option key={animalType.id} value={animalType.id}>
-                    {animalType.name}
-                  </option>
-                ))}
-                <option value="other">Autre</option>
+                  <option value="">Sélectionnez un type</option>
+                  {animalTypes.map((animalType) => (
+                      <option key={animalType.id} value={animalType.id}>
+                          {animalType.name}
+                      </option>
+                  ))}
+                  <option value="other">Autre</option>
               </select>
-              {showCustomAnimalType && (
-                <div className="mt-4">
-                  <label
-                    htmlFor="customAnimalType"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Entrez le type d'animal
-                  </label>
-                  <input
-                    type="text"
-                    name="customAnimalType"
-                    id="customAnimalType"
-                    value={formData.customAnimalType}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  />
+                {showCustomAnimalType && (
+                  <div className="mt-4">
+                      <label htmlFor="customAnimalType" className="block text-sm font-medium text-gray-700">
+                          Entrez le type d'animal
+                      </label>
+                      <input
+                          type="text"
+                          name="customAnimalType"
+                          id="customAnimalType"
+                          value={formData.customAnimalType}
+                          onChange={handleInputChange}
+                          className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      />
+                  </div>
+                )}
+             </div>
 
-                  <label
-                    htmlFor="customRace"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Entrez la race
-                  </label>
-                  <input
-                    type="text"
-                    name="customRace"
-                    id="customRace"
-                    value={formData.customRace}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  />
-                </div>
-
-                
-                
-              )}
-            </div>
 
             <div>
               <label
@@ -396,9 +424,10 @@ useEffect(() => {
                 value={formData.raceId}
                 onChange={handleInputChange}
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                // disabled={disabledRace}
               >
                 <option value="">Sélectionnez une race</option>
-                {races.map((race) => (
+                {Array.isArray(races) && races.map((race) => (
                   <option key={race.id} value={race.id}>
                     {race.name}
                   </option>
@@ -415,15 +444,18 @@ useEffect(() => {
                   </label>
                   <input
                     type="text"
-                    name="customRaceStandalone"
-                    id="customRaceStandalone"
-                    value={formData.customRaceStandalone}
+                    name="customRace"
+                    id="customRace"
+                    value={formData.customRace}
                     onChange={handleInputChange}
+                    // disabled={disabledRace}
                     className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   />
                 </div>
               )}
             </div>
+
+
 
             <div className="md:col-span-2">
               <label
@@ -478,25 +510,27 @@ useEffect(() => {
             Informations du client
           </h3>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Sexe du client</label>
-            <div className="flex items-center space-x-6 mt-2">
-              {sexes.map((sex) => (
-                <div key={sex.id} className="flex items-center">
-                  <input
-                    id={sex.id}
-                    name="clientSexId"
-                    type="radio"
-                    value={sex.id}
-                    onChange={handleInputChange}
-                    className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
-                  />
-                  <label htmlFor={sex.id} className="ml-2 block text-sm text-gray-700">
+              <label
+                htmlFor="sex"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Sexe
+              </label>
+              <select
+                name="clientSexId"
+                id="clientSexId"
+                value={formData.clientSexId}
+                onChange={handleInputChange}
+                className="mt-1 block w-30 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              >
+                {sexes.map((sex) => (
+                  <option key={sex.id} value={sex.id}>
                     {sex.name}
-                  </label>
-                </div>
-              ))}
+                  </option>
+                ))}
+              </select>
             </div>
-          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label
@@ -668,113 +702,68 @@ useEffect(() => {
                 <option value="other">Autres</option>
               </select>
             </div>
-
-            {enableVetFields && (
-              <>
-                <div className="md:col-span-2">
-                  <label
-                    htmlFor="nameVetCenter"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Nom du centre
-                  </label>
-                  <input
-                    type="text"
-                    name="nameVetCenter"
-                    id="nameVetCenter"
-                    value={formData.nameVetCenter}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="adressVetCenter"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Adresse
-                  </label>
-                  <input
-                    type="text"
-                    name="adressVetCenter"
-                    id="adressVetCenter"
-                    value={formData.adressVetCenter}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="cityVetCenter"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Ville
-                  </label>
-                  <input
-                    type="text"
-                    name="cityVetCenter"
-                    id="cityVetCenter"
-                    value={formData.cityVetCenter}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="postalVetCenter"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Code postal
-                  </label>
-                  <input
-                    type="text"
-                    name="postalVetCenter"
-                    id="postalVetCenter"
-                    value={formData.postalVetCenter}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="phoneVetCenter"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Téléphone
-                  </label>
-                  <input
-                    type="text"
-                    name="phoneVetCenter"
-                    id="phoneVetCenter"
-                    value={formData.phoneVetCenter}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="emailVetCenter"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="emailVetCenter"
-                    id="emailVetCenter"
-                    value={formData.emailVetCenter}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  />
-                </div>
-              </>
-            )}
           </div>
+
+          {enableVetFields && (
+            <div className="mt-6">
+              <CenterFormSection
+                formData={formData}
+                onInputChange={handleInputChange}
+                centerLabel="veterinaire"
+                centerType="VetCenter"
+                enableStaff={true}
+                staffLabel="veterinaire"
+                onStaffListChange={setVetsList}
+              />
+            </div>
+          )}
+        </div>
+
+                {/* CENTRE VETERINAIRE */}
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h3 className="text-xl font-semibold text-gray-700 mb-4">
+            Informations sur le centre ostéopathe
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label
+                htmlFor="osteoCenter"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Centre ostéopathe
+              </label>
+              <select
+                name="osteoCenterId"
+                id="osteoCenter"
+                value={formData.osteoCenterId}
+                onChange={handleInputChange}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              >
+                <option value="">Sélectionnez un centre ostéopathe</option>
+                {osteoCenters.map((osteoCenter) => (
+                  <option key={osteoCenter.id} value={osteoCenter.id}>
+                    {osteoCenter.name} à {osteoCenter.city}
+                  </option>
+                ))}
+                <option value="other">Autres</option>
+              </select>
+            </div>
+          </div>
+
+          {enableOsteoFields && (
+            <div className="mt-6">
+              <CenterFormSection
+                formData={formData}
+                onInputChange={handleInputChange}
+                centerLabel="osteopathe"
+                centerType="OsteoCenter"
+                enableStaff={true}
+                staffLabel="osteopathe"
+                onStaffListChange={setOsteosList}
+              />
+            </div>
+          )}
         </div>
 
         <div className="mt-6 flex justify-end">
