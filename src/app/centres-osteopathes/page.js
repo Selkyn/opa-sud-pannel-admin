@@ -30,12 +30,14 @@ export default function OsteoCentersPage () {
         <EntityList
             title="Centre ostéopathe"
             data={filteredOsteoCenters}
-            columns={["Nom", "Ostéopathes", "Adresse", "Téléphone", "Email"]}
+            columns={["Nom", "Ostéopathes", "Adresse", "Téléphone", "Email", "Contact"]}
             entityType="centres-osteopathes"
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
             staffs='osteos'
             staffLabel='Ostéopathe'
+            callBackend="osteo-centers"
+            refreshData={fetchOsteoCenters}
         />
     );
 }

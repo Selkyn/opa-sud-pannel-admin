@@ -11,8 +11,36 @@ export default function EntityList({
     entityType, searchTerm, 
     onSearchChange,
     staffs, 
-    staffLabel 
+    staffLabel,
+    callBackend,
+    refreshData 
 }) {
+    const [contacts, setContacts] = useState([]);
+
+    useEffect(() => {
+        fetchContacts();
+    }, []);
+
+    const fetchContacts = async () => {
+        try {
+            const response = await axios.get("http://localhost:4000/contacts");
+            setContacts(response.data);
+        } catch (error) {
+            console.error("Erreur lors de la récupération de la liste des types de contacts")
+        }
+    }
+
+    const handleContactChange = async (itemId, newContactId) => {
+        try {
+          await axios.put(`http://localhost:4000/${callBackend}/${itemId}/contact`, { contactId: newContactId });
+          if (typeof refreshData === "function") {
+            refreshData();
+        }
+        } catch (error) {
+          console.error("Erreur lors de la mise à jour du statut:", error);
+        }
+      };
+
     return (
         <div className="container mx-auto px-4 py-8">
             <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">{title}</h2>
@@ -64,6 +92,22 @@ export default function EntityList({
                                             <td className="px-4 py-4">{item.adress}, {item.postal} {item.city}</td>
                                             <td className="px-4 py-4">{item.phone}</td>
                                             <td className="px-4 py-4">{item.email}</td>
+                                            <td className="px-4 py-4">
+                                                <select
+                                                    value={item.contact ? item.contact.id : ''}
+                                                    onChange={(e) => handleContactChange(item.id, e.target.value)}
+                                                    className="border border-gray-300 rounded px-2 py-1"
+                                                >
+                                                    {contacts.map((contact) =>(
+                                                        <option
+                                                            key={contact.id}
+                                                            value={contact.id}
+                                                        >
+                                                            {contact.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </td>
                                         </tr>
                                         {item.patients && item.patients.length > 0 && (
                                             <tr className="bg-gray-50 border-b">

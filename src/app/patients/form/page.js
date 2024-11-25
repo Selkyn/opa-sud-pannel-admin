@@ -177,6 +177,30 @@ export default function AddPatientForm() {
     fetchFormData();
   }, []);
 
+  const checkClientEmail = async (email) => {
+    try {
+      const response = await axios.get(`http://localhost:4000/clients/email/${email}`);
+      if (response.data) {
+        const clientData = response.data; // Les informations du client récupérées
+        setFormData((prevData) => ({
+          ...prevData,
+          firstname: clientData.firstname || "",
+          lastname: clientData.lastname || "",
+          phone: clientData.phone || "",
+          adress: clientData.adress || "",
+          city: clientData.city || "",
+          postal: clientData.postal || "",
+          department: clientData.department || "",
+          clientSexId: clientData.sexId || ""
+        }));
+        alert("Les informations du client ont été préremplies.");
+      }
+    } catch (error) {
+      console.error("Erreur lors de la vérification de l'email :", error);
+      alert("Aucun client trouvé avec cet email.");
+    }
+  };
+
   // Envoi des données du formulaire au backend
   const handleSubmit = async (e) => {
     e.preventDefault(); // Empêche le rechargement de la page lors de la soumission du formulaire
@@ -562,6 +586,8 @@ export default function AddPatientForm() {
                 id="email"
                 value={formData.email}
                 onChange={handleInputChange}
+                onBlur={(e) => checkClientEmail(e.target.value)} // Vérifie l'email lors de la perte de focus
+
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
             </div>

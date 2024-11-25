@@ -158,12 +158,14 @@ export default function VetCentersPage () {
         <EntityList
             title="Centre vétérinaire"
             data={filteredVetCenters}
-            columns={["Nom", "Vétérinaires", "Adresse", "Téléphone", "Email"]}
+            columns={["Nom", "Vétérinaires", "Adresse", "Téléphone", "Email", "Contact"]}
             entityType="centres-veterinaires"
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
             staffs='vets'
             staffLabel='Vétérinaire'
+            callBackend="vet-centers"
+            refreshData={fetchVetCenters}
         />
     );
 }

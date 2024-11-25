@@ -10,6 +10,7 @@ import CheckboxFilter from '../components/CheckBoxFilter';
 import usePatientFilters from './hooks/usePatientFilters';
 import SearchBar from '../components/SearchBar';
 import Pagination from '../components/Pagination';
+import { dateInput } from '@nextui-org/react';
 
 export default function PatientsPage() {
   const [patients, setPatients] = useState([]);
@@ -125,6 +126,15 @@ const handlePaymentModeChange = async (patientId, newPaymentModeId) => {
   }
 };
 
+const handleDateChange = async (patientId, newDate) => {
+  try {
+    await axios.put(`http://localhost:4000/payment/${patientId}/edit`, { date: newDate });
+    fetchPatients();
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour de la date de paiement:", error);
+  }
+};
+
 const handlePageChange = (pageNumber) => {
   setCurrentPage(pageNumber);
 };
@@ -186,6 +196,7 @@ return (
               <th className="px-4 py-2">État</th>
               <th className="px-4 py-2">Paiement</th>
               <th className="px-4 py-2">Mode</th>
+              <th className="px-4 py-2">Date de paiment</th>
             </tr>
           </thead>
           <tbody>
@@ -250,6 +261,15 @@ return (
                       ))}
                     </select>
                   </td>
+                  <td className="px-4 py-2">
+                    <input
+                      type="date"
+                      value={patient.payment && patient.payment.date ? patient.payment.date.split('T')[0] : ''}
+                      onChange={(e) => handleDateChange(patient.id, e.target.value)}
+                      className="border border-gray-300 rounded px-2 py-1"
+                    />
+                  </td>
+
                 </tr>
               ))
             ) : (

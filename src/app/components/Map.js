@@ -35,8 +35,8 @@ const geolocIcon = new L.Icon({
   shadowAnchor: [15, 45] 
 });
 
-const osteolocIcon = new L.Icon({
-  iconUrl: '/icons/geoloc.png',
+const osteoIcon = new L.Icon({
+  iconUrl: '/icons/osteo.png',
   iconSize: [30, 35],
   iconAnchor: [17, 45],
   popupAnchor: [0, -45],
@@ -69,7 +69,7 @@ const Map = ({
 }) => {
   const [markers, setMarkers] = useState([]);
   const [vetMarkers, setVetMarkers] = useState([]);
-  const [osteoMarkers, setOsteMarkers] = useState([]);
+  const [osteoMarkers, setOsteoMarkers] = useState([]);
   const [centerPosition, setCenterPosition] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [route, setRoute] = useState(null);
@@ -147,6 +147,28 @@ const Map = ({
   }, []);
 
   useEffect(() => {
+    const fetchOsteoCenters = async () => {
+      try {
+        const response = await axios.get('http://localhost:4000/osteo-centers');
+        const osteoCenters = response.data;
+        const newOsteoMarkers = osteoCenters
+          .filter(osteoCenter => osteoCenter.latitude && osteoCenter.longitude)
+          .map((osteoCenter) => ({
+            lat: osteoCenter.latitude,
+            lng: osteoCenter.longitude,
+            ...osteoCenter,
+          }));
+
+        setOsteoMarkers(newOsteoMarkers);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des centres vétérinaires :", error);
+      }
+    };
+
+    fetchOsteoCenters();
+  }, []);
+
+  useEffect(() => {
     console.log("ID du patient reçu dans Map :", focusedPatientId);
 
     if (focusedPatientId && markers.length > 0) {
@@ -171,6 +193,18 @@ const Map = ({
       }
     }
   }, [focusedVetCenterId, vetMarkers]);
+
+  useEffect(() => {
+    if (focusedOsteoCenterId && osteoMarkers.length > 0) {
+      const osteoCenterMarker = osteoMarkers.find(marker =>
+        marker.id === parseInt(focusedOsteoCenterId)
+      );
+
+      if (osteoCenterMarker) {
+        setCenterPosition([osteoCenterMarker.lat, osteoCenterMarker.lng]);
+      }
+    }
+  }, [focusedOsteoCenterId, osteoMarkers]);
 
     // Fonction pour obtenir la position de l'utilisateur
     // const locateUser = () => {
@@ -448,6 +482,43 @@ const Map = ({
                   onClick={() => {
                     console.log(vetMarker.name);
                     handleMarkerClick(vetMarker.lat, vetMarker.lng, vetMarker.name);
+                  }}
+                >
+                  ajouter
+                </button>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
+        {osteoMarkers.map((osteoMarker, idx) => (
+          <Marker 
+            key={idx}
+            position={[osteoMarker.lat, osteoMarker.lng]}
+            icon={osteoIcon}
+            >
+          
+            <Popup>
+              <div>
+                <p>Centre vétérinaire : {capitalizeFirstLetter(osteoMarker.name)}</p>
+                <p>{osteoMarker.adress}, {capitalizeFirstLetter(osteoMarker.city)}</p>
+                <button
+                  className="bg-blue-500 text-white px-2 py-1 rounded-md ml-2"
+                  onClick={() => onSelectOsteoCenter(osteoMarker.id)}
+                >
+                  Détails
+                </button>
+                <button
+                  className="bg-blue-500 text-white px-2 py-1 rounded-md ml-2"
+                  onClick={() => handleRouteToMarker([osteoMarker.lat, osteoMarker.lng])}
+                >
+                  Itinéraire
+                </button>
+                <button
+                  className="bg-blue-500 text-white px-2 py-1 rounded-md ml-2"
+                  onClick={() => {
+                    console.log(osteoMarker.name);
+                    handleMarkerClick(osteoMarker.lat, osteoMarker.lng, osteoMarker.name);
                   }}
                 >
                   ajouter

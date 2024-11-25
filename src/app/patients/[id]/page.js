@@ -72,7 +72,12 @@ export default function PatientDetailsPage({ params }) {
                     {/* Section du nom du patient */}
                     <div className="mb-6">
                         <h1 className="text-4xl font-bold text-gray-800 mb-4">{capitalizeFirstLetter(patient.name)}</h1>
-                        <p className="text-gray-600"><strong>Date du premier contact :</strong> {patient.createdAt}</p>
+                        <p className="text-gray-600">  
+                        <strong>Date du premier contact :</strong> {new Date(patient.createdAt).toLocaleDateString('fr-FR', {
+                            day: '2-digit',
+                            month: 'long',
+                            year: 'numeric',
+                        })}</p>
                     </div>
                     {/* Section Patient */}
                     <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-sm">
