@@ -138,7 +138,9 @@ export default function VetCentersPage () {
     const {
     searchTerm,
     setSearchTerm,
-    filteredVetCenters
+    filteredVetCenters,
+    handleContactFilterChange,
+    selectedContactFilters
     } = useVetCenterFilters(vetCenters);
 
     useEffect(() => {
@@ -162,6 +164,8 @@ export default function VetCentersPage () {
             entityType="centres-veterinaires"
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
+            handleContactFilterChange={handleContactFilterChange}
+            selectedContactFilters={selectedContactFilters}
             staffs='vets'
             staffLabel='Vétérinaire'
             callBackend="vet-centers"

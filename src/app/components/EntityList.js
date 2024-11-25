@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
 import SearchBar from './SearchBar';
+import CheckboxFilter from './CheckBoxFilter';
 
 export default function EntityList({ 
     title, 
@@ -13,7 +14,9 @@ export default function EntityList({
     staffs, 
     staffLabel,
     callBackend,
-    refreshData 
+    refreshData,
+    selectedContactFilters,
+    handleContactFilterChange 
 }) {
     const [contacts, setContacts] = useState([]);
 
@@ -46,6 +49,13 @@ export default function EntityList({
             <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">{title}</h2>
 
             <SearchBar searchTerm={searchTerm} onSearchChange={onSearchChange}/>
+
+            <CheckboxFilter
+                title="Filtrer par type de contact"
+                options={contacts}
+                selectedFilters={selectedContactFilters}
+                onFilterChange={handleContactFilterChange}
+                />
 
         
             <div className="mb-6 text-center">

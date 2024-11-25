@@ -10,7 +10,9 @@ export default function OsteoCentersPage () {
     const {
     searchTerm,
     setSearchTerm,
-    filteredOsteoCenters
+    filteredOsteoCenters,
+    handleContactFilterChange,
+    selectedContactFilters
     } = useOsteoCenterFilters(osteoCenters);
 
     useEffect(() => {
@@ -34,6 +36,8 @@ export default function OsteoCentersPage () {
             entityType="centres-osteopathes"
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
+            handleContactFilterChange={handleContactFilterChange}
+            selectedContactFilters={selectedContactFilters}
             staffs='osteos'
             staffLabel='Ostéopathe'
             callBackend="osteo-centers"
