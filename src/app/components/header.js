@@ -43,6 +43,9 @@ export default function Header() {
               <li className="nav-item">
                 <a className="text-gray-200 hover:text-gray-300" href="/map">Map</a>
               </li>
+              <li className="nav-item">
+                <a className="text-gray-200 hover:text-gray-300" href="/calendrier">Calendrier</a>
+              </li>
               {/* <li className="nav-item">
                 <p className="text-gray-200">Bienvenue ! Pseudo</p>
               </li> */}

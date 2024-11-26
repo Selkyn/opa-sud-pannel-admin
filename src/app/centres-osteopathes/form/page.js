@@ -51,8 +51,9 @@ export default function AddOsteoCenterForm() {
             centerType="ostéopathe"
             staffLabel="ostéopathe"
             initialData={{ ...formData, staff: osteos }}
-            // enableSubmitBtn = {true}
+            enableSubmitBtn = {true}
             onSubmit={handleSubmit}
+            isEditing= {false}
         />
     );
 }

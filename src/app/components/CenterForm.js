@@ -7,24 +7,30 @@ export default function CenterForm({
     centerType,  // Type de centre (ex. : veterinary, osteopathy)
     staffLabel, // Label pour les membres du personnel (ex. : Veterinarian, Osteopath)
     onSubmit,
-    enableSubmitBtn = false,                    // Fonction de soumission du formulaire
     initialData = {},            // Données initiales pour les champs du formulaire
+    isEditing = false
 }) {
     const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        address: "",
-        city: "",
-        postal: "",
-        infos: "",
-        department: "",
-        phone: "",
-        ...initialData
+        name: initialData.name || "",
+        email: initialData.email || "",
+        adress: initialData.adress || "",
+        city: initialData.city || "",
+        postal: initialData.postal || "",
+        infos: initialData.infos || "",
+        department: initialData.department || "",
+        phone: initialData.phone || ""
     });
+    
 
-    const [staffList, setStaffList] = useState(initialData.staff || [
-        { firstname: "", lastname: "", email: "" }
-    ]);
+    const [staffList, setStaffList] = useState(
+        initialData.staff?.map(staff => ({
+            id: staff.id || null,
+            firstname: staff.firstname || "",
+            lastname: staff.lastname || "",
+            email: staff.email || "",
+            phone: staff.phone || ""
+        })) || [{ firstname: "", lastname: "", email: "", phone: "" }]
+    );
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -39,7 +45,7 @@ export default function CenterForm({
     };
 
     const addStaff = () => {
-        setStaffList([...staffList, { firstname: "", lastname: "", email: "" }]);
+        setStaffList([...staffList, { firstname: "", lastname: "", email: "", phone: "" }]);
     };
 
     const removeStaff = (index) => {
@@ -57,7 +63,9 @@ export default function CenterForm({
 
     return (
         <>
-        <h2 className="text-center text-3xl mt-4">Ajouter centre {centerType}</h2>
+        <h2 className="text-center text-3xl mt-4">
+        {isEditing ? `Modifier centre ${centerType}` : `Ajouter centre ${centerType}`}
+        </h2>
         <section className="bg-gray-100 p-8 rounded-lg shadow-lg max-w-4xl mx-auto mt-6">
             <h3 className="text-2xl font-semibold mb-6 text-gray-800">
                 Centre {centerType.charAt(0).toUpperCase() + centerType.slice(1)}
@@ -74,7 +82,7 @@ export default function CenterForm({
                                 type="text"
                                 name="name"
                                 id="name"
-                                value={formData.name}
+                                value={formData.name || ""}
                                 onChange={handleInputChange}
                                 required
                                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -88,7 +96,7 @@ export default function CenterForm({
                                 type="email"
                                 name="email"
                                 id="email"
-                                value={formData.email}
+                                value={formData.email || ""}
                                 onChange={handleInputChange}
                                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                             />
@@ -104,7 +112,7 @@ export default function CenterForm({
                                 type="text"
                                 name="adress"
                                 id="adress"
-                                value={formData.adress}
+                                value={formData.adress || ""}
                                 onChange={handleInputChange}
                                 required
                                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -118,7 +126,7 @@ export default function CenterForm({
                                 type="text"
                                 name="city"
                                 id="city"
-                                value={formData.city}
+                                value={formData.city || ""}
                                 onChange={handleInputChange}
                                 required
                                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -132,7 +140,7 @@ export default function CenterForm({
                                 type="text"
                                 name="postal"
                                 id="postal"
-                                value={formData.postal}
+                                value={formData.postal || ""}
                                 onChange={handleInputChange}
                                 required
                                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -147,7 +155,7 @@ export default function CenterForm({
                                 type="text"
                                 name="phone"
                                 id="phone"
-                                value={formData.phone}
+                                value={formData.phone || ""}
                                 onChange={handleInputChange}
                                 required
                                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -168,7 +176,7 @@ export default function CenterForm({
                                         type="text"
                                         name="lastname"
                                         id={`lastname-${index}`}
-                                        value={staff.lastname}
+                                        value={staff.lastname || ""}
                                         onChange={(e) => handleStaffChange(index, e)}
                                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm"
                                     />
@@ -182,7 +190,7 @@ export default function CenterForm({
                                         type="text"
                                         name="firstname"
                                         id={`firstname-${index}`}
-                                        value={staff.firstname}
+                                        value={staff.firstname || ""}
                                         onChange={(e) => handleStaffChange(index, e)}
                                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm"
                                     />
@@ -196,7 +204,7 @@ export default function CenterForm({
                                         type="email"
                                         name="email"
                                         id={`email-${index}`}
-                                        value={staff.email}
+                                        value={staff.email || ""}
                                         onChange={(e) => handleStaffChange(index, e)}
                                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm"
                                     />
@@ -210,7 +218,7 @@ export default function CenterForm({
                                         type="text"
                                         name="phone"
                                         id={`phone-${index}`}
-                                        value={staff.phone}
+                                        value={staff.phone || ""}
                                         onChange={(e) => handleStaffChange(index, e)}
                                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm"
                                     />
@@ -224,7 +232,7 @@ export default function CenterForm({
                                         onClick={() => removeStaff(index)}
                                         className="bg-red-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-red-700"
                                     >
-                                        Remove {staffLabel.toLowerCase()}
+                                        Enlever {staffLabel.toLowerCase()}
                                     </button>
                                 )}
                             </div>
@@ -237,20 +245,20 @@ export default function CenterForm({
                             onClick={addStaff}
                             className="bg-green-600 text-white px-6 py-2 rounded-md shadow-sm hover:bg-green-700"
                         >
-                            Add {staffLabel.toLowerCase()}
+                            Ajouter un {staffLabel.toLowerCase()}
                         </button>
                     </div>
                 </div>
-                {enableSubmitBtn && (
+                
                     <div className="mt-6 flex justify-end">
                         <button
                             type="submit"
                             className="bg-blue-600 text-white px-6 py-2 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                         >
-                            Submit {centerType} Center
+                            {isEditing ? `Modifier centre ${centerType}` : `Ajouter centre ${centerType}`}
                         </button>
                     </div>
-                )}
+                
 
             </form>
         </section>

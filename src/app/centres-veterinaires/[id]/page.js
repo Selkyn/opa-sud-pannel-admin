@@ -6,6 +6,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
+import CenterCard from "@/app/components/CenterCard";
 
 export default function vetCenterDetailsPage({ params }) {
     const { id } = params;
@@ -41,34 +42,15 @@ export default function vetCenterDetailsPage({ params }) {
       };
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <button 
-                onClick={() => router.back()} 
-                className="bg-green-900 text-white px-4 py-2 rounded-md mb-4 hover:bg-green-700"
-            >
-                Revenir à la page précédente
-            </button>
-            {vetCenter ? (
-                <div>
-                    <h1>{vetCenter.name}</h1>
-                    <Link href={`/centres-veterinaires/${vetCenter.id}/edit`}>
-                        <button className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2">Modifier</button>
-                    </Link>
-                    <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded-md">
-                Supprimer
-            </button>
-            <Link href={`/map?vetCenterId=${id}`}>
-                <button className="bg-blue-500 text-white px-4 py-2 rounded-md mb-4 hover:bg-blue-700">
-                    Voir sur la carte
-                </button>
-            </Link>
-                </div>
-                
-            ) : (
-                <p>Centre vétérinaire introuvable</p>
+        <>
+            {vetCenter && (
+                <CenterCard
+                    handleDelete={handleDelete}
+                    editLink={`/centres-veterinaires/${vetCenter.id}/edit`}
+                    mapLink={`/map?vetCenterId=${id}`}
+                    center={vetCenter}
+                />
             )}
-
-
-        </div>
+        </>
     )
 }

@@ -381,6 +381,7 @@ export default function AddVetCenterForm() {
             initialData={{ ...formData, staff: vets }}
             enableSubmitBtn= {true}
             onSubmit={handleSubmit}
+            isEditing= {false}
         />
     );
 }

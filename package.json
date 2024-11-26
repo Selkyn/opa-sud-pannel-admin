@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fullcalendar/core": "^6.1.15",
+    "@fullcalendar/daygrid": "^6.1.15",
+    "@fullcalendar/react": "^6.1.15",
     "@nextui-org/react": "^2.4.8",
     "axios": "^1.7.7",
     "leaflet": "^1.9.4",
