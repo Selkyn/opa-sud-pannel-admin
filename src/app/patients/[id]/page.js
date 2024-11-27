@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { capitalizeFirstLetter } from "@/app/utils/stringUtils";
 import { calculateAge  } from "@/app/utils/ageUtils";
 import ContactEmail from "@/app/components/ContactEmail";
+import Appointment from "@/app/components/Appointment";
 
 export default function PatientDetailsPage({ params }) {
     const { id } = params;
@@ -226,6 +227,12 @@ export default function PatientDetailsPage({ params }) {
                     Voir sur la carte
                 </button>
             </Link>
+
+            <Appointment
+                itemId={id}
+                entityType="patient"
+            />
+                
 
         </div>
         

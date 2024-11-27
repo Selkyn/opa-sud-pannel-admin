@@ -191,7 +191,7 @@ return (
             <tr>
               <th className="px-4 py-2">Patient</th>
               <th className="px-4 py-2">Client</th>
-              <th className="px-4 py-2">Pathologie</th>
+              {/* <th className="px-4 py-2">Pathologie</th> */}
               <th className="px-4 py-2">Type</th>
               <th className="px-4 py-2">État</th>
               <th className="px-4 py-2">Paiement</th>
@@ -220,7 +220,7 @@ return (
                     )}{" "}
                     {patient.client ? `${capitalizeFirstLetter(patient.client.lastname)} ${capitalizeFirstLetter(patient.client.firstname)}` : "Client inconnu"}
                   </td>
-                  <td className="px-4 py-2">{capitalizeFirstLetter(patient.pathology)}</td>
+                  {/* <td className="px-4 py-2">{capitalizeFirstLetter(patient.pathology)}</td> */}
                   <td className="px-4 py-2">{patient.animalType ? capitalizeFirstLetter(patient.animalType.name) : 'Non spécifié'}</td>
                   <td className="px-4 py-2">
                     <select

@@ -7,6 +7,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import CenterCard from "@/app/components/CenterCard";
+import Appointment from "@/app/components/Appointment";
 
 export default function vetCenterDetailsPage({ params }) {
     const { id } = params;
@@ -51,6 +52,10 @@ export default function vetCenterDetailsPage({ params }) {
                     center={vetCenter}
                 />
             )}
+            <Appointment
+                itemId={id}
+                entityType="vetCenter"
+            />
         </>
     )
 }
