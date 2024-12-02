@@ -10,6 +10,7 @@ import { capitalizeFirstLetter } from "@/app/utils/stringUtils";
 import { calculateAge  } from "@/app/utils/ageUtils";
 import ContactEmail from "@/app/components/ContactEmail";
 import Appointment from "@/app/components/Appointment";
+import Workschedule from "@/app/components/WorkSchedule";
 
 export default function PatientDetailsPage({ params }) {
     const { id } = params;
@@ -231,6 +232,10 @@ export default function PatientDetailsPage({ params }) {
             <Appointment
                 itemId={id}
                 entityType="patient"
+            />
+
+            <Workschedule
+                patientIdFromParams={id}
             />
                 
 

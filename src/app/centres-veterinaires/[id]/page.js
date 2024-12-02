@@ -53,8 +53,9 @@ export default function vetCenterDetailsPage({ params }) {
                 />
             )}
             <Appointment
-                itemId={id}
-                entityType="vetCenter"
+                participantIdFromParams={params.id} // L'ID du participant depuis les params
+                participantTypeFromParams="vetCenter" // Le type du participant
+                onClose={() => console.log("RDV enregistré sur la page vetCenter")} // Optionnel
             />
         </>
     )

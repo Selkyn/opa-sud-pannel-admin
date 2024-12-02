@@ -12,7 +12,7 @@ function MapControls({ onAvoidMotorwaysChange }) {
   };
 
   return (
-    <div style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 1000 }}>
+    <div style={{background:"white", position: 'absolute', top: '78px', left: '20px', zIndex: 1000, padding: "5px" }}>
       <label>
         <input
           type="checkbox"
