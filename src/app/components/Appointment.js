@@ -10,21 +10,25 @@ export default function Appointment({
     onClose,
     participantIdFromParams = null, // ID défini via params (si fourni)
     participantTypeFromParams = null, // Type défini via params (si fourni)
-    fetchAllEvents
+    fetchAllEvents,
+    edit = false,
+    fetchEntity
   }) {
     const [formData, setFormData] = useState({
       participantId: participantIdFromParams || "", // ID du participant (via params ou sélection)
       participantType: participantTypeFromParams || "", // Type du participant (via params ou sélection)
       start_time: initialData.start_time || "",
       start_time_hour: initialData.start_time_hour || "",
-      end_time: "",
-      end_time_hour: "",
+      end_time: initialData.end_time || "",
+      end_time_hour: initialData.end_time_hour || "",
       infos: "",
-      reasonAppointmentId: "",
-      statusAppointmentId: 1,
+      reasonAppointmentId: initialData.reasonAppointmentId ||"",
+      statusAppointmentId: initialData.statusAppointmentId || "",
     });
 
   const [reasonAppointments, setReasonAppointments] = useState([]);
+  const [statusAppointments, setStatusAppointments] = useState([]);
+  
 
   useEffect(() => {
     const fetchReasonAppointments = async () => {
@@ -37,6 +41,19 @@ export default function Appointment({
     };
     fetchReasonAppointments();
   }, []);
+
+  const fetchStatusAppointments = async () => {
+    try {
+      const response = await axios.get("http://localhost:4000/appointments/status");
+      setStatusAppointments(response.data)
+    } catch (error) {
+      console.error("Erreur lors de la récupération des status des rdv");
+    }
+  }
+
+  useEffect(() => {
+    fetchStatusAppointments()
+  }, [])
 
   const resetForm = () => {
     setFormData({
@@ -53,10 +70,22 @@ export default function Appointment({
   };
 
   const handleChange = (name, value) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData((prevData) => {
+      // Si la date de début est modifiée, synchronisez également la date de fin
+      if (name === "start_time") {
+        return {
+          ...prevData,
+          [name]: value,
+          end_time: value, // Synchronise la date de fin avec la date de début
+        };
+      }
+  
+      // Sinon, mettez à jour uniquement le champ ciblé
+      return {
+        ...prevData,
+        [name]: value,
+      };
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -66,18 +95,36 @@ export default function Appointment({
     const fullDateTimeEnd = `${formData.end_time}T${formData.end_time_hour}:00`;
 
     try {
-      await axios.post("http://localhost:4000/appointments/add", {
-        ...formData,
-        start_time: fullDateTimeStart,
-        end_time: fullDateTimeEnd,
-      });
+      if (edit) {
+        // Mode édition : mise à jour du rendez-vous
+        await axios.put(`http://localhost:4000/appointments/${initialData.id}/edit`, {
+          ...formData,
+          start_time: fullDateTimeStart,
+          end_time: fullDateTimeEnd,
+        });
+        alert("Rendez-vous mis à jour !");
+      } else {
+        // Mode création : ajout d'un nouveau rendez-vous
+        await axios.post("http://localhost:4000/appointments/add", {
+          ...formData,
+          statusAppointmentId: 1,
+          start_time: fullDateTimeStart,
+          end_time: fullDateTimeEnd,
+        });
+        alert("Rendez-vous pris !");
+      }
       resetForm();
-      fetchAllEvents()
+      if(!participantIdFromParams) {
+        fetchAllEvents()
+      } else {
+        fetchEntity()
+      }
+
+      
       if (onClose) {
         onClose();
       }
       
-      alert("Rendez-vous pris !");
     } catch (error) {
       console.error("Erreur lors de la prise du RDV: ", error);
       alert("Erreur lors de la prise du RDV");
@@ -86,7 +133,7 @@ export default function Appointment({
 
   return (
     <section className="max-w-4xl mx-auto mt-8">
-      <h4 className="text-xl font-semibold text-gray-900 mb-6">Prendre un rendez-vous</h4>
+      {/* <h4 className="text-xl font-semibold text-gray-900 mb-6">Prendre un rendez-vous</h4> */}
       <DateTimeForm
         formData={formData}
         onChange={handleChange}
@@ -129,6 +176,32 @@ export default function Appointment({
                 ))}
               </select>
             </div>
+            {edit && (
+              <div>
+              <label
+                htmlFor="statusAppointmentId"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Sélectionnez un status
+              </label>
+              <select
+                name="statusAppointmentId"
+                id="statusAppointmentId"
+                value={formData.statusAppointmentId}
+                onChange={(e) => handleChange(e.target.name, e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                required
+              >
+                <option value="">Sélectionnez un status</option>
+                {statusAppointments.map((statusAppointment) => (
+                  <option key={statusAppointment.id} value={statusAppointment.id}>
+                    {statusAppointment.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            )}
+
             {/* Si participantIdFromParams est défini, pas besoin de liste */}
             {!participantIdFromParams && (
               <>
@@ -237,7 +310,8 @@ export default function Appointment({
             )}
           </>
         }
-        submitButtonLabel="Prendre RDV"
+        
+        submitButtonLabel={edit ? "Modifier RDV" : "Prendre RDV"} 
       />
     </section>
   );
