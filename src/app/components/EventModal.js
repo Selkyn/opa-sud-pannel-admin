@@ -5,11 +5,11 @@ import Workschedule from './WorkSchedule';
 import Appointment from './Appointment';
 
 
-export default function EventModal({ onClose, selectedDate, fetchAllEvents }) {
+export default function EventModal({ onClose, selectedDate, fetchAllEvents, patients, vetCenters, osteoCenters }) {
     
-    const [patients, setPatients] = useState([]);
-    const [vetCenters, setVetCenters] = useState([]);
-    const [osteoCenters, setOsteoCenters] = useState([]);
+    // const [patients, setPatients] = useState([]);
+    // const [vetCenters, setVetCenters] = useState([]);
+    // const [osteoCenters, setOsteoCenters] = useState([]);
     const [eventType, setEventType] = useState();
     // const [start, setStart] = useState(
     //     selectedDate ? new Date(selectedDate).toISOString().slice(0, 16) : ""
@@ -30,52 +30,52 @@ export default function EventModal({ onClose, selectedDate, fetchAllEvents }) {
     //     };
     //     fetchTasks();
     //   }, []);
-    useEffect(() => {
-        fetchPatients();
-      }, []);
+    // useEffect(() => {
+    //     fetchPatients();
+    //   }, []);
 
-      useEffect(() => {
-        fetchOsteoCenters();
-        fetchVetCenters();
-      }, [vetCenters, osteoCenters])
+    //   useEffect(() => {
+    //     fetchOsteoCenters();
+    //     fetchVetCenters();
+    //   }, [vetCenters, osteoCenters])
 
-      const fetchPatients = async () => {
-        try {
-          const response = await axios.get("http://localhost:4000/patients");
-          const sortedPatients = response.data.sort((a, b) =>
-            a.name.localeCompare(b.name)
-          );
-          setPatients(sortedPatients);
-        } catch (error) {
-          console.error("Erreur lors de la récupération des patients");
-        }
-      };
+    //   const fetchPatients = async () => {
+    //     try {
+    //       const response = await axios.get("http://localhost:4000/patients");
+    //       const sortedPatients = response.data.sort((a, b) =>
+    //         a.name.localeCompare(b.name)
+    //       );
+    //       setPatients(sortedPatients);
+    //     } catch (error) {
+    //       console.error("Erreur lors de la récupération des patients");
+    //     }
+    //   };
 
 
 
-      const fetchVetCenters = async () => {
-        try {
-          const response = await axios.get("http://localhost:4000/vet-centers");
-          const sortedVetCenters = response.data.sort((a, b) =>
-            a.name.localeCompare(b.name)
-          );
-          setVetCenters(sortedVetCenters);
-        } catch (error) {
-          console.error("Erreur lors de la récupération des centres vétérinaires");
-        }
-      };
+    //   const fetchVetCenters = async () => {
+    //     try {
+    //       const response = await axios.get("http://localhost:4000/vet-centers");
+    //       const sortedVetCenters = response.data.sort((a, b) =>
+    //         a.name.localeCompare(b.name)
+    //       );
+    //       setVetCenters(sortedVetCenters);
+    //     } catch (error) {
+    //       console.error("Erreur lors de la récupération des centres vétérinaires");
+    //     }
+    //   };
 
-      const fetchOsteoCenters = async () => {
-        try {
-          const response = await axios.get("http://localhost:4000/osteo-centers");
-          const sortedOsteoCenters = response.data.sort((a, b) =>
-            a.name.localeCompare(b.name)
-          );
-          setOsteoCenters(sortedOsteoCenters);
-        } catch (error) {
-          console.error("Erreur lors de la récupération des centres vétérinaires");
-        }
-      };
+    //   const fetchOsteoCenters = async () => {
+    //     try {
+    //       const response = await axios.get("http://localhost:4000/osteo-centers");
+    //       const sortedOsteoCenters = response.data.sort((a, b) =>
+    //         a.name.localeCompare(b.name)
+    //       );
+    //       setOsteoCenters(sortedOsteoCenters);
+    //     } catch (error) {
+    //       console.error("Erreur lors de la récupération des centres vétérinaires");
+    //     }
+    //   };
 
     return (
       <div

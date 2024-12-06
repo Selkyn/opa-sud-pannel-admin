@@ -15,8 +15,9 @@ export default function Appointment({
     fetchEntity
   }) {
     const [formData, setFormData] = useState({
-      participantId: participantIdFromParams || "", // ID du participant (via params ou sélection)
-      participantType: participantTypeFromParams || "", // Type du participant (via params ou sélection)
+      // id: initialData.eventId || null,
+      participantId: participantIdFromParams || initialData.participantId || "", // ID du participant (via params ou sélection)
+      participantType: participantTypeFromParams || initialData.participantType ||"", // Type du participant (via params ou sélection)
       start_time: initialData.start_time || "",
       start_time_hour: initialData.start_time_hour || "",
       end_time: initialData.end_time || "",
@@ -29,6 +30,13 @@ export default function Appointment({
   const [reasonAppointments, setReasonAppointments] = useState([]);
   const [statusAppointments, setStatusAppointments] = useState([]);
   
+  useEffect(() => {
+    console.log("Données initialisées dans formData :", formData);
+  }, [formData]);
+  
+  // useEffect(() => {
+  //   console.log("Form Data après initialisation :", formData); // Log après mise à jour
+  // }, [formData]);
 
   useEffect(() => {
     const fetchReasonAppointments = async () => {
@@ -163,7 +171,7 @@ export default function Appointment({
               <select
                 name="reasonAppointmentId"
                 id="reasonAppointmentId"
-                value={formData.reasonAppointmentId}
+                value={formData.reasonAppointmentId || ""}
                 onChange={(e) => handleChange(e.target.name, e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 required
@@ -187,7 +195,7 @@ export default function Appointment({
               <select
                 name="statusAppointmentId"
                 id="statusAppointmentId"
-                value={formData.statusAppointmentId}
+                value={formData.statusAppointmentId || ""}
                 onChange={(e) => handleChange(e.target.name, e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 required
@@ -216,7 +224,7 @@ export default function Appointment({
                   <select
                     name="participantType"
                     id="participantType"
-                    value={formData.participantType}
+                    value={formData.participantType || ""}
                     onChange={(e) => handleChange(e.target.name, e.target.value)}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                     required
@@ -240,7 +248,7 @@ export default function Appointment({
                     <select
                       name="participantId"
                       id="participantId"
-                      value={formData.participantId}
+                      value={formData.participantId || ""}
                       onChange={(e) => handleChange(e.target.name, e.target.value)}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                       required

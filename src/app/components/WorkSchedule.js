@@ -11,7 +11,7 @@ export default function Workschedule({
   edit = false
 }) {
   const [formData, setFormData] = useState({
-    patientId: patientIdFromParams || "",
+    patientId: patientIdFromParams || initialData.patientId || "",
     custom_task_name: initialData.custom_task_name || "",
     taskId: initialData.taskId || "",
     start_time: initialData.start_time
@@ -80,7 +80,6 @@ export default function Workschedule({
         fetchAllEvents();
       }
 
-      alert("Tâche ajoutée au planning !");
       if (onClose) {
         onClose();
       }
