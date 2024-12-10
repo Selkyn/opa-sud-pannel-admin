@@ -11,6 +11,7 @@ import Appointment from "@/app/components/Appointment";
 import ToggleSection from "@/app/components/ToggleSection";
 import AppointmentsSection from "@/app/components/AppointmentsSection";
 import EventModalDetails from "@/app/components/EventModalDetails";
+import CardVetCenter from "@/app/components/CardVetCenter";
 
 export default function vetCenterDetailsPage({ params }) {
     const { id } = params;
@@ -49,6 +50,8 @@ export default function vetCenterDetailsPage({ params }) {
 
     return (
         <>
+            <CardVetCenter params={{ id: id }} />
+            
             {vetCenter && (
                 <CenterCard
                     handleDelete={handleDelete}

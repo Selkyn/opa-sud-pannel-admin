@@ -33,6 +33,7 @@ export default function AddPatientForm() {
     postalVetCenter: "",
     phoneVetCenter: "",
     emailVetCenter: "",
+    infosVetCenter: "",
     osteoCenterId: "",
     nameOsteoCenter: "",
     adressOsteoCenter: "",
@@ -41,6 +42,7 @@ export default function AddPatientForm() {
     postalOsteoCenter: "",
     phoneOsteoCenter: "",
     emailOsteoCenter: "",
+    infosOsteoCenter: "",
     limbs: [],
     vets: [],
     osteos: []
@@ -232,6 +234,7 @@ export default function AddPatientForm() {
     formDataToSend.postalVetCenter = formData.postalVetCenter;
     formDataToSend.phoneVetCenter = formData.phoneVetCenter;
     formDataToSend.emailVetCenter = formData.emailVetCenter;
+    formDataToSend.infosVetCenter = formData.infosVetCenter;
   }
 
     // Gestion de "Autre" pour le centre vétérinaire
@@ -244,6 +247,7 @@ export default function AddPatientForm() {
       formDataToSend.postalOsteoCenter = formData.postalOsteoCenter;
       formDataToSend.phoneOsteoCenter = formData.phoneOsteoCenter;
       formDataToSend.emailOsteoCenter = formData.emailOsteoCenter;
+      formDataToSend.infosOsteoCenter = formData.infosOsteoCenter;
     }
     
     try {

@@ -27,10 +27,15 @@ export default function PatientDetailsPage({ params }) {
   const [isAppointmentModalOpen, setAppointmentModalOpen] = useState(false);
   const [isWorkScheduleModalOpen, setWorkScheduleModalOpen] = useState(false);
   const [editingWorkSchedule, setEditingWorkSchedule] = useState(null);
+  const [paymentTypes, setPaymentTypes] = useState([]);
+  const [paymentModes, setPaymentModes] = useState([]);
+  const [status, setStatus] = useState([]);
 
   useEffect(() => {
     if (id) {
       fetchPatientDetails();
+      fetchPaymentData();
+      fetchStatus();
     }
   }, [id]);
 
@@ -42,6 +47,64 @@ export default function PatientDetailsPage({ params }) {
     } catch (err) {
       setError("Erreur lors de la récupération des détails du patient");
       setLoading(false);
+    }
+  };
+
+  const fetchStatus = async () => {
+    try {
+      const response = await axios.get("http://localhost:4000/patients/status");
+      setStatus(response.data);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des Status");
+    }
+  };
+
+  const fetchPaymentData = async () => {
+    try {
+      const [typesResponse, modesResponse] = await Promise.all([
+        axios.get("http://localhost:4000/paymentTypes"),
+        axios.get("http://localhost:4000/paymentModes"),
+      ]);
+      setPaymentTypes(typesResponse.data);
+      setPaymentModes(modesResponse.data);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des données de paiement:", error);
+    }
+  };
+
+  const handleStatusChange = async (patientId, newStatusId) => {
+    try {
+      await axios.put(`http://localhost:4000/patients/${patientId}/status`, { statusId: newStatusId });
+      fetchPatientDetails();
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour du statut:", error);
+    }
+  };
+
+  const handlePaymentTypeChange = async (newPaymentTypeId) => {
+    try {
+      await axios.put(`http://localhost:4000/payment/${id}/edit`, { paymentTypeId: newPaymentTypeId });
+      fetchPatientDetails();
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour du type de paiement:", error);
+    }
+  };
+
+  const handlePaymentModeChange = async (newPaymentModeId) => {
+    try {
+      await axios.put(`http://localhost:4000/payment/${id}/edit`, { paymentModeId: newPaymentModeId });
+      fetchPatientDetails();
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour du mode de paiement:", error);
+    }
+  };
+
+  const handlePaymentDateChange = async (newDate) => {
+    try {
+      await axios.put(`http://localhost:4000/payment/${id}/edit`, { date: newDate });
+      fetchPatientDetails();
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour de la date de paiement:", error);
     }
   };
 
@@ -73,7 +136,17 @@ export default function PatientDetailsPage({ params }) {
   };
 
   const handleEditClick = (workSchedule) => {
-    setEditingWorkSchedule(workSchedule); // Stocke les données de l'élément à éditer
+    const start = new Date(workSchedule.start_time);
+    const end = new Date(workSchedule.end_time);
+  
+    setEditingWorkSchedule({
+      ...workSchedule,
+      start_time: start.toISOString().split("T")[0], // Format ISO (YYYY-MM-DD)
+      start_time_hour: start.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false }),
+      end_time: end.toISOString().split("T")[0],
+      end_time_hour: end.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false }),
+    });
+  
     setWorkScheduleModalOpen(true); // Ouvre le modal
   };
 
@@ -326,7 +399,7 @@ export default function PatientDetailsPage({ params }) {
             <div className="flex space-x-4 mt-6">
               <button
                 onClick={() => setAppointmentModalOpen(true)}
-                className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                className="bg-green-500 text-white px-4 py-2 rounded-md"
               >
                 Ajouter un Rendez-vous
               </button>
@@ -466,13 +539,32 @@ export default function PatientDetailsPage({ params }) {
             )}
           </tbody>
         </table>
-        <button
-          onClick={() => setWorkScheduleModalOpen(true)}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md mt-4"
-        >
-          Ajouter un Planning de Travail
-        </button>
-      </div>
+        <div className="flex items-center gap-4 p-4 bg-white rounded-md shadow">
+          {/* Bouton */}
+          <button
+            onClick={() => setWorkScheduleModalOpen(true)}
+            className="bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600 transition-colors"
+          >
+            Ajouter un Planning de Travail
+          </button>
+
+          {/* Sélection avec label */}
+          <div className="flex items-center gap-2">
+            <p className="text-gray-700 font-medium">Travail en cours :</p>
+            <select
+              value={patient.status ? patient.status.id : ""}
+              onChange={(e) => handleStatusChange(patient.id, e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 text-gray-700 focus:ring focus:ring-blue-200"
+            >
+              {status.map((statu) => (
+                <option key={statu.id} value={statu.id}>
+                  {statu.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        </div>
 
       <EventModalDetails
         isOpen={isAppointmentModalOpen}
@@ -503,10 +595,54 @@ export default function PatientDetailsPage({ params }) {
           patientIdFromParams={id}
           initialData={editingWorkSchedule || {}} // Données initiales à éditer ou vide pour une nouvelle tâche
           onClose={() => setWorkScheduleModalOpen(false)}
+          fetchEntity={fetchPatientDetails}
           // fetchAllEvents={fetchAllEvents} // Fonction pour recharger les données après modification
           edit={!!editingWorkSchedule} // Mode édition activé si `editingWorkSchedule` n'est pas null
         />
       </EventModalDetails>
+
+      <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-sm mt-4">
+        <h2 className="text-xl font-semibold text-gray-800 mb-2">Paiement</h2>
+        <div className="flex gap-4">
+          <div>
+            <label className="block mb-2">Type de paiement</label>
+            <select
+              value={patient.payment?.paymentType?.id || ""}
+              onChange={(e) => handlePaymentTypeChange(e.target.value)}
+              className="border border-gray-300 rounded px-2 py-1"
+            >
+              {paymentTypes.map((type) => (
+                <option key={type.id} value={type.id}>
+                  {type.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block mb-2">Mode de paiement</label>
+            <select
+              value={patient.payment?.paymentMode?.id || ""}
+              onChange={(e) => handlePaymentModeChange(e.target.value)}
+              className="border border-gray-300 rounded px-2 py-1"
+            >
+              {paymentModes.map((mode) => (
+                <option key={mode.id} value={mode.id}>
+                  {mode.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block mb-2">Date de paiement</label>
+            <input
+              type="date"
+              value={patient.payment?.date?.split("T")[0] || ""}
+              onChange={(e) => handlePaymentDateChange(e.target.value)}
+              className="border border-gray-300 rounded px-2 py-1"
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -15,16 +15,28 @@ export default function AppointmentsSection({
   const [isEditModalOpen, setEditModalOpen] = useState(false); // État pour ouvrir/fermer le modal
 
   const handleEditClick = (appointment) => {
+    const start = new Date(appointment.start_time);
+    const end = new Date(appointment.end_time);
+  
     setSelectedAppointment({
       id: appointment.id,
-      start_time: appointment.start_time.split("T")[0], // Date sans l'heure
-      start_time_hour: appointment.start_time.split("T")[1].slice(0, 5), // Heure
-      end_time: appointment.end_time.split("T")[0], // Date de fin sans l'heure
-      end_time_hour: appointment.end_time.split("T")[1].slice(0, 5), // Heure de fin
+      start_time: start.toISOString().split("T")[0], // Date au format ISO
+      start_time_hour: start.toLocaleTimeString("fr-FR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false, // Format 24 heures
+      }),
+      end_time: end.toISOString().split("T")[0],
+      end_time_hour: end.toLocaleTimeString("fr-FR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }),
       reasonAppointmentId: appointment.reasonAppointment?.id || "",
       statusAppointmentId: appointment.statusAppointment?.id || "",
       infos: appointment.infos || "",
     });
+  
     setEditModalOpen(true); // Ouvre le modal
   };
 
@@ -37,7 +49,7 @@ export default function AppointmentsSection({
     <>
       <h3>Rendez-vous</h3>
       <table className="table-auto w-full border-collapse border border-gray-300 rounded-lg">
-        <thead className="bg-blue-500 text-white">
+        <thead className="bg-green-500 text-white">
           <tr>
             <th className="border border-gray-300 px-4 py-2 text-left">
               Date et Heure

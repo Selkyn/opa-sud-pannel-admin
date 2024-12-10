@@ -84,6 +84,36 @@ const Map = ({
   const [namePoints, setNamePoints] = useState([])
   const zoomLevel = 14;
   const apiKeyTomTom = process.env.NEXT_PUBLIC_TOMTOM_API_KEY;
+  // const [osmVetMarkers, setOsmVetMarkers] = useState([]);
+
+  // const fetchVetCentersFromOSM = async () => {
+  //   const overpassUrl = "https://overpass-api.de/api/interpreter";
+  //   const query = `
+  //     [out:json];
+  //     node["amenity"="veterinary"](42.0,-5.0,51.0,9.0); // Limites approximatives de la France
+  //     out body;
+  //   `;
+  
+  //   try {
+  //     const response = await axios.post(overpassUrl, query, {
+  //       headers: { "Content-Type": "text/plain" },
+  //     });
+  //     const data = response.data.elements.map((node) => ({
+  //       lat: node.lat,
+  //       lng: node.lon,
+  //       name: node.tags.name || "vétérinaire",
+  //       address: node.tags["addr:street"] || "Adresse inconnue",
+  //     }));
+  //     setOsmVetMarkers(data);
+  //   } catch (error) {
+  //     console.error("Erreur lors de la récupération des centres vétérinaires via OSM :", error);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetchVetCentersFromOSM();
+  // }, []);
+
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -407,6 +437,33 @@ const Map = ({
         )}
 
         {centerPosition && <CenterMap position={centerPosition} zoomLevel={zoomLevel} />}
+
+        {/* {osmVetMarkers.map((osmMarker, idx) => (
+  <Marker 
+    key={`osm-${idx}`} // Préfixe pour éviter les conflits de clés
+    position={[osmMarker.lat, osmMarker.lng]}
+    icon={vetoIcon} // Réutilisation de votre icône
+  >
+    <Popup>
+      <div>
+        <p>Centre vétérinaire : {capitalizeFirstLetter(osmMarker.name)}</p>
+        <p>Adresse : {osmMarker.address}</p>
+        <button
+          className="bg-blue-500 text-white px-2 py-1 rounded-md ml-2"
+          onClick={() => handleRouteToMarker([osmMarker.lat, osmMarker.lng])}
+        >
+          Itinéraire
+        </button>
+        <button
+          className="bg-blue-500 text-white px-2 py-1 rounded-md ml-2"
+          onClick={() => handleMarkerClick(osmMarker.lat, osmMarker.lng, osmMarker.name)}
+        >
+          Ajouter
+        </button>
+      </div>
+    </Popup>
+  </Marker>
+))} */}
 
         {markers.map((marker, idx) => (
           <Marker 

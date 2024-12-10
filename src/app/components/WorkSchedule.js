@@ -8,24 +8,17 @@ export default function Workschedule({
   initialData = {},
   onClose,
   fetchAllEvents,
+  fetchEntity,
   edit = false
 }) {
   const [formData, setFormData] = useState({
     patientId: patientIdFromParams || initialData.patientId || "",
     custom_task_name: initialData.custom_task_name || "",
     taskId: initialData.taskId || "",
-    start_time: initialData.start_time
-      ? new Date(initialData.start_time).toISOString().split("T")[0] // YYYY-MM-DD
-      : "",
-    start_time_hour: initialData.start_time
-      ? new Date(initialData.start_time).toISOString().split("T")[1].slice(0, 5) // HH:mm
-      : "",
-    end_time: initialData.end_time
-      ? new Date(initialData.end_time).toISOString().split("T")[0]
-      : "",
-    end_time_hour: initialData.end_time
-      ? new Date(initialData.end_time).toISOString().split("T")[1].slice(0, 5)
-      : "",
+    start_time: initialData.start_time || "",
+    start_time_hour: initialData.start_time_hour || "",
+    end_time: initialData.end_time || "",
+    end_time_hour: initialData.end_time_hour || "",
   });
   
 
@@ -78,7 +71,10 @@ export default function Workschedule({
 
       if (!patientIdFromParams) {
         fetchAllEvents();
+      } else {
+        fetchEntity()
       }
+
 
       if (onClose) {
         onClose();

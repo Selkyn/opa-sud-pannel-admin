@@ -13,6 +13,7 @@ import EventModalDetails from "@/app/components/EventModalDetails";
 import Appointment from "../components/Appointment";
 import Workschedule from "../components/WorkSchedule";
 
+
 export default function CalendarPage() {
   const [events, setEvents] = useState([]);
   const [workSchedules, setWorkSchedules] = useState([]);
@@ -26,6 +27,7 @@ export default function CalendarPage() {
   const [osteoCenters, setOsteoCenters] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [eventType, setEventType] = useState();
+  const [contextMenu, setContextMenu] = useState(null);
 
   const router = useRouter();
 
@@ -146,6 +148,19 @@ export default function CalendarPage() {
     }
   };
 
+  const handleEventClick = (eventInfo) => {
+    const { clientX: x, clientY: y } = eventInfo.jsEvent; // Position du clic
+    setContextMenu({
+      x,
+      y,
+      event: eventInfo.event, // L’événement sélectionné
+    });
+  };
+
+  const closeContextMenu = () => {
+    setContextMenu(null);
+  };
+
   const handleEditClick = (eventInfo) => {
     const eventId = eventInfo.event.id;
     const eventType = eventInfo.event.extendedProps.eventType;
@@ -165,10 +180,43 @@ export default function CalendarPage() {
       //   "Données étendues de l'événement :",
       //   selectedAppointment.extendedProps
       // );
-      setSelectedEvent(selectedAppointment);
+      const start = new Date(selectedAppointment.start);
+      const end = new Date(selectedAppointment.end);
+
+      setSelectedEvent({
+          ...selectedAppointment,
+          start_time: start.toISOString().split("T")[0], // Date au format ISO
+          start_time_hour: start.toLocaleTimeString("fr-FR", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false, // Format 24 heures
+          }),
+          end_time: end.toISOString().split("T")[0],
+          end_time_hour: end.toLocaleTimeString("fr-FR", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+          }),
+      });
       setAppointmentModalOpen(true);
     } else if (selectedWorkSchedule && eventType === "workSchedule") {
-      setSelectedEvent(selectedWorkSchedule);
+      const start = new Date(selectedWorkSchedule.start);
+      const end = new Date(selectedWorkSchedule.end);
+      setSelectedEvent({
+        ...selectedWorkSchedule,
+        start_time: start.toISOString().split("T")[0], // Date au format ISO
+        start_time_hour: start.toLocaleTimeString("fr-FR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false, // Format 24 heures
+        }),
+        end_time: end.toISOString().split("T")[0],
+        end_time_hour: end.toLocaleTimeString("fr-FR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+        }),
+    });
       setWorkScheduleModalOpen(true);
     } else {
       console.error("Aucun événement correspondant trouvé !");
@@ -184,7 +232,11 @@ export default function CalendarPage() {
   const handleDeleteClick = async (eventInfo) => {
     const eventId = eventInfo.event.id; // ID unique de l'événement
     const eventType = eventInfo.event.extendedProps.eventType; // Récupérer le type d'événement depuis extendedProps
-
+    const confirmation = window.confirm(
+      "Êtes-vous sûr de vouloir supprimer cet événement ? Cette action est irréversible."
+    );
+  
+    if (!confirmation) return;
     try {
       // Construire l'URL en fonction du type d'événement
       const url =
@@ -205,10 +257,19 @@ export default function CalendarPage() {
 
   const renderDayCell = (dayCellInfo) => {
     const handleAddClick = () => {
-      const dateStr = dayCellInfo.date.toISOString().split("T")[0]; // Formate la date
+      // Utiliser directement les composantes de la date en local
+      const localDate = new Date(dayCellInfo.date.getTime());
+      const year = localDate.getFullYear();
+      const month = String(localDate.getMonth() + 1).padStart(2, '0'); // Mois commence à 0
+      const day = String(localDate.getDate()).padStart(2, '0');
+  
+      // Format final de la date
+      const dateStr = `${year}-${month}-${day}`;
+  
+      console.log("Date sélectionnée :", dateStr);
+  
       setSelectedDate(dateStr); // Définit la date sélectionnée
       setIsModalOpen(true); // Ouvre le modal
-      // setAppointmentModalOpen(true);
     };
 
     return (
@@ -270,19 +331,19 @@ export default function CalendarPage() {
             onClick={() => handleEditClick(eventInfo)}
             className="bg-green-500 text-white text-xs py-1 rounded-md hover:bg-green-600"
           >
-            Modifier
+            ✏️
           </button>
           <button
             onClick={() => handleDeleteClick(eventInfo)}
             className="bg-red-500 text-white text-xs px-2 py-1 rounded-md hover:bg-red-600"
           >
-            Supprimer
+            🗑️
           </button>
           <button
             onClick={handleDetailsClick}
             className="bg-blue-500 text-white text-xs px-2 py-1 rounded-md hover:bg-blue-600"
           >
-            Détails
+            👁️
           </button>
         </div>
       </div>
@@ -349,16 +410,16 @@ export default function CalendarPage() {
           patients={patients}
           initialData={{
             id: selectedEvent?.id,
-            start_time: selectedEvent?.start,
-            start_time_hour: selectedEvent?.start,
-            end_time: selectedEvent?.end,
-            end_time_hour: selectedEvent?.end,
+            start_time: selectedEvent?.start.split("T")[0],
+            start_time_hour: selectedEvent?.start.split("T")[1]?.slice(0, 5),
+            end_time: selectedEvent?.end.split("T")[0],
+            end_time_hour: selectedEvent?.end.split("T")[1]?.slice(0, 5),
             // infos: selectedEvent?.extendedProps?.infos || "",
             patientId: selectedEvent?.extendedProps?.patientId,
             taskId: selectedEvent?.extendedProps?.taskId,
           }}
           edit={!!selectedEvent}
-          onClose={() => setAppointmentModalOpen(false)}
+          onClose={() => setWorkScheduleModalOpen(false)}
           fetchAllEvents={fetchAllEvents}
         />
       </EventModalDetails>
@@ -370,6 +431,7 @@ export default function CalendarPage() {
           weekends={true}
           events={calendarEvents}
           eventContent={renderEventContent}
+          eventClick={handleEventClick}
           dayCellContent={renderDayCell}
           eventClassNames={(eventInfo) => {
             if (eventInfo.event.extendedProps.eventType === "appointment") {
@@ -387,7 +449,7 @@ export default function CalendarPage() {
           // eventResize={handleEventResize} // Gestionnaire pour redimensionner un événement
           locale="fr"
           locales={[frLocale]}
-          timeZone="Europe/Paris"
+          // timeZone="UTC" 
           height="auto"
           // dateClick={handleDateClick}
           headerToolbar={{

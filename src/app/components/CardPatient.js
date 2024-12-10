@@ -36,7 +36,9 @@ const CardPatient = ({ params }) => {
                 <div className="flex flex-col item-center">
                     {/* Section du nom du patient */}
                     <div className="mb-6">
-                        <h3 className="text-4xl font-bold text-gray-800 mb-4">{patient.name}</h3>
+                        <Link key={patient.id} href={`/patients/${patient.id}`}>
+                            <h3 className="text-4xl font-bold text-gray-800 mb-4">{patient.name}</h3>
+                        </Link>
                         <p className="text-gray-600"><strong>Date du premier contact :</strong> {patient.createdAt}</p>
                     </div>
                     {/* Section Patient */}
