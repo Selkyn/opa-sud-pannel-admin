@@ -39,10 +39,22 @@ export default function Workschedule({
   }, []);
 
   const handleChange = (name, value) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData((prevData) => {
+      // Si la date de début est modifiée, synchronisez également la date de fin
+      if (name === "start_time") {
+        return {
+          ...prevData,
+          [name]: value,
+          end_time: value, // Synchronise la date de fin avec la date de début
+        };
+      }
+  
+      // Sinon, mettez à jour uniquement le champ ciblé
+      return {
+        ...prevData,
+        [name]: value,
+      };
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -90,37 +102,40 @@ export default function Workschedule({
       <h4 className="text-xl font-semibold text-gray-900 mb-6">
         Tâche de travail
       </h4>
-      {!patientIdFromParams && (
-        <div>
-          <label
-            htmlFor="patientId"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Sélectionnez un patient
-          </label>
-          <select
-            name="patientId"
-            id="patientId"
-            value={formData.patientId}
-            onChange={(e) => handleChange(e.target.name, e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            required
-          >
-            <option value="">Sélectionnez un patient</option>
-            {patients.map((patient) => (
-              <option key={patient.id} value={patient.id}>
-                {patient.name} - {patient.client.firstname}{" "}
-                {patient.client.lastname} ({patient.client.city})
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+
       <DateTimeForm
         formData={formData}
         onChange={handleChange}
         onSubmit={handleSubmit}
         additionalFields={
+          <>
+          {!patientIdFromParams && (
+            
+            <div>
+              <label
+                htmlFor="patientId"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Sélectionnez un patient
+              </label>
+              <select
+                name="patientId"
+                id="patientId"
+                value={formData.patientId}
+                onChange={(e) => handleChange(e.target.name, e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                required
+              >
+                <option value="">Sélectionnez un patient</option>
+                {patients.map((patient) => (
+                  <option key={patient.id} value={patient.id}>
+                    {patient.name} - {patient.client.firstname}{" "}
+                    {patient.client.lastname} ({patient.client.city})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           <div>
             <label
               htmlFor="taskId"
@@ -144,6 +159,7 @@ export default function Workschedule({
               ))}
             </select>
           </div>
+          </>
         }
         submitButtonLabel={edit ? "Modifier tache" : "Ajouter Tache"} 
       />

@@ -150,7 +150,7 @@ export default function Appointment({
           <>
             <div>
               <label htmlFor="infos" className="block text-sm font-medium text-gray-700">
-                Infos
+                Infos complémentaires
               </label>
               <input
                 type="text"

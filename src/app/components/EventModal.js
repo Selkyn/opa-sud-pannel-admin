@@ -107,6 +107,10 @@ export default function EventModal({ onClose, selectedDate, fetchAllEvents, pati
               start_time_hour: selectedDate
                 ? selectedDate.split("T")[1]?.slice(0, 5)
                 : "", // Heure de début (HH:mm)
+                end_time: selectedDate ? selectedDate.split("T")[0] : "", // Date de début (YYYY-MM-DD)
+                end_time_hour: selectedDate
+                  ? selectedDate.split("T")[1]?.slice(0, 5)
+                  : "", // Heure de début (HH:mm)
             }}
             onClose={onClose}
             fetchAllEvents={fetchAllEvents}
@@ -121,6 +125,10 @@ export default function EventModal({ onClose, selectedDate, fetchAllEvents, pati
               start_time_hour: selectedDate
                 ? selectedDate.split("T")[1]?.slice(0, 5)
                 : "", // Heure de début (HH:mm)
+                end_time: selectedDate ? selectedDate.split("T")[0] : "", // Date de début (YYYY-MM-DD)
+                end_time_hour: selectedDate
+                  ? selectedDate.split("T")[1]?.slice(0, 5)
+                  : "", // Heure de début (HH:mm)
             }}
             onClose={onClose}
             fetchAllEvents={fetchAllEvents}

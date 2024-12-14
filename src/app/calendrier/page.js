@@ -31,6 +31,10 @@ export default function CalendarPage() {
 
   const router = useRouter();
 
+    useEffect(() => {
+    fetchAllEvents();
+  }, []);
+
   useEffect(() => {
     if (isAppointmentModalOpen || isModalOpen) {
       fetchPatients();
@@ -86,9 +90,7 @@ export default function CalendarPage() {
     }
   };
 
-  useEffect(() => {
-    fetchAllEvents();
-  }, []);
+
 
   const fetchAllEvents = async () => {
     try {
@@ -101,7 +103,7 @@ export default function CalendarPage() {
           const extendedProps = appointment.extendedProps || {};
 
           return {
-            id: appointment.id,
+            id: `appointment-${appointment.id}`,
             title: appointment.title || "Rendez-vous",
             start: appointment.start,
             end: appointment.end,
@@ -133,7 +135,7 @@ export default function CalendarPage() {
       );
       const formattedWorkSchedules =
         workScheduleResponse.data?.map((workSchedule) => ({
-          id: workSchedule.id,
+          id: `workSchedule-${workSchedule.id}`,
           title: workSchedule.title || "Planning de travail",
           start: workSchedule.start,
           end: workSchedule.end,
@@ -164,64 +166,63 @@ export default function CalendarPage() {
   const handleEditClick = (eventInfo) => {
     const eventId = eventInfo.event.id;
     const eventType = eventInfo.event.extendedProps.eventType;
-
-      const selectedAppointment = calendarEvents.find(
-      (event) => String(event.id) === String(eventId)
-    );
-
-    const selectedWorkSchedule = calendarEvents.find(
-      (event) => String(event.id) === String(eventId)
-    );
-
-    console.log("Événement trouvé pour édition :", selectedAppointment);
-
-    if (selectedAppointment && eventType === "appointment") {
-      // console.log(
-      //   "Données étendues de l'événement :",
-      //   selectedAppointment.extendedProps
-      // );
-      const start = new Date(selectedAppointment.start);
-      const end = new Date(selectedAppointment.end);
-
+  
+    // Supprimer le préfixe pour extraire l'ID brut
+    const cleanedId = eventId.includes("-") ? eventId.split("-")[1] : eventId;
+  
+    const selectedEvent = calendarEvents.find((event) => event.id === eventId);
+  
+    if (selectedEvent && eventType === "appointment") {
+      // console.log("Événement trouvé pour édition :", selectedEvent);
+  
+      const start = new Date(selectedEvent.start);
+      const end = new Date(selectedEvent.end);
+  
       setSelectedEvent({
-          ...selectedAppointment,
-          start_time: start.toISOString().split("T")[0], // Date au format ISO
-          start_time_hour: start.toLocaleTimeString("fr-FR", {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false, // Format 24 heures
-          }),
-          end_time: end.toISOString().split("T")[0],
-          end_time_hour: end.toLocaleTimeString("fr-FR", {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false,
-          }),
-      });
-      setAppointmentModalOpen(true);
-    } else if (selectedWorkSchedule && eventType === "workSchedule") {
-      const start = new Date(selectedWorkSchedule.start);
-      const end = new Date(selectedWorkSchedule.end);
-      setSelectedEvent({
-        ...selectedWorkSchedule,
-        start_time: start.toISOString().split("T")[0], // Date au format ISO
+        ...selectedEvent,
+        id: cleanedId, // Passer l'ID nettoyé
+        start_time: start.toISOString().split("T")[0],
         start_time_hour: start.toLocaleTimeString("fr-FR", {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false, // Format 24 heures
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
         }),
         end_time: end.toISOString().split("T")[0],
         end_time_hour: end.toLocaleTimeString("fr-FR", {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
         }),
-    });
+      });
+      setAppointmentModalOpen(true);
+    } else if (selectedEvent && eventType === "workSchedule") {
+      console.log("Événement trouvé pour édition :", selectedEvent);
+  
+      const start = new Date(selectedEvent.start);
+      const end = new Date(selectedEvent.end);
+  
+      setSelectedEvent({
+        ...selectedEvent,
+        id: cleanedId, // Passer l'ID nettoyé
+        start_time: start.toISOString().split("T")[0],
+        start_time_hour: start.toLocaleTimeString("fr-FR", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }),
+        end_time: end.toISOString().split("T")[0],
+        end_time_hour: end.toLocaleTimeString("fr-FR", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }),
+      });
       setWorkScheduleModalOpen(true);
     } else {
       console.error("Aucun événement correspondant trouvé !");
     }
   };
+  
 
   const handleDateClick = (info) => {
     console.log("Date reçue :", info.dateStr);
@@ -231,6 +232,7 @@ export default function CalendarPage() {
 
   const handleDeleteClick = async (eventInfo) => {
     const eventId = eventInfo.event.id; // ID unique de l'événement
+    const cleanedId = eventId.includes("-") ? eventId.split("-")[1] : eventId;
     const eventType = eventInfo.event.extendedProps.eventType; // Récupérer le type d'événement depuis extendedProps
     const confirmation = window.confirm(
       "Êtes-vous sûr de vouloir supprimer cet événement ? Cette action est irréversible."
@@ -241,8 +243,8 @@ export default function CalendarPage() {
       // Construire l'URL en fonction du type d'événement
       const url =
         eventType === "workSchedule"
-          ? `http://localhost:4000/work-schedules/${eventId}/delete`
-          : `http://localhost:4000/appointments/${eventId}/delete`;
+          ? `http://localhost:4000/work-schedules/${cleanedId}/delete`
+          : `http://localhost:4000/appointments/${cleanedId}/delete`;
 
       await axios.delete(url);
 
@@ -316,15 +318,19 @@ export default function CalendarPage() {
           <div className="text-base font-bold text-gray-900">
             {eventInfo.event.title}
           </div>
-          <div className="text-xs text-gray-500 italic">
-            {eventInfo.event.extendedProps.entityType}
-          </div>
-          <div className="text-sm text-gray-700">
-            {eventInfo.event.extendedProps.entityName}
-          </div>
-          <div className="text-xs text-gray-500 italic">
-            {eventInfo.event.extendedProps.status}
-          </div>
+          {isAppointment && eventInfo.event.extendedProps.participantType && (
+            <div className="text-xs text-gray-500 italic">
+              {eventInfo.event.extendedProps.participantType}
+            </div>
+          )}
+          {eventInfo.event.extendedProps.entityName && (
+            <div className="text-sm text-gray-700">{eventInfo.event.extendedProps.entityName}</div>
+          )}
+          {isAppointment && eventInfo.event.extendedProps.status && (
+            <div className="text-xs text-gray-500 italic">
+              {eventInfo.event.extendedProps.status}
+            </div>
+          )}
         </div>
         <div className="flex flex-col ml-6 gap-1">
           <button
@@ -526,5 +532,68 @@ export default function CalendarPage() {
 //     );
 //     alert("Erreur lors de la mise à jour de la durée.");
 //     info.revert(); // Revenir à l'état précédent en cas d'erreur
+//   }
+// };
+
+
+// const handleEditClick = (eventInfo) => {
+//   const eventId = eventInfo.event.id;
+//   const eventType = eventInfo.event.extendedProps.eventType;
+
+//     const selectedAppointment = calendarEvents.find(
+//     (event) => String(event.id) === String(eventId)
+//   );
+
+//   const selectedWorkSchedule = calendarEvents.find(
+//     (event) => String(event.id) === String(eventId)
+//   );
+
+//   console.log("Événement trouvé pour édition :", selectedAppointment);
+
+//   if (selectedAppointment && eventType === "appointment") {
+//     // console.log(
+//     //   "Données étendues de l'événement :",
+//     //   selectedAppointment.extendedProps
+//     // );
+//     const start = new Date(selectedAppointment.start);
+//     const end = new Date(selectedAppointment.end);
+
+//     setSelectedEvent({
+//         ...selectedAppointment,
+//         start_time: start.toISOString().split("T")[0], // Date au format ISO
+//         start_time_hour: start.toLocaleTimeString("fr-FR", {
+//             hour: "2-digit",
+//             minute: "2-digit",
+//             hour12: false, // Format 24 heures
+//         }),
+//         end_time: end.toISOString().split("T")[0],
+//         end_time_hour: end.toLocaleTimeString("fr-FR", {
+//             hour: "2-digit",
+//             minute: "2-digit",
+//             hour12: false,
+//         }),
+//     });
+//     setAppointmentModalOpen(true);
+//   } else if (selectedWorkSchedule && eventType === "workSchedule") {
+//     const start = new Date(selectedWorkSchedule.start);
+//     const end = new Date(selectedWorkSchedule.end);
+//     setSelectedEvent({
+//       ...selectedWorkSchedule,
+//       start_time: start.toISOString().split("T")[0], // Date au format ISO
+//       start_time_hour: start.toLocaleTimeString("fr-FR", {
+//           hour: "2-digit",
+//           minute: "2-digit",
+//           hour12: false, // Format 24 heures
+//       }),
+//       end_time: end.toISOString().split("T")[0],
+//       end_time_hour: end.toLocaleTimeString("fr-FR", {
+//           hour: "2-digit",
+//           minute: "2-digit",
+//           hour12: false,
+//       }),
+//   });
+//     setWorkScheduleModalOpen(true);
+//   } else {
+//     console.error("Aucun événement correspondant trouvé !");
 //   }
 // };

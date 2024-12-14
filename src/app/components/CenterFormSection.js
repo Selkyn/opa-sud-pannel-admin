@@ -91,6 +91,7 @@ export default function CenterFormSection({
       id={`email${centerType}`}
       value={localData[`email${centerType}`] || ''}
       onChange={handleLocalInputChange}
+      required
       className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
     />
   </div>
@@ -143,6 +144,20 @@ export default function CenterFormSection({
   </div>
 
   <div>
+    <label htmlFor={`phone${centerType}`} className="block text-sm font-medium text-gray-700">
+      Téléphone
+    </label>
+    <input
+      type="text"
+      name={`phone${centerType}`}
+      id={`phone${centerType}`}
+      value={localData[`phone${centerType}`] || ''}
+      onChange={handleLocalInputChange}
+      className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+    />
+  </div>
+
+  <div>
     <label htmlFor={`infos${centerType}`} className="block text-sm font-medium text-gray-700">
       infos
     </label>
@@ -152,7 +167,6 @@ export default function CenterFormSection({
       id={`infos${centerType}`}
       value={localData[`infos${centerType}`] || ''}
       onChange={handleLocalInputChange}
-      required
       className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
     />
   </div>

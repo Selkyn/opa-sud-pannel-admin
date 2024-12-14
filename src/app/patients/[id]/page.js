@@ -228,8 +228,8 @@ export default function PatientDetailsPage({ params }) {
                 </p>
                 <p>
                   <strong>Adresse :</strong>{" "}
-                  {patient.client && patient.client.adress
-                    ? patient.client.adress
+                  {patient.client && patient.client.adress && patient.client.city && patient.client.postal
+                    ? patient.client.adress + " " + patient.client.postal + " " + patient.client.city
                     : "Non spécifié"}
                 </p>
               </div>
