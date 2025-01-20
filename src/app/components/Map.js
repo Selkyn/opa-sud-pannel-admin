@@ -93,48 +93,48 @@ const Map = ({
   const [namePoints, setNamePoints] = useState([])
   const zoomLevel = 14;
   const apiKeyTomTom = process.env.NEXT_PUBLIC_TOMTOM_API_KEY;
-  const [osmVetMarkers, setOsmVetMarkers] = useState([]);
+  // const [osmVetMarkers, setOsmVetMarkers] = useState([]);
 
-  const fetchVetCentersFromOSM = async (bounds, zoom) => {
-    if (zoom < 12) {
-      setOsmVetMarkers([]); // Supprime les marqueurs si on dézoome trop
-      return;
-    }
-    if (zoom < 12) return;
+  // const fetchVetCentersFromOSM = async (bounds, zoom) => {
+  //   if (zoom < 12) {
+  //     setOsmVetMarkers([]); // Supprime les marqueurs si on dézoome trop
+  //     return;
+  //   }
+  //   if (zoom < 12) return;
 
-    const { _northEast, _southWest } = bounds;
-    const overpassUrl = "https://overpass-api.de/api/interpreter";
-    const query = `
-    [out:json];
-    (
-      node["amenity"="veterinary"](${_southWest.lat},${_southWest.lng},${_northEast.lat},${_northEast.lng});
-      node["amenity"="animal_hospital"](${_southWest.lat},${_southWest.lng},${_northEast.lat},${_northEast.lng});
-      node["office"="veterinary"](${_southWest.lat},${_southWest.lng},${_northEast.lat},${_northEast.lng});
-      node["amenity"="clinic"][animal="yes"](${_southWest.lat},${_southWest.lng},${_northEast.lat},${_northEast.lng}); 
-    );
-    out body;
-  `;
+  //   const { _northEast, _southWest } = bounds;
+  //   const overpassUrl = "https://overpass-api.de/api/interpreter";
+  //   const query = `
+  //   [out:json];
+  //   (
+  //     node["amenity"="veterinary"](${_southWest.lat},${_southWest.lng},${_northEast.lat},${_northEast.lng});
+  //     node["amenity"="animal_hospital"](${_southWest.lat},${_southWest.lng},${_northEast.lat},${_northEast.lng});
+  //     node["office"="veterinary"](${_southWest.lat},${_southWest.lng},${_northEast.lat},${_northEast.lng});
+  //     node["amenity"="clinic"][animal="yes"](${_southWest.lat},${_southWest.lng},${_northEast.lat},${_northEast.lng}); 
+  //   );
+  //   out body;
+  // `;
 
-    try {
-      const response = await axios.post(overpassUrl, query, {
-        headers: { "Content-Type": "text/plain" },
-      });
-      const data = response.data.elements.map((node) => ({
-        lat: node.lat,
-        lng: node.lon,
-        name: node.tags.name || "vétérinaire" || "veterinaire",
-        address: node.tags["addr:street"] || "Adresse inconnue",
-      }));
-      setOsmVetMarkers(data);
-      console.log('Centres vétérinaires OSM récupérés :', data);
-    } catch (error) {
-      console.error("Erreur lors de la récupération des centres vétérinaires via OSM :", error);
-    }
-  };
+  //   try {
+  //     const response = await axios.post(overpassUrl, query, {
+  //       headers: { "Content-Type": "text/plain" },
+  //     });
+  //     const data = response.data.elements.map((node) => ({
+  //       lat: node.lat,
+  //       lng: node.lon,
+  //       name: node.tags.name || "vétérinaire" || "veterinaire",
+  //       address: node.tags["addr:street"] || "Adresse inconnue",
+  //     }));
+  //     setOsmVetMarkers(data);
+  //     console.log('Centres vétérinaires OSM récupérés :', data);
+  //   } catch (error) {
+  //     console.error("Erreur lors de la récupération des centres vétérinaires via OSM :", error);
+  //   }
+  // };
 
-  const handleMapMove = (bounds, zoom) => {
-    fetchVetCentersFromOSM(bounds, zoom);
-  };
+  // const handleMapMove = (bounds, zoom) => {
+  //   fetchVetCentersFromOSM(bounds, zoom);
+  // };
 
 
   const MapEventHandler = ({ onMapMove }) => {
@@ -421,13 +421,13 @@ const Map = ({
         center={[43.683333, 4.133333]}
         zoom={7}
         style={{ height: '900px', width: '100%' }}
-        onMoveEnd={handleMapMove}
+        // onMoveEnd={handleMapMove}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
-        <MapEventHandler onMapMove={handleMapMove} />
+        {/* <MapEventHandler onMapMove={handleMapMove} /> */}
         <MapControls onAvoidMotorwaysChange={handleAvoidMotorwaysChange} />
         <LocateButton onLocate={(location) => setUserLocation(location)} />
 
@@ -477,7 +477,7 @@ const Map = ({
 
         {centerPosition && <CenterMap position={centerPosition} zoomLevel={zoomLevel} />}
 
-        {osmVetMarkers.map((osmMarker, idx) => (
+        {/* {osmVetMarkers.map((osmMarker, idx) => (
           <Marker
             key={`osm-${idx}`}
             position={[osmMarker.lat, osmMarker.lng]}
@@ -488,7 +488,7 @@ const Map = ({
               <p>{osmMarker.address}</p>
             </Popup>
           </Marker>
-        ))}
+        ))} */}
 
         {markers.map((marker, idx) => (
           <Marker 

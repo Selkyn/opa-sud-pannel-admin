@@ -1,11 +1,6 @@
-// src/app/map/layout.js
+import MainLayout from "../components/MainLayout";
 
-import React from 'react';
 
 export default function MapLayout({ children }) {
-  return (
-    <div>
-      {children}
-    </div>
-  );
+return <MainLayout>{children}</MainLayout>;
 }

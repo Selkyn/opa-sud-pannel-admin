@@ -25,7 +25,7 @@ export default function AddPatientForm() {
     postal: "",
     department: "",
     clientSexId: "",
-    vetCenterId: "",
+    vetCenterId: null,
     nameVetCenter: "",
     adressVetCenter: "",
     cityVetCenter: "",
@@ -34,7 +34,7 @@ export default function AddPatientForm() {
     phoneVetCenter: "",
     emailVetCenter: "",
     infosVetCenter: "",
-    osteoCenterId: "",
+    osteoCenterId: null,
     nameOsteoCenter: "",
     adressOsteoCenter: "",
     cityOsteoCenter: "",
@@ -239,7 +239,7 @@ export default function AddPatientForm() {
 
     // Gestion de "Autre" pour le centre vétérinaire
     if (formData.osteoCenterId === "other") {
-      formDataToSend.OsteoCenterId = null; // On met OsteoCenterId à null car on va utiliser les champs personnalisés pour le centre
+      formDataToSend.osteoCenterId = null; // On met OsteoCenterId à null car on va utiliser les champs personnalisés pour le centre
       formDataToSend.nameOsteoCenter = formData.nameOsteoCenter;
       formDataToSend.adressOsteoCenter = formData.adressOsteoCenter;
       formDataToSend.cityOsteoCenter = formData.cityOsteoCenter;

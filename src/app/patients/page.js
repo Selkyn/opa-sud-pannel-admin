@@ -11,6 +11,7 @@ import usePatientFilters from './hooks/usePatientFilters';
 import SearchBar from '../components/SearchBar';
 import Pagination from '../components/Pagination';
 import { dateInput } from '@nextui-org/react';
+import withAuth from "../../utils/withAuth";
 
 export default function PatientsPage() {
   const [patients, setPatients] = useState([]);
@@ -291,3 +292,4 @@ return (
 );
 
 }
+

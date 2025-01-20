@@ -12,6 +12,8 @@ import EventModal from "../components/EventModal";
 import EventModalDetails from "@/app/components/EventModalDetails";
 import Appointment from "../components/Appointment";
 import Workschedule from "../components/WorkSchedule";
+import withAuth from "../../utils/withAuth";
+
 
 
 export default function CalendarPage() {

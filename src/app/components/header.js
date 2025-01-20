@@ -2,12 +2,27 @@
 "use client"; 
 
 import React, { useState } from "react";
+import { useAuth } from "@/context/AuthContext"; // Importation du contexte
+
+import { useRouter } from "next/navigation";
+
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await logout(); // Appelle la fonction `logout` du contexte
+      router.push("/auth"); // Redirige vers la page de connexion
+    } catch (error) {
+      console.error("Erreur lors de la déconnexion :", error.message);
+    }
+  };
 
   return (
-    <header className="bg-green-800 text-gray-200 shadow-lg">
+    <header className="bg-green-800 text-gray-200 shadow-lg ">
       {/* Logo */}
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <a href="/">
@@ -87,14 +102,10 @@ export default function Header() {
               </a>
             </li>
             <li>
-              <form action="/logout" method="get">
-                <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200"
-                  type="submit"
-                >
-                  Déconnexion
-                </button>
-              </form>
+            <div>
+      <button onClick={handleLogout}>Se déconnecter</button>
+      {/* {message && <p>{message}</p>} */}
+    </div>
             </li>
           </ul>
         </nav>

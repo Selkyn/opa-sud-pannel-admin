@@ -1,9 +1,6 @@
-import React from 'react';
+import MainLayout from "../components/MainLayout";
 
 export default function CalendarLayout({ children }) {
-  return (
-    <div>
-      {children}
-    </div>
-  );
+  return <MainLayout>{children}</MainLayout>;
+
 }

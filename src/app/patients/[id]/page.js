@@ -15,6 +15,7 @@ import EventModal from "@/app/components/EventModal";
 import ToggleSection from "@/app/components/ToggleSection";
 import AppointmentsSection from "@/app/components/AppointmentsSection";
 import EventModalDetails from "@/app/components/EventModalDetails";
+import { Button } from "@nextui-org/react";
 
 export default function PatientDetailsPage({ params }) {
   const { id } = params;
@@ -29,7 +30,9 @@ export default function PatientDetailsPage({ params }) {
   const [editingWorkSchedule, setEditingWorkSchedule] = useState(null);
   const [paymentTypes, setPaymentTypes] = useState([]);
   const [paymentModes, setPaymentModes] = useState([]);
+  const [paymentStatus, setPaymentStatus] = useState([]);
   const [status, setStatus] = useState([]);
+  const [amount, setAmount] = useState("");
 
   useEffect(() => {
     if (id) {
@@ -43,6 +46,7 @@ export default function PatientDetailsPage({ params }) {
     try {
       const response = await axios.get(`http://localhost:4000/patients/${id}`);
       setPatient(response.data);
+      setAmount(response.data.payment.amount)
       setLoading(false);
     } catch (err) {
       setError("Erreur lors de la récupération des détails du patient");
@@ -61,12 +65,14 @@ export default function PatientDetailsPage({ params }) {
 
   const fetchPaymentData = async () => {
     try {
-      const [typesResponse, modesResponse] = await Promise.all([
+      const [typesResponse, modesResponse, statusResponse] = await Promise.all([
         axios.get("http://localhost:4000/paymentTypes"),
         axios.get("http://localhost:4000/paymentModes"),
+        axios.get("http://localhost:4000/paymentStatus")
       ]);
       setPaymentTypes(typesResponse.data);
       setPaymentModes(modesResponse.data);
+      setPaymentStatus(statusResponse.data);
     } catch (error) {
       console.error("Erreur lors de la récupération des données de paiement:", error);
     }
@@ -99,12 +105,47 @@ export default function PatientDetailsPage({ params }) {
     }
   };
 
+  const handlePaymentStatusChange = async (newPaymentStatusId) => {
+    try {
+      await axios.put(`http://localhost:4000/payment/${id}/edit`, { paymentStatusId: newPaymentStatusId });
+      fetchPatientDetails();
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour du mode de paiement:", error);
+    }
+  };
+
   const handlePaymentDateChange = async (newDate) => {
     try {
       await axios.put(`http://localhost:4000/payment/${id}/edit`, { date: newDate });
       fetchPatientDetails();
     } catch (error) {
       console.error("Erreur lors de la mise à jour de la date de paiement:", error);
+    }
+  };
+
+  const handlePaymentEndDateChange = async (newEndDate) => {
+    try {
+      await axios.put(`http://localhost:4000/payment/${id}/edit`, { endDate: newEndDate });
+      fetchPatientDetails();
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour de la date de paiement:", error);
+    }
+  };
+
+  const handleButtonClick = () => {
+    if (!amount || isNaN(amount)) {
+      alert("Veuillez entrer un montant valide.");
+      return;
+    }
+    handlePaymentAmountChange(amount); // Envoie la valeur validée à la fonction de mise à jour
+  };
+
+  const handlePaymentAmountChange = async (newAmount) => {
+    try {
+      await axios.put(`http://localhost:4000/payment/${id}/edit`, { amount: newAmount });
+      fetchPatientDetails();
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour du mode de paiement:", error);
     }
   };
 
@@ -604,6 +645,20 @@ export default function PatientDetailsPage({ params }) {
       <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-sm mt-4">
         <h2 className="text-xl font-semibold text-gray-800 mb-2">Paiement</h2>
         <div className="flex gap-4">
+        <div>
+            <label className="block mb-2">Status de paiement</label>
+            <select
+              value={patient.payment?.paymentStatus?.id || ""}
+              onChange={(e) => handlePaymentStatusChange(e.target.value)}
+              className="border border-gray-300 rounded px-2 py-1"
+            >
+              {paymentStatus.map((status) => (
+                <option key={status.id} value={status.id}>
+                  {status.name}
+                </option>
+              ))}
+            </select>
+          </div>
           <div>
             <label className="block mb-2">Type de paiement</label>
             <select
@@ -640,6 +695,27 @@ export default function PatientDetailsPage({ params }) {
               onChange={(e) => handlePaymentDateChange(e.target.value)}
               className="border border-gray-300 rounded px-2 py-1"
             />
+          </div>
+          <div>
+            <label className="block mb-2">Date de fin paiement</label>
+            <input
+              type="date"
+              value={patient.payment?.endDate?.split("T")[0] || ""}
+              onChange={(e) => handlePaymentEndDateChange(e.target.value)}
+              className="border border-gray-300 rounded px-2 py-1"
+            />
+          </div>
+          <div>
+            <label className="block mb-2">Montant</label>
+            <input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="border border-gray-300 rounded px-2 py-1"
+            />
+            <Button
+              onPress={handleButtonClick}
+            >Montant</Button>
           </div>
         </div>
       </div>
