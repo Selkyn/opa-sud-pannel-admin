@@ -12,7 +12,7 @@ import EventModalDetails from "@/app/components/EventModalDetails";
 import api from '@/utils/apiCall';
 
 
-export default function osteoCenterDetailsPage({ params }) {
+export default function OsteoCenterDetailsPage({ params }) {
   const { id } = params;
   const router = useRouter();
 

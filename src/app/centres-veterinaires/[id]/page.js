@@ -15,7 +15,7 @@ import CardVetCenter from "@/app/components/CardVetCenter";
 import api from '@/utils/apiCall';
 
 
-export default function vetCenterDetailsPage({ params }) {
+export default function VetCenterDetailsPage({ params }) {
     const { id } = params;
     const router = useRouter();
 
