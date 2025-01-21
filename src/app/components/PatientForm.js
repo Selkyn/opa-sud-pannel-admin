@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import api from '@/utils/apiCall';
+
 
 export default function PatientForm({ initialData = {}, isEditMode = false }) {
     const [formData, setFormData] = useState({
@@ -87,7 +89,7 @@ export default function PatientForm({ initialData = {}, isEditMode = false }) {
   useEffect(() => {
     const fetchFormData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/patients/form");
+        const response = await api.get("/patients/form");
         const { sexes, animalTypes, vetCenters } = response.data;
         setSexes(sexes);
         setAnimalTypes(animalTypes);
@@ -137,9 +139,9 @@ export default function PatientForm({ initialData = {}, isEditMode = false }) {
 
     try {
       const url = isEditMode
-        ? `http://localhost:4000/patients/${initialData.id}/edit`
-        : "http://localhost:4000/patients/add";
-      const response = await axios.post(url, formDataToSend);
+        ? `/patients/${initialData.id}/edit`
+        : "/patients/add";
+      const response = await api.post(url, formDataToSend);
       alert(isEditMode ? "Patient modifié avec succès !" : "Patient ajouté avec succès !");
       // Réinitialiser les données du formulaire après la soumission
       setFormData({

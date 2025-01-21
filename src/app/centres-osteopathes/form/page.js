@@ -3,6 +3,8 @@
 import React, { useEffect, useState} from "react";
 import axios from "axios";
 import CenterForm from "@/app/components/CenterForm";
+import api from '@/utils/apiCall';
+
 
 export default function AddOsteoCenterForm() {
     const [formData, setFormData] = useState({
@@ -27,7 +29,7 @@ export default function AddOsteoCenterForm() {
         delete formDataToSend.staff;
 
         try {
-            const response = await axios.post("http://localhost:4000/osteo-centers/add", formDataToSend);
+            const response = await api.post("/osteo-centers/add", formDataToSend);
             alert("Centre vétérinaire ajouté avec succès !");
             setFormData({
                 name: "",

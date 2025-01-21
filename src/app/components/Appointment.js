@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import DateTimeForm from "./DateTimeForm";
+import api from '@/utils/apiCall';
+
 
 export default function Appointment({
     patients,
@@ -41,7 +43,7 @@ export default function Appointment({
   useEffect(() => {
     const fetchReasonAppointments = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/appointments/reasons");
+        const response = await api.get("/appointments/reasons");
         setReasonAppointments(response.data);
       } catch (error) {
         console.error("Erreur lors de la récupération des raisons");
@@ -52,7 +54,7 @@ export default function Appointment({
 
   const fetchStatusAppointments = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/appointments/status");
+      const response = await api.get("/appointments/status");
       setStatusAppointments(response.data)
     } catch (error) {
       console.error("Erreur lors de la récupération des status des rdv");
@@ -105,7 +107,7 @@ export default function Appointment({
     try {
       if (edit) {
         // Mode édition : mise à jour du rendez-vous
-        await axios.put(`http://localhost:4000/appointments/${initialData.id}/edit`, {
+        await api.put(`/appointments/${initialData.id}/edit`, {
           ...formData,
           start_time: fullDateTimeStart,
           end_time: fullDateTimeEnd,
@@ -113,7 +115,7 @@ export default function Appointment({
         alert("Rendez-vous mis à jour !");
       } else {
         // Mode création : ajout d'un nouveau rendez-vous
-        await axios.post("http://localhost:4000/appointments/add", {
+        await api.post("/appointments/add", {
           ...formData,
           statusAppointmentId: 1,
           start_time: fullDateTimeStart,

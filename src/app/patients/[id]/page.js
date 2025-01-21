@@ -16,6 +16,8 @@ import ToggleSection from "@/app/components/ToggleSection";
 import AppointmentsSection from "@/app/components/AppointmentsSection";
 import EventModalDetails from "@/app/components/EventModalDetails";
 import { Button } from "@nextui-org/react";
+import api from '@/utils/apiCall';
+
 
 export default function PatientDetailsPage({ params }) {
   const { id } = params;
@@ -44,7 +46,7 @@ export default function PatientDetailsPage({ params }) {
 
   const fetchPatientDetails = async () => {
     try {
-      const response = await axios.get(`http://localhost:4000/patients/${id}`);
+      const response = await api.get(`/patients/${id}`);
       setPatient(response.data);
       setAmount(response.data.payment.amount)
       setLoading(false);
@@ -56,7 +58,7 @@ export default function PatientDetailsPage({ params }) {
 
   const fetchStatus = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/patients/status");
+      const response = await api.get("/patients/status");
       setStatus(response.data);
     } catch (error) {
       console.error("Erreur lors de la récupération des Status");
@@ -66,9 +68,9 @@ export default function PatientDetailsPage({ params }) {
   const fetchPaymentData = async () => {
     try {
       const [typesResponse, modesResponse, statusResponse] = await Promise.all([
-        axios.get("http://localhost:4000/paymentTypes"),
-        axios.get("http://localhost:4000/paymentModes"),
-        axios.get("http://localhost:4000/paymentStatus")
+        api.get("/paymentTypes"),
+        api.get("/paymentModes"),
+        api.get("/paymentStatus")
       ]);
       setPaymentTypes(typesResponse.data);
       setPaymentModes(modesResponse.data);
@@ -80,7 +82,7 @@ export default function PatientDetailsPage({ params }) {
 
   const handleStatusChange = async (patientId, newStatusId) => {
     try {
-      await axios.put(`http://localhost:4000/patients/${patientId}/status`, { statusId: newStatusId });
+      await api.put(`/patients/${patientId}/status`, { statusId: newStatusId });
       fetchPatientDetails();
     } catch (error) {
       console.error("Erreur lors de la mise à jour du statut:", error);
@@ -89,7 +91,7 @@ export default function PatientDetailsPage({ params }) {
 
   const handlePaymentTypeChange = async (newPaymentTypeId) => {
     try {
-      await axios.put(`http://localhost:4000/payment/${id}/edit`, { paymentTypeId: newPaymentTypeId });
+      await api.put(`/payment/${id}/edit`, { paymentTypeId: newPaymentTypeId });
       fetchPatientDetails();
     } catch (error) {
       console.error("Erreur lors de la mise à jour du type de paiement:", error);
@@ -98,7 +100,7 @@ export default function PatientDetailsPage({ params }) {
 
   const handlePaymentModeChange = async (newPaymentModeId) => {
     try {
-      await axios.put(`http://localhost:4000/payment/${id}/edit`, { paymentModeId: newPaymentModeId });
+      await api.put(`/payment/${id}/edit`, { paymentModeId: newPaymentModeId });
       fetchPatientDetails();
     } catch (error) {
       console.error("Erreur lors de la mise à jour du mode de paiement:", error);
@@ -107,7 +109,7 @@ export default function PatientDetailsPage({ params }) {
 
   const handlePaymentStatusChange = async (newPaymentStatusId) => {
     try {
-      await axios.put(`http://localhost:4000/payment/${id}/edit`, { paymentStatusId: newPaymentStatusId });
+      await api.put(`/payment/${id}/edit`, { paymentStatusId: newPaymentStatusId });
       fetchPatientDetails();
     } catch (error) {
       console.error("Erreur lors de la mise à jour du mode de paiement:", error);
@@ -116,7 +118,7 @@ export default function PatientDetailsPage({ params }) {
 
   const handlePaymentDateChange = async (newDate) => {
     try {
-      await axios.put(`http://localhost:4000/payment/${id}/edit`, { date: newDate });
+      await api.put(`/payment/${id}/edit`, { date: newDate });
       fetchPatientDetails();
     } catch (error) {
       console.error("Erreur lors de la mise à jour de la date de paiement:", error);
@@ -125,7 +127,7 @@ export default function PatientDetailsPage({ params }) {
 
   const handlePaymentEndDateChange = async (newEndDate) => {
     try {
-      await axios.put(`http://localhost:4000/payment/${id}/edit`, { endDate: newEndDate });
+      await api.put(`/payment/${id}/edit`, { endDate: newEndDate });
       fetchPatientDetails();
     } catch (error) {
       console.error("Erreur lors de la mise à jour de la date de paiement:", error);
@@ -142,7 +144,7 @@ export default function PatientDetailsPage({ params }) {
 
   const handlePaymentAmountChange = async (newAmount) => {
     try {
-      await axios.put(`http://localhost:4000/payment/${id}/edit`, { amount: newAmount });
+      await api.put(`/payment/${id}/edit`, { amount: newAmount });
       fetchPatientDetails();
     } catch (error) {
       console.error("Erreur lors de la mise à jour du mode de paiement:", error);
@@ -165,8 +167,8 @@ export default function PatientDetailsPage({ params }) {
   const handleDelete = async () => {
     if (confirm(`Etes-vous sûr de vouloir supprimer ${patient.name} ?`)) {
       try {
-        await axios.delete(
-          `http://localhost:4000/patients/${patient.id}/delete`
+        await api.delete(
+          `/patients/${patient.id}/delete`
         );
 
         router.push("/patients");

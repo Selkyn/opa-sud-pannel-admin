@@ -12,6 +12,8 @@ import ToggleSection from "@/app/components/ToggleSection";
 import AppointmentsSection from "@/app/components/AppointmentsSection";
 import EventModalDetails from "@/app/components/EventModalDetails";
 import CardVetCenter from "@/app/components/CardVetCenter";
+import api from '@/utils/apiCall';
+
 
 export default function vetCenterDetailsPage({ params }) {
     const { id } = params;
@@ -28,7 +30,7 @@ export default function vetCenterDetailsPage({ params }) {
 
     const fetchVetCenterDetails = async () => {
         try {
-            const response = await axios.get(`http://localhost:4000/vet-centers/${id}`)
+            const response = await api.get(`/vet-centers/${id}`)
             setvetCenter(response.data);
         } catch (error) {
             console.error("Erreur lors de la récupération des détails du centre vétérinaire");
@@ -38,7 +40,7 @@ export default function vetCenterDetailsPage({ params }) {
     const handleDelete = async () => {
         if (confirm(`Etes-vous sûr de vouloir supprimer ${vetCenter.name} ?`)) {
           try {
-            await axios.delete(`http://localhost:4000/vet-centers/${vetCenter.id}/delete`);
+            await api.delete(`/vet-centers/${vetCenter.id}/delete`);
       
             router.push("/centres-veterinaires");
       

@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from 'next/navigation'; 
 import CenterFormSection from "@/app/components/CenterFormSection";
+import api from '@/utils/apiCall';
+
 
 export default function EditPatientForm({ params }) {
   const [formData, setFormData] = useState({
@@ -79,7 +81,7 @@ useEffect(() => {
     const fetchPatientData = async () => {
       if (id) {
         try {
-          const response = await axios.get(`http://localhost:4000/patients/${id}`);
+          const response = await api.get(`/patients/${id}`);
           const patient = response.data;
           setFormData({
             name: patient.name || "",
@@ -207,7 +209,7 @@ useEffect(() => {
   useEffect(() => {
     const fetchFormData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/patients/form");
+        const response = await api.get("/patients/form");
         const { sexes, animalTypes, vetCenters, osteoCenters, limbs, races } = response.data;
         console.log(limbs)
         setSexes(sexes);
@@ -272,8 +274,8 @@ useEffect(() => {
   }
     
     try {
-      const response = await axios.put(
-        `http://localhost:4000/patients/${id}/edit/add`,
+      const response = await api.put(
+        `/patients/${id}/edit/add`,
         formDataToSend
       );
       alert("Patient modifié avec succès !");

@@ -3,6 +3,8 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import Link from 'next/link';
+import api from '@/utils/apiCall';
+
 
 
 const CardVetCenter = ({ params }) => {
@@ -13,7 +15,7 @@ const CardVetCenter = ({ params }) => {
         if (id) {
             const fetchVetCenterDetails = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:4000/vet-centers/${id}`);
+                    const response = await api.get(`/vet-centers/${id}`);
                     setVetCenter(response.data);
                 } catch (error) {
                     console.error("Erreur lors de la récupération des détails du centre vétérinaire");

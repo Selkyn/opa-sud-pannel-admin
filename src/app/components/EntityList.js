@@ -5,6 +5,8 @@ import Link from 'next/link';
 import axios from 'axios';
 import SearchBar from './SearchBar';
 import CheckboxFilter from './CheckBoxFilter';
+import api from '@/utils/apiCall';
+
 
 export default function EntityList({ 
     title, 
@@ -26,7 +28,7 @@ export default function EntityList({
 
     const fetchContacts = async () => {
         try {
-            const response = await axios.get("http://localhost:4000/contacts");
+            const response = await api.get("/contacts");
             setContacts(response.data);
         } catch (error) {
             console.error("Erreur lors de la récupération de la liste des types de contacts")
@@ -35,7 +37,7 @@ export default function EntityList({
 
     const handleContactChange = async (itemId, newContactId) => {
         try {
-          await axios.put(`http://localhost:4000/${callBackend}/${itemId}/contact`, { contactId: newContactId });
+          await api.put(`/${callBackend}/${itemId}/contact`, { contactId: newContactId });
           if (typeof refreshData === "function") {
             refreshData();
         }

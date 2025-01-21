@@ -5,6 +5,8 @@ import 'leaflet/dist/leaflet.css';
 import LocateButton from './LocateButton';
 import { capitalizeFirstLetter } from '../utils/stringUtils';
 import MapControls from './MapControls';
+import api from '@/utils/apiCall';
+
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -155,7 +157,7 @@ const Map = ({
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/patients');
+        const response = await api.get('/patients');
         const patients = response.data;
   
         // Regrouper les patients par adresse
@@ -194,7 +196,7 @@ const Map = ({
   useEffect(() => {
     const fetchVetCenters = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/vet-centers');
+        const response = await api.get('/vet-centers');
         const vetCenters = response.data;
         const newVetMarkers = vetCenters
           .filter(vetCenter => vetCenter.latitude && vetCenter.longitude)
@@ -216,7 +218,7 @@ const Map = ({
   useEffect(() => {
     const fetchOsteoCenters = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/osteo-centers');
+        const response = await api.get('/osteo-centers');
         const osteoCenters = response.data;
         const newOsteoMarkers = osteoCenters
           .filter(osteoCenter => osteoCenter.latitude && osteoCenter.longitude)

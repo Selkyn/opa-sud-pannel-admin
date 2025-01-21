@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import CenterForm from "@/app/components/CenterForm";
+import api from '@/utils/apiCall';
+
 
 export default function EditOsteoCenterForm({ params }) {
     const [initialData, setInitialData] = useState(null);
@@ -12,7 +14,7 @@ export default function EditOsteoCenterForm({ params }) {
     useEffect(() => {
         const fetchOsteoCenter = async () => {
             try {
-                const response = await axios.get(`http://localhost:4000/osteo-centers/${id}`);
+                const response = await api.get(`/osteo-centers/${id}`);
                 const osteoCenter = response.data;
 
                 // Formatage des données pour le composant CenterForm
@@ -45,7 +47,7 @@ export default function EditOsteoCenterForm({ params }) {
 
     const handleSubmit = async (data) => {
         try {
-            await axios.put(`http://localhost:4000/osteo-centers/${id}/edit`, {
+            await api.put(`/osteo-centers/${id}/edit`, {
                 ...data,
                 osteos: data.staff // Renommez 'staff' en 'osteos' pour correspondre à l'API
             });

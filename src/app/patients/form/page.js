@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Checkbox, CheckboxGroup } from "@nextui-org/react";
 import CenterFormSection from "@/app/components/CenterFormSection";
+import api from '@/utils/apiCall';
+
 
 export default function AddPatientForm() {
   const [formData, setFormData] = useState({
@@ -162,7 +164,7 @@ export default function AddPatientForm() {
   useEffect(() => {
     const fetchFormData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/patients/form");
+        const response = await api.get("/patients/form");
         const { sexes, animalTypes, vetCenters, limbs, osteoCenters } = response.data;
         setSexes(sexes);
         setAnimalTypes(animalTypes);
@@ -181,7 +183,7 @@ export default function AddPatientForm() {
 
   const checkClientEmail = async (email) => {
     try {
-      const response = await axios.get(`http://localhost:4000/clients/email/${email}`);
+      const response = await api.get(`/clients/email/${email}`);
       if (response.data) {
         const clientData = response.data; // Les informations du client récupérées
         setFormData((prevData) => ({
@@ -251,8 +253,8 @@ export default function AddPatientForm() {
     }
     
     try {
-      const response = await axios.post(
-        "http://localhost:4000/patients/add",
+      const response = await api.post(
+        "/patients/add",
         formDataToSend
       );
       alert("Patient ajouté avec succès !");

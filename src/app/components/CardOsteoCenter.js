@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Link from 'next/link';
+import api from '@/utils/apiCall';
+
 
 const CardOsteoCenter = ({ params }) => {
     const { id } = params;
@@ -12,7 +14,7 @@ const CardOsteoCenter = ({ params }) => {
         if (id) {
             const fetchOsteoCenterDetails = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:4000/osteo-centers/${id}`);
+                    const response = await api.get(`/osteo-centers/${id}`);
                     setOsteoCenter(response.data);
                 } catch (error) {
                     console.error("Erreur lors de la récupération des détails du centre ostéopathique");

@@ -4,6 +4,8 @@ import axios from "axios";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { calculateAge } from "../utils/ageUtils";
+import api from '@/utils/apiCall';
+
 
 const CardPatient = ({ params }) => {
     const { id } = params;
@@ -15,7 +17,7 @@ const CardPatient = ({ params }) => {
         if (id) {
           const fetchPatientDetails = async () => {
             try {
-              const response = await axios.get(`http://localhost:4000/patients/${id}`);
+              const response = await api.get(`/patients/${id}`);
               setPatient(response.data);
             } catch (error) {
               console.error("Erreur lors de la récupération des détails du patient");

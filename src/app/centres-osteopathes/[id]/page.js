@@ -9,6 +9,8 @@ import Appointment from "@/app/components/Appointment";
 import ToggleSection from "@/app/components/ToggleSection";
 import AppointmentsSection from "@/app/components/AppointmentsSection";
 import EventModalDetails from "@/app/components/EventModalDetails";
+import api from '@/utils/apiCall';
+
 
 export default function osteoCenterDetailsPage({ params }) {
   const { id } = params;
@@ -25,8 +27,8 @@ export default function osteoCenterDetailsPage({ params }) {
 
   const fetchOsteoCenterDetails = async () => {
     try {
-      const response = await axios.get(
-        `http://localhost:4000/osteo-centers/${id}`
+      const response = await api.get(
+        `/osteo-centers/${id}`
       );
       setOsteoCenter(response.data);
     } catch (error) {
@@ -39,8 +41,8 @@ export default function osteoCenterDetailsPage({ params }) {
   const handleDelete = async () => {
     if (confirm(`Êtes-vous sûr de vouloir supprimer ${osteoCenter.name} ?`)) {
       try {
-        await axios.delete(
-          `http://localhost:4000/osteo-centers/${osteoCenter.id}/delete`
+        await api.delete(
+          `/osteo-centers/${osteoCenter.id}/delete`
         );
         router.push("/centres-osteopathes");
       } catch (error) {

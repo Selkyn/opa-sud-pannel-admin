@@ -13,6 +13,7 @@ import EventModalDetails from "@/app/components/EventModalDetails";
 import Appointment from "../components/Appointment";
 import Workschedule from "../components/WorkSchedule";
 import withAuth from "../../utils/withAuth";
+import api from "@/utils/apiCall";
 
 
 
@@ -30,6 +31,7 @@ export default function CalendarPage() {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [eventType, setEventType] = useState();
   const [contextMenu, setContextMenu] = useState(null);
+ 
 
   const router = useRouter();
 
@@ -58,7 +60,7 @@ export default function CalendarPage() {
 
   const fetchPatients = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/patients");
+      const response = await api.get("/patients");
       const sortedPatients = response.data.sort((a, b) =>
         a.name.localeCompare(b.name)
       );
@@ -70,7 +72,7 @@ export default function CalendarPage() {
 
   const fetchVetCenters = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/vet-centers");
+      const response = await api.get("/vet-centers");
       const sortedVetCenters = response.data.sort((a, b) =>
         a.name.localeCompare(b.name)
       );
@@ -82,7 +84,7 @@ export default function CalendarPage() {
 
   const fetchOsteoCenters = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/osteo-centers");
+      const response = await api.get("/osteo-centers");
       const sortedOsteoCenters = response.data.sort((a, b) =>
         a.name.localeCompare(b.name)
       );
@@ -97,8 +99,8 @@ export default function CalendarPage() {
   const fetchAllEvents = async () => {
     try {
       // Récupérer les rendez-vous
-      const appointmentsResponse = await axios.get(
-        "http://localhost:4000/appointments"
+      const appointmentsResponse = await api.get(
+        "/appointments"
       );
       const formattedAppointments =
         appointmentsResponse.data?.map((appointment) => {
@@ -132,8 +134,8 @@ export default function CalendarPage() {
       // console.log("Rendez-vous formatés :", formattedAppointments);
 
       // Récupérer les plannings de travail
-      const workScheduleResponse = await axios.get(
-        "http://localhost:4000/work-schedules"
+      const workScheduleResponse = await api.get(
+        "/work-schedules"
       );
       const formattedWorkSchedules =
         workScheduleResponse.data?.map((workSchedule) => ({
@@ -245,10 +247,10 @@ export default function CalendarPage() {
       // Construire l'URL en fonction du type d'événement
       const url =
         eventType === "workSchedule"
-          ? `http://localhost:4000/work-schedules/${cleanedId}/delete`
-          : `http://localhost:4000/appointments/${cleanedId}/delete`;
+          ? `/work-schedules/${cleanedId}/delete`
+          : `/appointments/${cleanedId}/delete`;
 
-      await axios.delete(url);
+      await api.delete(url);
 
       fetchAllEvents();
 

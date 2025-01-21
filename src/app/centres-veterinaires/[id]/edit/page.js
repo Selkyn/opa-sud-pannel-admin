@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import CenterForm from "@/app/components/CenterForm";
+import api from '@/utils/apiCall';
+
 
 export default function EditVetCenterForm({ params }) {
     const [initialData, setInitialData] = useState(null);
@@ -12,7 +14,7 @@ export default function EditVetCenterForm({ params }) {
     useEffect(() => {
         const fetchVetCenter = async () => {
             try {
-                const response = await axios.get(`http://localhost:4000/vet-centers/${id}`);
+                const response = await api.get(`/vet-centers/${id}`);
                 const vetCenter = response.data;
 
                 // Formatage des données pour le composant CenterForm
@@ -45,7 +47,7 @@ export default function EditVetCenterForm({ params }) {
 
     const handleSubmit = async (data) => {
         try {
-            await axios.put(`http://localhost:4000/vet-centers/${id}/edit`, {
+            await api.put(`/vet-centers/${id}/edit`, {
                 ...data,
                 vets: data.staff // Renommez 'staff' en 'vets' pour correspondre à l'API
             });

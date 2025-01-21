@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import DateTimeForm from "./DateTimeForm";
+import api from '@/utils/apiCall';
+
 
 export default function Workschedule({
   patientIdFromParams,
@@ -27,8 +29,8 @@ export default function Workschedule({
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:4000/work-schedules/tasks"
+        const response = await api.get(
+          "/work-schedules/tasks"
         );
         setTasks(response.data);
       } catch (error) {
@@ -65,14 +67,14 @@ export default function Workschedule({
 
     try {
       if (edit) {
-        await axios.put(`http://localhost:4000/work-schedules/${initialData.id}/edit`, {
+        await api.put(`/work-schedules/${initialData.id}/edit`, {
           ...formData,
           start_time: fullDateTimeStart,
           end_time: fullDateTimeEnd,
         });
         alert("Tache de travail mis à jour !");
       } else {
-        await axios.post("http://localhost:4000/work-schedules/add", {
+        await api.post("/work-schedules/add", {
           ...formData,
           start_time: fullDateTimeStart,
           end_time: fullDateTimeEnd,

@@ -131,6 +131,8 @@ import React, {useEffect, useState} from 'react';
 import axios from "axios";
 import useVetCenterFilters from "./hooks/useVetCenters";
 import EntityList from '../components/EntityList';
+import api from '@/utils/apiCall';
+
 
 export default function VetCentersPage () {
     const [vetCenters, setVetCenters] = useState([]);
@@ -149,7 +151,7 @@ export default function VetCentersPage () {
 
     const fetchVetCenters = async () => {
         try {
-            const response = await axios.get("http://localhost:4000/vet-centers");
+            const response = await api.get("/vet-centers");
             setVetCenters(response.data);
         } catch (error) {
             console.error("Erreur lors de la récupération des centres vétérinaires", error);

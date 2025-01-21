@@ -12,6 +12,7 @@ import SearchBar from '../components/SearchBar';
 import Pagination from '../components/Pagination';
 import { dateInput } from '@nextui-org/react';
 import withAuth from "../../utils/withAuth";
+import api from '@/utils/apiCall';
 
 export default function PatientsPage() {
   const [patients, setPatients] = useState([]);
@@ -50,7 +51,8 @@ export default function PatientsPage() {
 
   const fetchPatients = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/patients");
+      const response = await api.get("/patients");
+      console.log("Réponse API /patients :", response.data);
       const sortedPatients = response.data.sort((a, b) =>
         a.name.localeCompare(b.name)
       );
@@ -59,11 +61,12 @@ export default function PatientsPage() {
       console.error("Erreur lors de la récupération des patients");
     }
   };
+  
 
   useEffect(() => {
   const fetchStatus = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/patients/status");
+      const response = await api.get("/patients/status");
       setStatus(response.data);
     } catch (error) {
       console.error("Erreur lors de la récupération des Status");
@@ -76,7 +79,7 @@ export default function PatientsPage() {
 useEffect(() => {
   const fetchPaymentTypes = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/paymentTypes");
+      const response = await api.get("/paymentTypes");
       setPaymentTypes(response.data);
     } catch (error) {
       console.error("Erreur lors de la récupération des types de paiements");
@@ -89,7 +92,7 @@ useEffect(() => {
 useEffect(() => {
   const fetchPaymentModes = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/paymentModes");
+      const response = await api.get("/paymentModes");
       setPaymentModes(response.data);
     } catch (error) {
       console.error("Erreur lors de la récupération des Modes de paiements");
@@ -102,7 +105,7 @@ useEffect(() => {
 
 const handleStatusChange = async (patientId, newStatusId) => {
   try {
-    await axios.put(`http://localhost:4000/patients/${patientId}/status`, { statusId: newStatusId });
+    await api.put(`/patients/${patientId}/status`, { statusId: newStatusId });
     fetchPatients();
   } catch (error) {
     console.error("Erreur lors de la mise à jour du statut:", error);
@@ -111,7 +114,7 @@ const handleStatusChange = async (patientId, newStatusId) => {
 
 const handlePaymentTypeChange = async (patientId, newPaymentTypeId) => {
   try {
-    await axios.put(`http://localhost:4000/payment/${patientId}/edit`, { paymentTypeId: newPaymentTypeId });
+    await api.put(`/payment/${patientId}/edit`, { paymentTypeId: newPaymentTypeId });
     fetchPatients();
   } catch (error) {
     console.error("Erreur lors de la mise à jour du type de paiement:", error);
@@ -120,7 +123,7 @@ const handlePaymentTypeChange = async (patientId, newPaymentTypeId) => {
 
 const handlePaymentModeChange = async (patientId, newPaymentModeId) => {
   try {
-    await axios.put(`http://localhost:4000/payment/${patientId}/edit`, { paymentModeId: newPaymentModeId });
+    await api.put(`/payment/${patientId}/edit`, { paymentModeId: newPaymentModeId });
     fetchPatients();
   } catch (error) {
     console.error("Erreur lors de la mise à jour du mode de paiement:", error);
@@ -129,7 +132,7 @@ const handlePaymentModeChange = async (patientId, newPaymentModeId) => {
 
 const handleDateChange = async (patientId, newDate) => {
   try {
-    await axios.put(`http://localhost:4000/payment/${patientId}/edit`, { date: newDate });
+    await api.put(`/payment/${patientId}/edit`, { date: newDate });
     fetchPatients();
   } catch (error) {
     console.error("Erreur lors de la mise à jour de la date de paiement:", error);

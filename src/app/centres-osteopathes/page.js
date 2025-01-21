@@ -3,6 +3,8 @@ import React, {useEffect, useState} from 'react';
 import axios from "axios";
 import useOsteoCenterFilters from "./hooks/useOsteoCenters";
 import EntityList from '../components/EntityList';
+import api from '@/utils/apiCall';
+
 
 export default function OsteoCentersPage () {
     const [osteoCenters, setOsteoCenters] = useState([]);
@@ -21,7 +23,7 @@ export default function OsteoCentersPage () {
 
     const fetchOsteoCenters = async () => {
         try {
-            const response = await axios.get("http://localhost:4000/osteo-centers");
+            const response = await api.get("/osteo-centers");
             setOsteoCenters(response.data);
         } catch (error) {
             console.error("Erreur lors de la récupération des centres vétérinaires", error);
