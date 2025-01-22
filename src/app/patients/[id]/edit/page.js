@@ -211,7 +211,6 @@ useEffect(() => {
       try {
         const response = await api.get("/patients/form");
         const { sexes, animalTypes, vetCenters, osteoCenters, limbs, races } = response.data;
-        console.log(limbs)
         setSexes(sexes);
         setAnimalTypes(animalTypes);
         setRaces(races);

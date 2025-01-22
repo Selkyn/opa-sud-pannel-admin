@@ -146,7 +146,6 @@ const Map = ({
         const bounds = map.getBounds();
         const zoom = map.getZoom();
   
-        console.log('Carte déplacée, niveau de zoom :', zoom, 'Limites de la carte :', bounds);
         onMapMove(bounds, zoom); // Passe les informations à la fonction parent
       },
     });
@@ -238,7 +237,6 @@ const Map = ({
   }, []);
 
   useEffect(() => {
-    console.log("ID du patient reçu dans Map :", focusedPatientId);
 
     if (focusedPatientId && markers.length > 0) {
       const patientMarker = markers.find(marker =>
@@ -414,8 +412,6 @@ const Map = ({
       const minutes = totalMinutes % 60;
       return `${hours}h ${minutes}m`;
     };
-    console.log("Détails de l'itinéraire :", routeDetails);
-
 
   return (
     <div className="position: relative">

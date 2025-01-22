@@ -17,21 +17,6 @@ const MapPage = ({ searchParams }) => {
   const [selectedVetCenterId, setSelectedVetCenterId] = useState(null);
   const [selectedOsteoCenterId, setSelectedOsteoCenterId] = useState(null);
 
-  // useEffect(() => {
-  //   if (patientId) {
-  //     console.log("Patient ID reçu depuis l'URL :", patientId);
-  //   }
-  // }, [patientId]);
-
-  // useEffect(() => {
-  //   if (professionalId) {
-  //     console.log("professional ID reçu depuis l'URL :", professionalId);
-  //   }
-  // }, [patientId]);
-  // // useEffect(() => {
-  // //   if (professionalId) {}
-  // // })
-
   const handleSelectPatient = (id) => {
     console.log("Patient sélectionné :", id); // Vérification
     setSelectedPatientId(id);

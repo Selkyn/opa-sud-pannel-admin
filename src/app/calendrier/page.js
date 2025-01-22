@@ -131,7 +131,6 @@ export default function CalendarPage() {
             },
           };
         }) || [];
-      // console.log("Rendez-vous formatés :", formattedAppointments);
 
       // Récupérer les plannings de travail
       const workScheduleResponse = await api.get(
@@ -177,8 +176,6 @@ export default function CalendarPage() {
     const selectedEvent = calendarEvents.find((event) => event.id === eventId);
   
     if (selectedEvent && eventType === "appointment") {
-      // console.log("Événement trouvé pour édition :", selectedEvent);
-  
       const start = new Date(selectedEvent.start);
       const end = new Date(selectedEvent.end);
   
@@ -200,7 +197,6 @@ export default function CalendarPage() {
       });
       setAppointmentModalOpen(true);
     } else if (selectedEvent && eventType === "workSchedule") {
-      console.log("Événement trouvé pour édition :", selectedEvent);
   
       const start = new Date(selectedEvent.start);
       const end = new Date(selectedEvent.end);
@@ -229,7 +225,6 @@ export default function CalendarPage() {
   
 
   const handleDateClick = (info) => {
-    console.log("Date reçue :", info.dateStr);
     setSelectedDate(info.dateStr); // Récupère la date cliquée
     setIsModalOpen(true); // Ouvre le modal
   };
@@ -271,8 +266,6 @@ export default function CalendarPage() {
   
       // Format final de la date
       const dateStr = `${year}-${month}-${day}`;
-  
-      console.log("Date sélectionnée :", dateStr);
   
       setSelectedDate(dateStr); // Définit la date sélectionnée
       setIsModalOpen(true); // Ouvre le modal
@@ -472,132 +465,3 @@ export default function CalendarPage() {
     </div>
   );
 }
-
-// const handleEventDrop = async (info) => {
-//   const updatedEvent = {
-//     id: info.event.id,
-//     start: info.event.start.toISOString(),
-//     end: info.event.end ? info.event.end.toISOString() : null,
-//   };
-
-//   try {
-//     const eventType = info.event.extendedProps.eventType;
-//     const url =
-//       eventType === "workSchedule"
-//         ? `http://localhost:4000/work-schedules/${updatedEvent.id}/edit`
-//         : `http://localhost:4000/appointments/${updatedEvent.id}/update`;
-
-//     const response = await axios.put(url, updatedEvent);
-
-//     // Utiliser les données enrichies du backend pour mettre à jour l'état
-//     const updatedWorkSchedule = response.data.workSchedule;
-
-//     setCalendarEvents((prevEvents) =>
-//       prevEvents.map((event) =>
-//         event.id === updatedEvent.id
-//           ? { ...event, ...updatedWorkSchedule }
-//           : event
-//       )
-//     );
-
-//     alert("Événement mis à jour avec succès !");
-//   } catch (error) {
-//     console.error("Erreur lors de la mise à jour de l'événement :", error);
-//     alert("Erreur lors de la mise à jour de l'événement.");
-//     info.revert(); // Revenir à l'état précédent en cas d'erreur
-//   }
-// };
-
-// const handleEventResize = async (info) => {
-//   const updatedEvent = {
-//     id: info.event.id,
-//     start: info.event.start.toISOString(),
-//     end: info.event.end ? info.event.end.toISOString() : null,
-//   };
-
-//   try {
-//     const url =
-//       updatedEvent.eventType === "workSchedule"
-//         ? `http://localhost:4000/work-schedules/${updatedEvent.id}/edit`
-//         : `http://localhost:4000/appointments/${updatedEvent.id}/edit`;
-
-//     await axios.put(url, updatedEvent);
-
-//     const updatedEvents = calendarEvents.map((event) =>
-//       event.id === updatedEvent.id ? { ...event, ...updatedEvent } : event
-//     );
-//     setCalendarEvents(updatedEvents);
-
-//     alert("Durée de l'événement mise à jour !");
-//   } catch (error) {
-//     console.error(
-//       "Erreur lors de la mise à jour de la durée de l'événement :",
-//       error
-//     );
-//     alert("Erreur lors de la mise à jour de la durée.");
-//     info.revert(); // Revenir à l'état précédent en cas d'erreur
-//   }
-// };
-
-
-// const handleEditClick = (eventInfo) => {
-//   const eventId = eventInfo.event.id;
-//   const eventType = eventInfo.event.extendedProps.eventType;
-
-//     const selectedAppointment = calendarEvents.find(
-//     (event) => String(event.id) === String(eventId)
-//   );
-
-//   const selectedWorkSchedule = calendarEvents.find(
-//     (event) => String(event.id) === String(eventId)
-//   );
-
-//   console.log("Événement trouvé pour édition :", selectedAppointment);
-
-//   if (selectedAppointment && eventType === "appointment") {
-//     // console.log(
-//     //   "Données étendues de l'événement :",
-//     //   selectedAppointment.extendedProps
-//     // );
-//     const start = new Date(selectedAppointment.start);
-//     const end = new Date(selectedAppointment.end);
-
-//     setSelectedEvent({
-//         ...selectedAppointment,
-//         start_time: start.toISOString().split("T")[0], // Date au format ISO
-//         start_time_hour: start.toLocaleTimeString("fr-FR", {
-//             hour: "2-digit",
-//             minute: "2-digit",
-//             hour12: false, // Format 24 heures
-//         }),
-//         end_time: end.toISOString().split("T")[0],
-//         end_time_hour: end.toLocaleTimeString("fr-FR", {
-//             hour: "2-digit",
-//             minute: "2-digit",
-//             hour12: false,
-//         }),
-//     });
-//     setAppointmentModalOpen(true);
-//   } else if (selectedWorkSchedule && eventType === "workSchedule") {
-//     const start = new Date(selectedWorkSchedule.start);
-//     const end = new Date(selectedWorkSchedule.end);
-//     setSelectedEvent({
-//       ...selectedWorkSchedule,
-//       start_time: start.toISOString().split("T")[0], // Date au format ISO
-//       start_time_hour: start.toLocaleTimeString("fr-FR", {
-//           hour: "2-digit",
-//           minute: "2-digit",
-//           hour12: false, // Format 24 heures
-//       }),
-//       end_time: end.toISOString().split("T")[0],
-//       end_time_hour: end.toLocaleTimeString("fr-FR", {
-//           hour: "2-digit",
-//           minute: "2-digit",
-//           hour12: false,
-//       }),
-//   });
-//     setWorkScheduleModalOpen(true);
-//   } else {
-//     console.error("Aucun événement correspondant trouvé !");
-//   }
-// };

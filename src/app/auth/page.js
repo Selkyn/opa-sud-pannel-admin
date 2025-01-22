@@ -15,8 +15,6 @@ export default function Auth() {
     const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
-        console.log("Utilisateur connecté :", user);
-
         if (user) {
           router.push("/");
         }

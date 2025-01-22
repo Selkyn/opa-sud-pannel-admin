@@ -31,14 +31,6 @@ export default function Appointment({
 
   const [reasonAppointments, setReasonAppointments] = useState([]);
   const [statusAppointments, setStatusAppointments] = useState([]);
-  
-  // useEffect(() => {
-  //   console.log("Données initialisées dans formData :", formData);
-  // }, [formData]);
-  
-  // useEffect(() => {
-  //   console.log("Form Data après initialisation :", formData); // Log après mise à jour
-  // }, [formData]);
 
   useEffect(() => {
     const fetchReasonAppointments = async () => {

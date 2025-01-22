@@ -52,7 +52,6 @@ export default function PatientsPage() {
   const fetchPatients = async () => {
     try {
       const response = await api.get("/patients");
-      console.log("Réponse API /patients :", response.data);
       const sortedPatients = response.data.sort((a, b) =>
         a.name.localeCompare(b.name)
       );
