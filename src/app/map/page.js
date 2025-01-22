@@ -10,29 +10,12 @@ import CardOsteoCenter from '../components/CardOsteoCenter';
 const Map = dynamic(() => import('../components/Map'), { ssr: false });
 
 const MapPage = ({ searchParams }) => {
-  // const patientId = searchParams.patientId;
-  // const vetCenterId = searchParams.vetCenterId;
-  // const osteoCenterId = searchParams.osteoCenterId;
+  const patientId = searchParams.patientId;
+  const vetCenterId = searchParams.vetCenterId;
+  const osteoCenterId = searchParams.osteoCenterId;
   const [selectedPatientId, setSelectedPatientId] = useState(null);
   const [selectedVetCenterId, setSelectedVetCenterId] = useState(null);
   const [selectedOsteoCenterId, setSelectedOsteoCenterId] = useState(null);
-
-    // Met à jour les états locaux lorsque les paramètres changent
-    useEffect(() => {
-      if (searchParams.patientId) {
-        setSelectedPatientId(searchParams.patientId);
-        setSelectedVetCenterId(null);
-        setSelectedOsteoCenterId(null);
-      } else if (searchParams.vetCenterId) {
-        setSelectedVetCenterId(searchParams.vetCenterId);
-        setSelectedPatientId(null);
-        setSelectedOsteoCenterId(null);
-      } else if (searchParams.osteoCenterId) {
-        setSelectedOsteoCenterId(searchParams.osteoCenterId);
-        setSelectedVetCenterId(null);
-        setSelectedPatientId(null);
-      }
-    }, [searchParams]);
 
   const handleSelectPatient = (id) => {
     setSelectedPatientId(id);
@@ -59,9 +42,9 @@ const MapPage = ({ searchParams }) => {
           onSelectPatient={handleSelectPatient}
           onSelectVetCenter={handleSelectVetCenter}
           onSelectOsteoCenter={handleSelectOsteoCenter}
-          focusedPatientId={selectedPatientId}
-          focusedVetCenterId={selectedVetCenterId}
-          focusedOsteoCenterId={selectedOsteoCenterId}
+          focusedPatientId={patientId}
+          focusedVetCenterId={vetCenterId}
+          focusedOsteoCenterId={osteoCenterId}
         />
       </div>
       <div className="w-1/5 bg-gray-100 p-4">

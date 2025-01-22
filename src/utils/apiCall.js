@@ -16,7 +16,6 @@ api.interceptors.request.use(async (config) => {
             try {
                 const response = await api.get('/csrf-token'); // Appelle l'endpoint pour obtenir le token
                 cachedCsrfToken = response.data.csrfToken; // Stocke le token récupéré
-                console.log("CSRF Token récupéré depuis l'API :", cachedCsrfToken);
             } catch (error) {
                 console.error("Erreur lors de la récupération du token CSRF :", error);
                 return Promise.reject(error);
