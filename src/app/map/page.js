@@ -59,9 +59,9 @@ const MapPage = ({ searchParams }) => {
           onSelectPatient={handleSelectPatient}
           onSelectVetCenter={handleSelectVetCenter}
           onSelectOsteoCenter={handleSelectOsteoCenter}
-          focusedPatientId={patientId}
-          focusedVetCenterId={vetCenterId}
-          focusedOsteoCenterId={osteoCenterId}
+          focusedPatientId={selectedPatientId}
+          focusedVetCenterId={selectedVetCenterId}
+          focusedOsteoCenterId={selectedOsteoCenterId}
         />
       </div>
       <div className="w-1/5 bg-gray-100 p-4">
