@@ -5,14 +5,16 @@ import { useState, useEffect } from 'react';
 import CardPatient from '../components/CardPatient';
 import CardVetCenter from '../components/CardVetCenter';
 import CardOsteoCenter from '../components/CardOsteoCenter';
+import { useSearchParams } from 'next/navigation';
 
 // Charger la carte dynamiquement avec SSR désactivé
 const Map = dynamic(() => import('../components/Map'), { ssr: false });
 
-const MapPage = ({ searchParams }) => {
-  const patientId = searchParams.patientId;
-  const vetCenterId = searchParams.vetCenterId;
-  const osteoCenterId = searchParams.osteoCenterId;
+const MapPage = () => {
+  const searchParams = useSearchParams();
+  const patientId = searchParams.get('patientId');
+  const vetCenterId = searchParams.get('vetCenterId');
+  const osteoCenterId = searchParams.get('osteoCenterId');
   const [selectedPatientId, setSelectedPatientId] = useState(null);
   const [selectedVetCenterId, setSelectedVetCenterId] = useState(null);
   const [selectedOsteoCenterId, setSelectedOsteoCenterId] = useState(null);
