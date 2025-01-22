@@ -50,7 +50,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import api from '../utils/apiCall';
 import { useRouter } from "next/navigation";
-import axios from 'axios';
 
 const AuthContext = createContext();
 
@@ -91,14 +90,14 @@ export function AuthProvider({ children }) {
     const logout = async () => {
         try {
           console.log("Tentative de déconnexion...");
-          await axios.post('https://api-opa-sud-selkyn.vercel.app/api/auth/logout', { withCredentials: true }); // Supprime le cookie côté serveur
+          await api.post('/auth/logout'); // Supprime le cookie côté serveur
       
           // Vérifie immédiatement l'état utilisateur après déconnexion
-        //   try {
-        //     await api.get('/auth/check', { withCredentials: true });
-        //   } catch (error) {
-        //     console.log("Utilisateur déconnecté, aucune donnée utilisateur trouvée.");
-        //   }
+          try {
+            await api.get('/auth/check', { withCredentials: true });
+          } catch (error) {
+            console.log("Utilisateur déconnecté, aucune donnée utilisateur trouvée.");
+          }
       
           setUser(null); // Réinitialise immédiatement l'état utilisateur
           router.push('/auth'); // Redirige vers la page de connexion
