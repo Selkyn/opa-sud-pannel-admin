@@ -93,11 +93,11 @@ export function AuthProvider({ children }) {
           await api.post('/auth/logout'); // Supprime le cookie côté serveur
       
           // Vérifie immédiatement l'état utilisateur après déconnexion
-          try {
-            await api.get('/auth/check', { withCredentials: true });
-          } catch (error) {
-            console.log("Utilisateur déconnecté, aucune donnée utilisateur trouvée.");
-          }
+        //   try {
+        //     await api.get('/auth/check', { withCredentials: true });
+        //   } catch (error) {
+        //     console.log("Utilisateur déconnecté, aucune donnée utilisateur trouvée.");
+        //   }
       
           setUser(null); // Réinitialise immédiatement l'état utilisateur
           router.push('/auth'); // Redirige vers la page de connexion
