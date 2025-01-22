@@ -50,6 +50,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import api from '../utils/apiCall';
 import { useRouter } from "next/navigation";
+import axios from 'axios';
 
 const AuthContext = createContext();
 
