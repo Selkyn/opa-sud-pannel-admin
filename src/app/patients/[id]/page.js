@@ -213,7 +213,7 @@ export default function PatientDetailsPage({ params }) {
         >
           Supprimer
         </button>
-        <Link href={`/map?patientId=${id}`}>
+        <Link href={`/map?patientId=${patient.id}`}>
           <button className="bg-blue-500 text-white px-4 py-2 rounded-md mb-4 hover:bg-blue-700 ml-2">
             Voir sur la carte
           </button>
