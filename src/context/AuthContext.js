@@ -91,7 +91,7 @@ export function AuthProvider({ children }) {
     const logout = async () => {
         try {
           console.log("Tentative de déconnexion...");
-          await axios.post('https://api-opa-sud-selkyn.vercel.app/api/auth/logout'); // Supprime le cookie côté serveur
+          await axios.post('https://api-opa-sud-selkyn.vercel.app/api/auth/logout', { withCredentials: true }); // Supprime le cookie côté serveur
       
           // Vérifie immédiatement l'état utilisateur après déconnexion
         //   try {
