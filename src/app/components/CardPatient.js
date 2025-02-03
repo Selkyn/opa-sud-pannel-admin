@@ -55,8 +55,8 @@ const CardPatient = ({ params }) => {
                                     "Non spécifié"
                                 )}{" "} 
                                 {patient.client && patient.client.lastname ? patient.client.lastname : "Non spécifié"} {patient.client && patient.client.firstname ? patient.client.firstname : "Non spécifié"}</p>
-                                <p><strong>Adresse mail :</strong> {patient.client && patient.client.email ? patient.client.email : "Non spécifié"}</p>
-                                <p><strong>Téléphone :</strong> {patient.client && patient.client.phone ? patient.client.phone : "Non spécifié"}</p>
+                                {/* <p><strong>Adresse mail :</strong> {patient.client && patient.client.email ? patient.client.email : "Non spécifié"}</p> */}
+                                {/* <p><strong>Téléphone :</strong> {patient.client && patient.client.phone ? patient.client.phone : "Non spécifié"}</p> */}
                                 <p><strong>Adresse :</strong> {patient.client && patient.client.adress ? patient.client.adress : "Non spécifié"}</p>
                             </div>
 
@@ -67,10 +67,10 @@ const CardPatient = ({ params }) => {
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <p><strong>Espece : </strong> {patient.animalType && patient.animalType.name ? patient.animalType.name : "Non spécifié"}</p>
-                                <p><strong>Race : </strong> {patient.race && patient.race.name ? patient.race.name : "Non spécifié"}</p>
-                                <p><strong>Age : </strong> {age < 1 ? "Moins de 1 an" : age + " ans" }</p>
+                                {/* <p><strong>Race : </strong> {patient.race && patient.race.name ? patient.race.name : "Non spécifié"}</p> */}
+                                {/* <p><strong>Age : </strong> {age < 1 ? "Moins de 1 an" : age + " ans" }</p>
                                 <p><strong>Poids :</strong> {patient.weight ? patient.weight + " grammes" : "Non spécifié"}</p>
-                                <p><strong>Pathologie :</strong> {patient.pathology? patient.pathology: "Non spécifié"}</p>
+                                <p><strong>Pathologie :</strong> {patient.pathology? patient.pathology: "Non spécifié"}</p> */}
                             </div>
                             {/* <div>
                                 <p><strong>Attentes du client :</strong></p>
@@ -82,10 +82,12 @@ const CardPatient = ({ params }) => {
                         <h2 className="text-xl font-semibold text-gray-800 mb-2">Centre vétérinaire</h2>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <p><strong>Nom du centre : </strong> {patient.vetCenter && patient.vetCenter.name ? patient.vetCenter.name : "Non spécifié"}</p>
-                                <p><strong>Adresse mail :</strong> {patient.vetCenter && patient.vetCenter.email ? patient.vetCenter.email : "Non spécifié"}</p>
-                                <p><strong>Téléphone :</strong> {patient.vetCenter && patient.vetCenter.phone ? patient.vetCenter.phone : "Non spécifié"}</p>
-                                <p><strong>Vétérinaire :</strong></p>
+                                {/* <p><strong>Nom du centre : </strong> </p> */}
+                                <p>{patient.vetCenter && patient.vetCenter.name ? patient.vetCenter.name : "Non spécifié"}</p>
+                                <p>{patient.vetCenter && patient.vetCenter.city ? patient.vetCenter.city : "Non spécifié"}</p>
+                                {/* <p><strong>Adresse mail :</strong> {patient.vetCenter && patient.vetCenter.email ? patient.vetCenter.email : "Non spécifié"}</p>
+                                <p><strong>Téléphone :</strong> {patient.vetCenter && patient.vetCenter.phone ? patient.vetCenter.phone : "Non spécifié"}</p> */}
+                                {/* <p><strong>Vétérinaire :</strong></p>
                                 {patient.vetCenter?.vets && patient.vetCenter.vets.length > 0 ? (
                                     <ul>
                                         {patient.vetCenter.vets.map((vet) => (
@@ -96,7 +98,7 @@ const CardPatient = ({ params }) => {
                                     </ul>
                                 ) : (
                                     "Aucun vétérinaire"
-                                )}
+                                )} */}
 
                             </div>
 

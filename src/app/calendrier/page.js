@@ -355,7 +355,7 @@ export default function CalendarPage() {
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-2xl font-bold text-blue-600 mb-6">Mon calendrier</h1>
+      {/* <h1 className="text-2xl font-bold text-blue-600 mb-6">Mon calendrier</h1> */}
       {isModalOpen && (
         <EventModal
           onClose={() => setIsModalOpen(false)}
@@ -427,7 +427,10 @@ export default function CalendarPage() {
         />
       </EventModalDetails>
 
-      <div className="bg-white rounded-lg shadow-lg p-4">
+      <div className="bg-white rounded-lg shadow-lg p-4"
+      style={{maxWidth: "100%", alignSelf:'center'}}
+      >
+
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"

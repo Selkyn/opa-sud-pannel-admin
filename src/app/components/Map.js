@@ -146,7 +146,7 @@ const Map = ({
         const bounds = map.getBounds();
         const zoom = map.getZoom();
   
-        console.log('Carte déplacée, niveau de zoom :', zoom, 'Limites de la carte :', bounds);
+        // console.log('Carte déplacée, niveau de zoom :', zoom, 'Limites de la carte :', bounds);
         onMapMove(bounds, zoom); // Passe les informations à la fonction parent
       },
     });
@@ -238,7 +238,7 @@ const Map = ({
   }, []);
 
   useEffect(() => {
-    console.log("ID du patient reçu dans Map :", focusedPatientId);
+    // console.log("ID du patient reçu dans Map :", focusedPatientId);
 
     if (focusedPatientId && markers.length > 0) {
       const patientMarker = markers.find(marker =>
@@ -414,7 +414,7 @@ const Map = ({
       const minutes = totalMinutes % 60;
       return `${hours}h ${minutes}m`;
     };
-    console.log("Détails de l'itinéraire :", routeDetails);
+    // console.log("Détails de l'itinéraire :", routeDetails);
 
 
   return (
@@ -422,7 +422,7 @@ const Map = ({
       <MapContainer
         center={[43.683333, 4.133333]}
         zoom={7}
-        style={{ height: '900px', width: '100%' }}
+        style={{ height: '100vh', width: '100%' }}
         // onMoveEnd={handleMapMove}
       >
         <TileLayer
@@ -564,7 +564,7 @@ const Map = ({
                 <button
                   className="bg-blue-500 text-white px-2 py-1 rounded-md ml-2"
                   onClick={() => {
-                    console.log(vetMarker.name);
+                    // console.log(vetMarker.name);
                     handleMarkerClick(vetMarker.lat, vetMarker.lng, vetMarker.name);
                   }}
                 >
@@ -601,7 +601,7 @@ const Map = ({
                 <button
                   className="bg-blue-500 text-white px-2 py-1 rounded-md ml-2"
                   onClick={() => {
-                    console.log(osteoMarker.name);
+                    // console.log(osteoMarker.name);
                     handleMarkerClick(osteoMarker.lat, osteoMarker.lng, osteoMarker.name);
                   }}
                 >

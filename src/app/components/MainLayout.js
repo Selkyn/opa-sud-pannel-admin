@@ -23,5 +23,5 @@ export default function MainLayout({ children }) {
     // Ne rien rendre tant que la vérification est en cours ou que la redirection n'a pas eu lieu
     return <div>Chargement...</div>; // Affiche un loader
   }
-  return <><Header/>{children}</>;
+  return <>{children}</>;
 }

@@ -1,4 +1,11 @@
 "use client";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+
 
 export default function CheckboxFilter({
     title,
@@ -7,21 +14,26 @@ export default function CheckboxFilter({
     onFilterChange
 }) {
     return (
-        <div className="mb-6">
-        <h3 className="text-lg font-semibold mb-2">{title}</h3>
-        <div className="flex flex-wrap gap-4">
-          {options.map((option) => (
-            <label key={option.id} className="flex items-center">
-              <input
-                type="checkbox"
-                checked={selectedFilters.includes(option.id)}
-                onChange={() => onFilterChange(option.id)}
-                className="mr-2"
-              />
-              {option.name}
-            </label>
-          ))}
-        </div>
-      </div>
-    )
+      <Accordion type="single" collapsible>
+      <AccordionItem value={title}> {/* ✅ Chaque titre est un élément unique */}
+        <AccordionTrigger>{title}</AccordionTrigger>
+        <AccordionContent>
+          <div className="flex flex-wrap gap-4">
+            {options.map((option) => (
+              <label key={option.id} className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={selectedFilters.includes(option.id)}
+                  onChange={() => onFilterChange(option.id)}
+                  className="mr-2"
+                />
+                {option.name}
+              </label>
+            ))}
+          </div>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
+    
 }
