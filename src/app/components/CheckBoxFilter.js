@@ -18,7 +18,7 @@ export default function CheckboxFilter({
       <AccordionItem value={title}> {/* ✅ Chaque titre est un élément unique */}
         <AccordionTrigger>{title}</AccordionTrigger>
         <AccordionContent>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-col gap-4">
             {options.map((option) => (
               <label key={option.id} className="flex items-center">
                 <input

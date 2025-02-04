@@ -13,6 +13,11 @@ import Pagination from "../components/Pagination";
 import { dateInput } from "@nextui-org/react";
 import withAuth from "../../utils/withAuth";
 import api from "@/utils/apiCall";
+import { Payment, columns } from "./columns";
+import { DataTable } from "./data-table";
+import CardPatientList from "../components/CardPatientList";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "lucide-react";
 
 export default function PatientsPage() {
   const [patients, setPatients] = useState([]);
@@ -23,6 +28,7 @@ export default function PatientsPage() {
   const [totalPatients, setTotalPatients] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const patientsPerPage = 20;
+  const [isCardView, setIsCardView] = useState(true);
 
   const {
     searchTerm,
@@ -166,63 +172,122 @@ export default function PatientsPage() {
     selectedPaymentModeFilters,
   ]);
 
+  const data = [
+    { id: "1", status: "pending", patient: "test@example.com", client: 100 },
+    { id: "2", status: "success", patient: "user@example.com", client: 200 },
+  ];
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
-        Patients
-      </h2> */}
+    <div className="container mx-auto py-2 w-full">
+      {/* Conteneur principal : divisé en deux parties (contenu à gauche et filtres à droite) */}
+      <div className="flex justify-between gap-6">
+        {/* 🌍 Section principale (Barre de recherche, toggle, patients) */}
+        <div className="flex-1">
+          {/* 🔍 Barre de recherche et switch (table/cards) */}
+          <div className="flex flex-col items-center  mb-6">
+            <SearchBar
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              placeholder="Rechercher un patient..."
+            />
+            <span className="rounded-lg bg-blue-500 text-white px-2">
+              {filteredPatients.length} / {totalPatients}
+            </span>
 
-      <SearchBar
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        placeholder="Rechercher un patient..."
-      />
+            {/* <div className="flex items-center space-x-3">
+            <label>Table</label>
+            <Switch checked={isCardView} onCheckedChange={setIsCardView} />
+            <label>Cards</label>
+          </div> */}
+          </div>
 
-      <CheckboxFilter
-        title="Filtrer par status"
-        options={status}
-        selectedFilters={selectedStatusFilters}
-        onFilterChange={handleStatusFilterChange}
-      />
-
-      <CheckboxFilter
-        title="Filtrer par type de paiement"
-        options={paymentTypes}
-        selectedFilters={selectedPaymentTypeFilters}
-        onFilterChange={handlePaymentTypeFilterChange}
-      />
-
-      <CheckboxFilter
-        title="Filtrer par mode de paiement"
-        options={paymentModes}
-        selectedFilters={selectedPaymentModeFilters}
-        onFilterChange={handlePaymentModeFilterChange}
-      />
-
-      <div>
-        <div>
-          <p>
+          {/* 🏥 Nombre total de patients et bouton d'ajout */}
+          <div className="flex justify-between items-center mb-6">
+            {/* <p className="text-lg font-semibold">
             Nombre de patients : {filteredPatients.length} / {totalPatients}
-          </p>
+          </p> */}
+            {/* <span className="rounded-lg bg-blue-500 text-white px-2">{filteredPatients.length} / {totalPatients}</span> */}
+            {/* <Link
+            href="/patients/form"
+            className="text-white bg-blue-500 hover:bg-blue-700 font-bold py-2 px-4 rounded"
+          >
+            Ajouter un patient
+          </Link> */}
+          </div>
+
+          {/* 📋 Liste des patients (table ou cards) */}
+          <section>
+            {isCardView ? (
+              <div className="flex flex-wrap justify-center gap-4">
+                {currentPatients.length > 0 ? (
+                  currentPatients.map((patient) => (
+                    <CardPatientList key={patient.id} patient={patient} />
+                  ))
+                ) : (
+                  <p className="text-center text-gray-500">
+                    Aucun patient trouvé
+                  </p>
+                )}
+              </div>
+            ) : (
+              <DataTable columns={columns} data={currentPatients} />
+            )}
+
+            {/* 📌 Pagination */}
+            <Pagination
+              totalItems={filteredPatients.length}
+              currentPage={currentPage}
+              itemsPerPage={patientsPerPage}
+              onPageChange={setCurrentPage}
+            />
+          </section>
         </div>
-        <div className="mb-6 text-center">
+
+        {/* 🎯 Section des filtres (toujours à droite) */}
+        <div className="w-1/8 space-y-4">
+          <div className="flex items-center space-x-3 mb-8">
+            <label>Table</label>
+            <Switch checked={isCardView} onCheckedChange={setIsCardView} />
+            <label>Cards</label>
+          </div>
           <Link
             href="/patients/form"
             className="text-white bg-blue-500 hover:bg-blue-700 font-bold py-2 px-4 rounded"
           >
             Ajouter un patient
           </Link>
+          <CheckboxFilter
+            title="Filtrer par status"
+            options={status}
+            selectedFilters={selectedStatusFilters}
+            onFilterChange={handleStatusFilterChange}
+          />
+
+          <CheckboxFilter
+            title="Filtrer par type de paiement"
+            options={paymentTypes}
+            selectedFilters={selectedPaymentTypeFilters}
+            onFilterChange={handlePaymentTypeFilterChange}
+          />
+
+          <CheckboxFilter
+            title="Filtrer par mode de paiement"
+            options={paymentModes}
+            selectedFilters={selectedPaymentModeFilters}
+            onFilterChange={handlePaymentModeFilterChange}
+          />
         </div>
       </div>
+    </div>
+  );
 
-      <section>
-        <div className="overflow-x-auto">
+  {
+    /* <div className="overflow-x-auto">
           <table className="table-auto w-full text-left bg-white shadow-lg rounded-lg">
             <thead className="bg-green-900 text-white">
               <tr>
                 <th className="px-4 py-2">Patient</th>
                 <th className="px-4 py-2">Client</th>
-                {/* <th className="px-4 py-2">Pathologie</th> */}
                 <th className="px-4 py-2">Type</th>
                 <th className="px-4 py-2">État</th>
                 <th className="px-4 py-2">Paiement</th>
@@ -264,7 +329,6 @@ export default function PatientsPage() {
                           )} ${capitalizeFirstLetter(patient.client.firstname)}`
                         : "Client inconnu"}
                     </td>
-                    {/* <td className="px-4 py-2">{capitalizeFirstLetter(patient.pathology)}</td> */}
                     <td className="px-4 py-2">
                       {patient.animalType
                         ? capitalizeFirstLetter(patient.animalType.name)
@@ -348,14 +412,6 @@ export default function PatientsPage() {
               )}
             </tbody>
           </table>
-        </div>
-        <Pagination
-          totalItems={filteredPatients.length}
-          currentPage={currentPage}
-          itemsPerPage={patientsPerPage}
-          onPageChange={setCurrentPage}
-        />
-      </section>
-    </div>
-  );
+        </div> */
+  }
 }

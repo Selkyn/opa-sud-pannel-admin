@@ -60,6 +60,36 @@ export function AuthProvider({ children }) {
     const router = useRouter();
     const pathname = usePathname();
 
+    useEffect(() => {
+        const refreshToken = async () => {
+            try {
+                await api.post('/auth/refreshTokenWeb');
+                console.log("✅ Token rafraîchi automatiquement !");
+            } catch (error) {
+                console.error("❌ Erreur lors du rafraîchissement :", error);
+            }
+        };
+
+        // ✅ Rafraîchit dès le chargement de l'application
+        refreshToken();
+
+        // 🔄 Rafraîchir toutes les 10 minutes
+        const interval = setInterval(refreshToken, 10 * 60 * 1000);
+
+        // 🔄 Rafraîchir quand l'utilisateur revient sur la page
+        const handleFocus = () => {
+            console.log("🔄 L'utilisateur est revenu, tentative de refresh...");
+            refreshToken();
+        };
+
+        window.addEventListener("focus", handleFocus);
+
+        return () => {
+            clearInterval(interval);
+            window.removeEventListener("focus", handleFocus);
+        };
+    }, []);
+    
     // Vérifie l'authentification au chargement de l'application
     useEffect(() => {
         const checkAuth = async () => {

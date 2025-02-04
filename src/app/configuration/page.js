@@ -26,8 +26,8 @@ export default function Configuration() {
   const [races, setRaces] = useState([]);
 
   const [newTask, setNewTask] = useState("");
-  const [editingTaskId, setEditingTaskId] = useState(null); // ✅ Stocke l'ID de la tâche en mode édition
-  const [editedTaskName, setEditedTaskName] = useState(""); // ✅ Stocke le nom modifié
+  const [editingTaskId, setEditingTaskId] = useState(null);
+  const [editedTaskName, setEditedTaskName] = useState("");
 
   //   useEffect(() => {
   //     fetchTasks();
@@ -188,7 +188,7 @@ export default function Configuration() {
                             category={"races"}
                             items={races.filter(
                               (race) => race.animalTypeId === animalType.id
-                            )} // ✅ Filtrage des races ici
+                            )}
                             fetchData={fetchData}
                             animalTypeId={animalType.id}
                             race={true}
