@@ -10,10 +10,15 @@ export const columns = [
       return (
         <Link href={`/patients/${row.original.id}`}>
           <button>
-            <Badge>
-            {row.original.name}
+            <Badge
+              className={`${
+                row.original.sex.name === "male"
+                  ? "bg-blue-500 hover:bg-blue-600"
+                  : "bg-pink-400 hover:bg-pink-600"
+              }`}
+            >
+              {row.original.name}
             </Badge>
-            
           </button>
         </Link>
       );
@@ -43,6 +48,22 @@ export const columns = [
     },
   },
   {
+    header: "Race",
+    accessorKey: "race",
+    cell: ({ row }) => {
+      return (
+        <p>
+          {row.original.animalType
+            ? row.original.animalType.name === "Chien"
+              ? row.original.race.name
+              : row.original.animalType.name
+            : "Inconnu"}
+        </p>
+      );
+    },
+  },
+
+  {
     header: "Status",
     accessorKey: "status",
     cell: ({ row }) => {
@@ -58,28 +79,41 @@ export const columns = [
     header: "Pathologie",
   },
   {
-    accessorKey: "paymentType",
-    header: "Type paiement",
+    accessorKey: "paymentStatus",
+    header: "Status paiement",
     cell: ({ row }) => {
       return (
-        <span>
-          {row.original.payment?.paymentType
-            ? row.original.payment.paymentType.name
-            : " "}
-        </span>
+        <div>
+          {row.original.payments?.length > 0 ? (
+            row.original.payments.map((payment) => (
+              <span key={payment.id} className="block text-sm text-gray-700">
+                {payment.paymentStatus ? payment.paymentStatus.name : "Non spécifié"}
+              </span>
+            ))
+          ) : (
+            <span className="text-gray-500">Aucun paiement</span>
+          )}
+        </div>
       );
     },
   },
+  
   {
     accessorKey: "paymentMode",
     header: "Mode paiement",
     cell: ({ row }) => {
       return (
-        <span>
-          {row.original.payment?.paymentMode
-            ? row.original.payment.paymentMode.name
-            : " "}
-        </span>
+        <div>
+          {row.original.payments?.length > 0 ? (
+            row.original.payments.map((payment) => (
+              <span key={payment.id} className="block text-sm text-gray-700">
+                {payment.paymentMode ? payment.paymentMode.name : "Non spécifié"}
+              </span>
+            ))
+          ) : (
+            <span className="text-gray-500">Aucun paiement</span>
+          )}
+        </div>
       );
     },
   },

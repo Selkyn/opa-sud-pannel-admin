@@ -64,7 +64,7 @@ export function AuthProvider({ children }) {
         const refreshToken = async () => {
             try {
                 await api.post('/auth/refreshTokenWeb');
-                console.log("✅ Token rafraîchi automatiquement !");
+                // console.log("✅ Token rafraîchi automatiquement !");
             } catch (error) {
                 console.error("❌ Erreur lors du rafraîchissement :", error);
             }
@@ -78,7 +78,7 @@ export function AuthProvider({ children }) {
 
         // 🔄 Rafraîchir quand l'utilisateur revient sur la page
         const handleFocus = () => {
-            console.log("🔄 L'utilisateur est revenu, tentative de refresh...");
+            // console.log("🔄 L'utilisateur est revenu, tentative de refresh...");
             refreshToken();
         };
 

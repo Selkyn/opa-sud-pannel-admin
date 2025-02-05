@@ -16,8 +16,7 @@ import ToggleSection from "@/app/components/ToggleSection";
 import AppointmentsSection from "@/app/components/AppointmentsSection";
 import EventModalDetails from "@/app/components/EventModalDetails";
 import { Button } from "@nextui-org/react";
-import api from '@/utils/apiCall';
-
+import api from "@/utils/apiCall";
 
 export default function PatientDetailsPage({ params }) {
   const { id } = params;
@@ -48,7 +47,12 @@ export default function PatientDetailsPage({ params }) {
     try {
       const response = await api.get(`/patients/${id}`);
       setPatient(response.data);
-      setAmount(response.data.payment.amount)
+
+      // Vérifier si le patient a des paiements et récupérer le montant du dernier
+      if (response.data.paiements?.length > 0) {
+        setAmount(response.data.paiements[0].amount || ""); // Prend le premier paiement par défaut
+      }
+
       setLoading(false);
     } catch (err) {
       setError("Erreur lors de la récupération des détails du patient");
@@ -70,13 +74,16 @@ export default function PatientDetailsPage({ params }) {
       const [typesResponse, modesResponse, statusResponse] = await Promise.all([
         api.get("/paymentTypes"),
         api.get("/paymentModes"),
-        api.get("/paymentStatus")
+        api.get("/paymentStatus"),
       ]);
       setPaymentTypes(typesResponse.data);
       setPaymentModes(modesResponse.data);
       setPaymentStatus(statusResponse.data);
     } catch (error) {
-      console.error("Erreur lors de la récupération des données de paiement:", error);
+      console.error(
+        "Erreur lors de la récupération des données de paiement:",
+        error
+      );
     }
   };
 
@@ -89,50 +96,129 @@ export default function PatientDetailsPage({ params }) {
     }
   };
 
-  const handlePaymentTypeChange = async (newPaymentTypeId) => {
+  // const handlePaymentTypeChange = async (newPaymentTypeId) => {
+  //   try {
+  //     await api.put(`/payment/${id}/edit`, { paymentTypeId: newPaymentTypeId });
+  //     fetchPatientDetails();
+  //   } catch (error) {
+  //     console.error(
+  //       "Erreur lors de la mise à jour du type de paiement:",
+  //       error
+  //     );
+  //   }
+  // };
+
+  // const handlePaymentModeChange = async (newPaymentModeId) => {
+  //   try {
+  //     await api.put(`/payment/${id}/edit`, { paymentModeId: newPaymentModeId });
+  //     fetchPatientDetails();
+  //   } catch (error) {
+  //     console.error(
+  //       "Erreur lors de la mise à jour du mode de paiement:",
+  //       error
+  //     );
+  //   }
+  // };
+
+  // const handlePaymentStatusChange = async (newPaymentStatusId) => {
+  //   try {
+  //     await api.put(`/payment/${id}/edit`, {
+  //       paymentStatusId: newPaymentStatusId,
+  //     });
+  //     fetchPatientDetails();
+  //   } catch (error) {
+  //     console.error(
+  //       "Erreur lors de la mise à jour du mode de paiement:",
+  //       error
+  //     );
+  //   }
+  // };
+
+  // const handlePaymentDateChange = async (newDate) => {
+  //   try {
+  //     await api.put(`/payment/${id}/edit`, { date: newDate });
+  //     fetchPatientDetails();
+  //   } catch (error) {
+  //     console.error(
+  //       "Erreur lors de la mise à jour de la date de paiement:",
+  //       error
+  //     );
+  //   }
+  // };
+
+  // const handlePaymentEndDateChange = async (newEndDate) => {
+  //   try {
+  //     await api.put(`/payment/${id}/edit`, { endDate: newEndDate });
+  //     fetchPatientDetails();
+  //   } catch (error) {
+  //     console.error(
+  //       "Erreur lors de la mise à jour de la date de paiement:",
+  //       error
+  //     );
+  //   }
+  // };
+
+  const handlePaymentTypeChange = async (paymentId, newPaymentTypeId) => {
+
     try {
-      await api.put(`/payment/${id}/edit`, { paymentTypeId: newPaymentTypeId });
+      await api.put(`/payment/${paymentId}/edit`, { paymentTypeId: newPaymentTypeId });
       fetchPatientDetails();
     } catch (error) {
       console.error("Erreur lors de la mise à jour du type de paiement:", error);
     }
   };
-
-  const handlePaymentModeChange = async (newPaymentModeId) => {
+  
+  const handlePaymentModeChange = async (paymentId, newPaymentModeId) => {
     try {
-      await api.put(`/payment/${id}/edit`, { paymentModeId: newPaymentModeId });
+      await api.put(`/payment/${paymentId}/edit`, { paymentModeId: newPaymentModeId });
       fetchPatientDetails();
     } catch (error) {
       console.error("Erreur lors de la mise à jour du mode de paiement:", error);
     }
   };
-
-  const handlePaymentStatusChange = async (newPaymentStatusId) => {
+  
+  const handlePaymentStatusChange = async (paymentId, newPaymentStatusId) => {
     try {
-      await api.put(`/payment/${id}/edit`, { paymentStatusId: newPaymentStatusId });
+      await api.put(`/payment/${paymentId}/edit`, { paymentStatusId: newPaymentStatusId });
       fetchPatientDetails();
     } catch (error) {
-      console.error("Erreur lors de la mise à jour du mode de paiement:", error);
+      console.error("Erreur lors de la mise à jour du statut de paiement:", error);
+    }
+  };
+  
+  const handlePaymentAmountChange = async (paymentId, newAmount) => {
+    try {
+      await api.put(`/payment/${paymentId}/edit`, { amount: newAmount });
+      fetchPatientDetails();
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour du montant de paiement:", error);
     }
   };
 
-  const handlePaymentDateChange = async (newDate) => {
+   const handlePaymentDateChange = async (paymentId, newDate) => {
     try {
-      await api.put(`/payment/${id}/edit`, { date: newDate });
+      await api.put(`/payment/${paymentId}/edit`, { date: newDate });
       fetchPatientDetails();
     } catch (error) {
-      console.error("Erreur lors de la mise à jour de la date de paiement:", error);
+      console.error(
+        "Erreur lors de la mise à jour de la date de paiement:",
+        error
+      );
     }
   };
 
-  const handlePaymentEndDateChange = async (newEndDate) => {
+  const handlePaymentEndDateChange = async (paymentId, newEndDate) => {
     try {
-      await api.put(`/payment/${id}/edit`, { endDate: newEndDate });
+      await api.put(`/payment/${paymentId}/edit`, { endDate: newEndDate });
       fetchPatientDetails();
     } catch (error) {
-      console.error("Erreur lors de la mise à jour de la date de paiement:", error);
+      console.error(
+        "Erreur lors de la mise à jour de la date de paiement:",
+        error
+      );
     }
   };
+  
 
   const handleButtonClick = () => {
     if (!amount || isNaN(amount)) {
@@ -142,14 +228,17 @@ export default function PatientDetailsPage({ params }) {
     handlePaymentAmountChange(amount); // Envoie la valeur validée à la fonction de mise à jour
   };
 
-  const handlePaymentAmountChange = async (newAmount) => {
-    try {
-      await api.put(`/payment/${id}/edit`, { amount: newAmount });
-      fetchPatientDetails();
-    } catch (error) {
-      console.error("Erreur lors de la mise à jour du mode de paiement:", error);
-    }
-  };
+  // const handlePaymentAmountChange = async (newAmount) => {
+  //   try {
+  //     await api.put(`/payment/${id}/edit`, { amount: newAmount });
+  //     fetchPatientDetails();
+  //   } catch (error) {
+  //     console.error(
+  //       "Erreur lors de la mise à jour du mode de paiement:",
+  //       error
+  //     );
+  //   }
+  // };
 
   if (loading) {
     return <div>Chargement...</div>;
@@ -167,9 +256,7 @@ export default function PatientDetailsPage({ params }) {
   const handleDelete = async () => {
     if (confirm(`Etes-vous sûr de vouloir supprimer ${patient.name} ?`)) {
       try {
-        await api.delete(
-          `/patients/${patient.id}/delete`
-        );
+        await api.delete(`/patients/${patient.id}/delete`);
 
         router.push("/patients");
       } catch (error) {
@@ -181,15 +268,23 @@ export default function PatientDetailsPage({ params }) {
   const handleEditClick = (workSchedule) => {
     const start = new Date(workSchedule.start_time);
     const end = new Date(workSchedule.end_time);
-  
+
     setEditingWorkSchedule({
       ...workSchedule,
       start_time: start.toISOString().split("T")[0], // Format ISO (YYYY-MM-DD)
-      start_time_hour: start.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false }),
+      start_time_hour: start.toLocaleTimeString("fr-FR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }),
       end_time: end.toISOString().split("T")[0],
-      end_time_hour: end.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false }),
+      end_time_hour: end.toLocaleTimeString("fr-FR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }),
     });
-  
+
     setWorkScheduleModalOpen(true); // Ouvre le modal
   };
 
@@ -271,8 +366,15 @@ export default function PatientDetailsPage({ params }) {
                 </p>
                 <p>
                   <strong>Adresse :</strong>{" "}
-                  {patient.client && patient.client.adress && patient.client.city && patient.client.postal
-                    ? patient.client.adress + " " + patient.client.postal + " " + patient.client.city
+                  {patient.client &&
+                  patient.client.adress &&
+                  patient.client.city &&
+                  patient.client.postal
+                    ? patient.client.adress +
+                      " " +
+                      patient.client.postal +
+                      " " +
+                      patient.client.city
                     : "Non spécifié"}
                 </p>
               </div>
@@ -311,9 +413,7 @@ export default function PatientDetailsPage({ params }) {
                 </p>
                 <p>
                   <strong>Poids :</strong>{" "}
-                  {patient.weight
-                    ? patient.weight + " grammes"
-                    : "Non spécifié"}
+                  {patient.weight ? patient.weight + " kg" : "Non spécifié"}
                 </p>
                 <p>
                   <strong>Pathologie :</strong>{" "}
@@ -607,7 +707,7 @@ export default function PatientDetailsPage({ params }) {
             </select>
           </div>
         </div>
-        </div>
+      </div>
 
       <EventModalDetails
         isOpen={isAppointmentModalOpen}
@@ -645,81 +745,115 @@ export default function PatientDetailsPage({ params }) {
       </EventModalDetails>
 
       <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-sm mt-4">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">Paiement</h2>
-        <div className="flex gap-4">
-        <div>
-            <label className="block mb-2">Status de paiement</label>
-            <select
-              value={patient.payment?.paymentStatus?.id || ""}
-              onChange={(e) => handlePaymentStatusChange(e.target.value)}
-              className="border border-gray-300 rounded px-2 py-1"
+        <h2 className="text-xl font-semibold text-gray-800 mb-2">Paiements</h2>
+
+        {patient.payments && patient.payments.length > 0 ? (
+          patient.payments.map((payment, index) => (
+            <div
+              key={payment.id}
+              className="mb-4 p-4 bg-white shadow rounded-md"
             >
-              {paymentStatus.map((status) => (
-                <option key={status.id} value={status.id}>
-                  {status.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block mb-2">Type de paiement</label>
-            <select
-              value={patient.payment?.paymentType?.id || ""}
-              onChange={(e) => handlePaymentTypeChange(e.target.value)}
-              className="border border-gray-300 rounded px-2 py-1"
-            >
-              {paymentTypes.map((type) => (
-                <option key={type.id} value={type.id}>
-                  {type.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block mb-2">Mode de paiement</label>
-            <select
-              value={patient.payment?.paymentMode?.id || ""}
-              onChange={(e) => handlePaymentModeChange(e.target.value)}
-              className="border border-gray-300 rounded px-2 py-1"
-            >
-              {paymentModes.map((mode) => (
-                <option key={mode.id} value={mode.id}>
-                  {mode.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block mb-2">Date de paiement</label>
-            <input
-              type="date"
-              value={patient.payment?.date?.split("T")[0] || ""}
-              onChange={(e) => handlePaymentDateChange(e.target.value)}
-              className="border border-gray-300 rounded px-2 py-1"
-            />
-          </div>
-          <div>
-            <label className="block mb-2">Date de fin paiement</label>
-            <input
-              type="date"
-              value={patient.payment?.endDate?.split("T")[0] || ""}
-              onChange={(e) => handlePaymentEndDateChange(e.target.value)}
-              className="border border-gray-300 rounded px-2 py-1"
-            />
-          </div>
-          <div>
-            <label className="block mb-2">Montant</label>
-            <input
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="border border-gray-300 rounded px-2 py-1"
-            />
-            <Button
-              onPress={handleButtonClick}
-            >Montant</Button>
-          </div>
-        </div>
+              <h3 className="text-lg font-semibold">Paiement {index + 1}</h3>
+
+              <div className="flex gap-4">
+                {/* Statut de paiement */}
+                <div>
+                  <label className="block mb-2">Status</label>
+                  <select
+                    value={payment.paymentStatus?.id || ""}
+                    onChange={(e) =>
+                      handlePaymentStatusChange(payment.id, e.target.value)
+                    }
+                    className="border border-gray-300 rounded px-2 py-1"
+                  >
+                    {paymentStatus.map((status) => (
+                      <option key={status.id} value={status.id}>
+                        {status.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Type de paiement */}
+                <div>
+                  <label className="block mb-2">Type</label>
+                  <select
+                    value={payment.paymentType?.id || ""}
+                    onChange={(e) =>
+                      handlePaymentTypeChange(payment.id, e.target.value)
+                    }
+                    className="border border-gray-300 rounded px-2 py-1"
+                  >
+                    {paymentTypes.map((type) => (
+                      <option key={type.id} value={type.id}>
+                        {type.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Mode de paiement */}
+                <div>
+                  <label className="block mb-2">Mode</label>
+                  <select
+                    value={payment.paymentMode?.id || ""}
+                    onChange={(e) =>
+                      handlePaymentModeChange(payment.id, e.target.value)
+                    }
+                    className="border border-gray-300 rounded px-2 py-1"
+                  >
+                    {paymentModes.map((mode) => (
+                      <option key={mode.id} value={mode.id}>
+                        {mode.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Date de paiement */}
+                <div>
+                  <label className="block mb-2">Date</label>
+                  <input
+                    type="date"
+                    value={payment.date?.split("T")[0] || ""}
+                    onChange={(e) =>
+                      handlePaymentDateChange(payment.id, e.target.value)
+                    }
+                    className="border border-gray-300 rounded px-2 py-1"
+                  />
+                </div> 
+
+                {/* Date de fin paiement */}
+                 <div>
+                  <label className="block mb-2">Fin</label>
+                  <input
+                    type="date"
+                    value={payment.endDate?.split("T")[0] || ""}
+                    onChange={(e) =>
+                      handlePaymentEndDateChange(payment.id, e.target.value)
+                    }
+                    className="border border-gray-300 rounded px-2 py-1"
+                  />
+                </div>
+
+                {/* Montant */}
+                <div>
+                  <label className="block mb-2">Montant (€)</label>
+                  <input
+                    type="number"
+                    value={payment.amount}
+                    onChange={(e) =>
+                      handlePaymentAmountChange(payment.id, e.target.value)
+                    }
+                    className="border border-gray-300 rounded px-2 py-1"
+                  />
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-500">Aucun paiement enregistré</p>
+        )}
       </div>
     </div>
   );

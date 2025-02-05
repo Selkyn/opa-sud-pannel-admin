@@ -18,6 +18,7 @@ import { DataTable } from "./data-table";
 import CardPatientList from "../components/CardPatientList";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function PatientsPage() {
   const [patients, setPatients] = useState([]);
@@ -25,6 +26,7 @@ export default function PatientsPage() {
   const [payments, setPayments] = useState();
   const [paymentTypes, setPaymentTypes] = useState([]);
   const [paymentModes, setPaymentModes] = useState([]);
+  const [paymentStatuses, setPaymentStatuses] = useState([]);
   const [totalPatients, setTotalPatients] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const patientsPerPage = 20;
@@ -37,9 +39,11 @@ export default function PatientsPage() {
     handleStatusFilterChange,
     handlePaymentTypeFilterChange,
     handlePaymentModeFilterChange,
+    handlePaymentStatusFilterChange,
     selectedStatusFilters,
     selectedPaymentTypeFilters,
     selectedPaymentModeFilters,
+    selectedPaymentStatusFilters,
   } = usePatientFilters(patients);
 
   // Calcul des patients visibles
@@ -81,6 +85,19 @@ export default function PatientsPage() {
     };
 
     fetchStatus();
+  }, []);
+
+  useEffect(() => {
+    const fetchPaymentStatuses = async () => {
+      try {
+        const response = await api.get("/paymentStatus");
+        setPaymentStatuses(response.data);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des status de paiements");
+      }
+    };
+
+    fetchPaymentStatuses();
   }, []);
 
   useEffect(() => {
@@ -170,6 +187,7 @@ export default function PatientsPage() {
     selectedStatusFilters,
     selectedPaymentTypeFilters,
     selectedPaymentModeFilters,
+    selectedPaymentStatusFilters,
   ]);
 
   const data = [
@@ -190,7 +208,7 @@ export default function PatientsPage() {
               onSearchChange={setSearchTerm}
               placeholder="Rechercher un patient..."
             />
-            <span className="rounded-lg bg-blue-500 text-white px-2">
+            <span className="rounded-lg bg-green-700 text-white px-2">
               {filteredPatients.length} / {totalPatients}
             </span>
 
@@ -252,30 +270,42 @@ export default function PatientsPage() {
           </div>
           <Link
             href="/patients/form"
-            className="text-white bg-blue-500 hover:bg-blue-700 font-bold py-2 px-4 rounded"
+            // className="text-white bg-blue-500 hover:bg-blue-700 font-bold py-2 px-4 rounded"
           >
-            Ajouter un patient
+            <Button className="bg-green-700 hover:bg-green-600">Ajouter un patient</Button>
+            
           </Link>
-          <CheckboxFilter
-            title="Filtrer par status"
-            options={status}
-            selectedFilters={selectedStatusFilters}
-            onFilterChange={handleStatusFilterChange}
-          />
 
-          <CheckboxFilter
-            title="Filtrer par type de paiement"
-            options={paymentTypes}
-            selectedFilters={selectedPaymentTypeFilters}
-            onFilterChange={handlePaymentTypeFilterChange}
-          />
+          <div className="mt-4 border-2 rounded-lg px-2 pt-2 bg-gray-50">
+            <h3 className="font-semibold">Filtres</h3>
+            <CheckboxFilter
+              title="Status du patient"
+              options={status}
+              selectedFilters={selectedStatusFilters}
+              onFilterChange={handleStatusFilterChange}
+            />
 
-          <CheckboxFilter
-            title="Filtrer par mode de paiement"
-            options={paymentModes}
-            selectedFilters={selectedPaymentModeFilters}
-            onFilterChange={handlePaymentModeFilterChange}
-          />
+            <CheckboxFilter
+              title="Status de paiement"
+              options={paymentStatuses}
+              selectedFilters={selectedPaymentStatusFilters}
+              onFilterChange={handlePaymentStatusFilterChange}
+            />
+
+            <CheckboxFilter
+              title="Type de paiement"
+              options={paymentTypes}
+              selectedFilters={selectedPaymentTypeFilters}
+              onFilterChange={handlePaymentTypeFilterChange}
+            />
+
+            <CheckboxFilter
+              title="Mode de paiement"
+              options={paymentModes}
+              selectedFilters={selectedPaymentModeFilters}
+              onFilterChange={handlePaymentModeFilterChange}
+            />
+          </div>
         </div>
       </div>
     </div>
