@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import api from "@/utils/apiCall";
 import PatientForm from "@/app/components/PatientForm";
 
-export default function addPatientForm() {
+export default function AddPatientForm() {
   const [sexes, setSexes] = useState([]);
   const [animalTypes, setAnimalTypes] = useState([]);
   const [limbs, setLimbs] = useState([]);

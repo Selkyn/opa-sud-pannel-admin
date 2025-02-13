@@ -17,9 +17,7 @@ export default function OsteoCentersPage () {
     selectedContactFilters
     } = useOsteoCenterFilters(osteoCenters);
 
-    useEffect(() => {
-        fetchOsteoCenters();
-    }, []);
+
 
     const fetchOsteoCenters = async () => {
         try {
@@ -29,6 +27,10 @@ export default function OsteoCentersPage () {
             console.error("Erreur lors de la récupération des centres vétérinaires", error);
         }
     };
+
+    useEffect(() => {
+        fetchOsteoCenters();
+    }, []);
 
     return (
         <EntityList

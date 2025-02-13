@@ -17,9 +17,7 @@ export default function VetCentersPage () {
     selectedContactFilters
     } = useVetCenterFilters(vetCenters);
 
-    useEffect(() => {
-        fetchVetCenters();
-    }, []);
+
 
     const fetchVetCenters = async () => {
         try {
@@ -32,6 +30,9 @@ export default function VetCentersPage () {
             console.error("Erreur lors de la récupération des centres vétérinaires", error);
         }
     };
+    useEffect(() => {
+        fetchVetCenters();
+    }, []);
 
     return (
         <EntityList
