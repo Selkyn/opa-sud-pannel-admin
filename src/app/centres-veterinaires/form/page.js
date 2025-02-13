@@ -346,9 +346,25 @@ export default function AddVetCenterForm() {
         phone: ""
     });
 
+    const [specialities, setSpecialities] = useState([]);
+
     const [vets, setVets] = useState([
         { firstname: "", lastname: "", email: "" }
     ]);
+
+    useEffect(() => {
+        const fetchSpecialities = async () => {
+            try {
+                const response = await api.get('/specialities');
+                setSpecialities(response.data);
+            } catch (error) {
+                console.error(error.message);
+            }
+        };
+    
+        fetchSpecialities();
+    }, []);
+    
 
     // Soumission du formulaire
     const handleSubmit = async (data) => {
@@ -367,7 +383,8 @@ export default function AddVetCenterForm() {
                 postal: "",
                 infos: "",
                 department: "",
-                phone: ""
+                phone: "",
+                specialities: []
             });
             setVets([{ firstname: "", lastname: "", email: "" }]);
         } catch (error) {
@@ -384,6 +401,7 @@ export default function AddVetCenterForm() {
             enableSubmitBtn= {true}
             onSubmit={handleSubmit}
             isEditing= {false}
+            specialities={specialities}
         />
     );
 }

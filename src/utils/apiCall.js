@@ -101,7 +101,7 @@ api.interceptors.response.use(
 // ✅ Supprimer l’intercepteur après déconnexion
 const removeRefreshInterceptor = () => {
     api.interceptors.response.eject(api.interceptors.response.handlers.length - 1);
-    console.log("🚫 Intercepteur supprimé après déconnexion.");
+    // console.log("🚫 Intercepteur supprimé après déconnexion.");
 };
 
 // ✅ Exporter `removeRefreshInterceptor`

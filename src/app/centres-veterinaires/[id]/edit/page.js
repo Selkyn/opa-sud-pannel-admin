@@ -8,8 +8,22 @@ import api from '@/utils/apiCall';
 
 export default function EditVetCenterForm({ params }) {
     const [initialData, setInitialData] = useState(null);
+    const [specialities, setSpecialities] = useState([]);
+    const [selectedSpecialities, setSelectedSpecialities] = useState([]);
     const [loading, setLoading] = useState(true);
     const { id } = params;
+
+    useEffect(() => {
+        const fetchSpecialities = async () => {
+            try {
+                const response = await api.get("/specialities");
+                setSpecialities(response.data);
+            } catch (error) {
+                console.error("Erreur lors de la récupération des spécialités")
+            }
+        }
+        fetchSpecialities();
+    }, [])
 
     useEffect(() => {
         const fetchVetCenter = async () => {
@@ -35,6 +49,7 @@ export default function EditVetCenterForm({ params }) {
                         phone: vet.phone
                     }))
                 });
+                setSelectedSpecialities(vetCenter.Specialities ? vetCenter.Specialities.map(speciality => speciality.id) : [])
             } catch (error) {
                 console.error("Erreur lors du chargement des données :", error);
             } finally {
@@ -70,6 +85,9 @@ export default function EditVetCenterForm({ params }) {
             enableSubmitBtn={true}
             onSubmit={handleSubmit}
             isEditing= {true}
+            specialities={specialities}
+            selectedSpecialities={selectedSpecialities}
+            setSelectedSpecialities={setSelectedSpecialities}
         />
     );
 }

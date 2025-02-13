@@ -1,158 +1,196 @@
-
+"use client";
 
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import api from '@/utils/apiCall';
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
+import { Checkbox } from "@/components/ui/checkbox";
 
-export default function PatientForm({ initialData = {}, isEditMode = false }) {
-    const [formData, setFormData] = useState({
-      name: initialData.name || "",
-      birthYear: initialData.birthYear || "",
-      sexId: initialData.sexId || "",
-      animalTypeId: initialData.animalTypeId || "",
-      customAnimalType: initialData.customAnimalType || "",
-      raceId: initialData.raceId || "",
-      customRace: initialData.customRace || "",
-      customRaceStandalone: initialData.customRaceStandalone || "",
-      pathology: initialData.pathology || "",
-      firstname: initialData.firstname || "",
-      lastname: initialData.lastname || "",
-      email: initialData.email || "",
-      phone: initialData.phone || "",
-      adress: initialData.adress || "",
-      city: initialData.city || "",
-      postal: initialData.postal || "",
-      department: initialData.department || "",
-      clientSexId: initialData.clientSexId || "",
-      vetCenterId: initialData.vetCenterId || "",
-      nameVetCenter: initialData.nameVetCenter || "",
-      adressVetCenter: initialData.adressVetCenter || "",
-      cityVetCenter: initialData.cityVetCenter || "",
-      departmentVetCenter: initialData.departmentVetCenter || "",
-      postalVetCenter: initialData.postalVetCenter || "",
-      phoneVetCenter: initialData.phoneVetCenter || "",
-      emailVetCenter: initialData.emailVetCenter || ""
-    });
+import CenterForm from "./CenterForm";
+import api from "@/utils/apiCall";
+import { select } from "@nextui-org/react";
 
-  const [sexes, setSexes] = useState([]);
-  const [animalTypes, setAnimalTypes] = useState([]);
-  const [vetCenters, setVetCenters] = useState([]);
-  const [races, setRaces] = useState([]);
+export default function PatientForm({
+  initialData,
+  sexes,
+  animalTypes,
+  races,
+  limbs,
+  vetCenters,
+  osteoCenters,
+  vetStaffList,
+  osteoStaffList,
+  specialities,
+  onSubmit,
+  isEditing,
+  submitVetCenter,
+  formDataVetCenter,
+  submitOsteoCenter,
+  formDataOsteoCenter,
+  vets,
+  osteos,
+  patientId,
+}) {
+  const form = useForm({
+    defaultValues: initialData || {
+      name: "",
+      birthYear: "",
+      weight: "",
+      sexId: "",
+      animalTypeId: "",
+      customAnimalType: "",
+      raceId: "",
+      customRace: "",
+      pathology: "",
+      firstname: "",
+      lastname: "",
+      email: "",
+      phone: "",
+      adress: "",
+      city: "",
+      postal: "",
+      department: "",
+      clientSexId: "",
+      vetCenters: [],
+      osteoCenters: [],
+      limbs: [],
+      vets: [],
+      osteos: [],
+    },
+  });
+
   const [showCustomAnimalType, setShowCustomAnimalType] = useState(false);
   const [showCustomRace, setShowCustomRace] = useState(false);
-  const [enableVetFields, setEnableVetFields] = useState(false);
+  const [disabledRace, setDisabledRace] = useState(true);
 
-  // Mise à jour des options de race en fonction du type d'animal
-  const updateRaceOptions = (animalTypeId) => {
-    const selectedAnimalType = animalTypes.find(
-      (animal) => animal.id === parseInt(animalTypeId)
-    );
-    setRaces(selectedAnimalType ? selectedAnimalType.races : []);
-  };
+  //   const handleSubmit = (values) => {
+  //     console.log("Form values:", values);
+  //     onSubmit(values);
+  //   };
 
-  // Gestion des changements dans le formulaire
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-
-    if (name === "animalTypeId") {
-      if (value === "other") {
-        setShowCustomAnimalType(true);
-        setRaces([]);
-        setFormData({
-          ...formData,
-          raceId: "",
-          customRace: "",
-          customAnimalType: "",
-        });
-      } else {
-        setShowCustomAnimalType(false);
-        updateRaceOptions(value);
-      }
-    }
-
-    if (name === "raceId" && value === "other") {
-      setShowCustomRace(true);
-    } else if (name === "raceId") {
-      setShowCustomRace(false);
-    }
-
-    if (name === "vetCenterId" && value === "other") {
-      setEnableVetFields(true);
-    } else if (name === "vetCenterId") {
-      setEnableVetFields(false);
-    }
-  };
-
-  // Charger les données si nous sommes en mode édition (initialData est fourni)
   useEffect(() => {
-    const fetchFormData = async () => {
-      try {
-        const response = await api.get("/patients/form");
-        const { sexes, animalTypes, vetCenters } = response.data;
-        setSexes(sexes);
-        setAnimalTypes(animalTypes);
-        setVetCenters(vetCenters);
+    if (initialData && isEditing) {
+      // console.log("Données rechargées dans le formulaire:", initialData); // 🔥 Debug
+      // console.log("Valeur sexId avant reset :", initialData.sexId);
+      // console.log(
+      //   "Valeur animalTypeId avant reset :",
+      //   initialData.animalTypeId
+      // );
+      // console.log("Valeur raceId avant reset :", initialData.raceId);
 
-        // Si des données initiales sont fournies (mode édition), préremplir le formulaire
-        if (initialData) {
-          setFormData(initialData);
-        }
-      } catch (error) {
-        console.error("Erreur lors de la récupération des données du formulaire", error);
+      form.reset({
+        ...initialData,
+        sexId: String(initialData.sexId || ""), // 🔥 Assure que sexId est bien un string
+        clientSexId: String(initialData.clientSexId || ""),
+        animalTypeId: String(initialData.animalTypeId || ""),
+        raceId: String(initialData.raceId || ""),
+      });
+
+    }
+  }, [initialData, isEditing, form]);
+
+
+  const checkClientEmail = async (email) => {
+    try {
+      const response = await api.get(`/clients/email/${email}`);
+      if (response.data) {
+        const clientData = response.data; // Les informations du client récupérées
+
+        form.setValue("firstname", clientData.firstname || "");
+        form.setValue("lastname", clientData.lastname || "");
+        form.setValue("phone", clientData.phone || "");
+        form.setValue("adress", clientData.adress || "");
+        form.setValue("city", clientData.city || "");
+        form.setValue("postal", clientData.postal || "");
+        form.setValue("department", clientData.department || "");
+        form.setValue("clientSexId", clientData.sexId || "");
+
+        alert("Les informations du client ont été préremplies.");
       }
+    } catch (error) {
+      console.error("Erreur lors de la vérification de l'email :", error);
+      alert("Aucun client trouvé avec cet email.");
+    }
+  };
+
+  const handleSubmit = async (values) => {
+
+    let formDataToSend = {
+      ...values,
+      vets: vetStaffList, // Liste des vétérinaires
+      osteos: osteoStaffList, // Liste des ostéopathes
+      vetCenters: values.vetCenters.map((center) => {
+        if (typeof center === "object" && center.id === "other") {
+          return {
+            ...center,
+            specialities: center.specialities || [],
+          };
+        }
+        return {
+          id: center.id,
+          selectedSpecialities: center.selectedSpecialities || [],
+        };
+      }),
+      osteoCenters: values.osteoCenters, // Liste des centres ostéopathiques
     };
 
-    fetchFormData();
-  }, [initialData]);
-
- // Envoi des données du formulaire au backend
- const handleSubmit = async (e) => {
-    e.preventDefault(); // Empêche le rechargement de la page lors de la soumission du formulaire
-
-    let formDataToSend = { ...formData }; // Clone formData
-
-    // Si l'utilisateur a choisi "Autre" pour le type d'animal, ajouter le champ personnalisé
-    if (formData.animalTypeId === "other") {
-      formDataToSend.animalTypeId = null; // On met animalTypeId à null car on va utiliser customAnimalType
-      formDataToSend.customAnimalType = formData.customAnimalType;
+    // 🔥 Si l'utilisateur a choisi "Autre" pour le type d'animal, gérer `customAnimalType`
+    if (values.animalTypeId === "other") {
+      formDataToSend.animalTypeId = null; // Mettre à null car on utilise customAnimalType
+      formDataToSend.customAnimalType = values.customAnimalType;
     }
 
-    // Si l'utilisateur a choisi "Autre" pour la race, ajouter le champ personnalisé
-    if (formData.raceId === "other") {
-      formDataToSend.raceId = null; // On met raceId à null car on va utiliser customRace
-      formDataToSend.customRace = formData.customRace;
-    }
-
-    // Gestion de "Autre" pour le centre vétérinaire
-    if (formData.vetCenterId === "other") {
-      formDataToSend.vetCenterId = null; // On met vetCenterId à null car on va utiliser les champs personnalisés pour le centre
-      formDataToSend.nameVetCenter = formData.nameVetCenter;
-      formDataToSend.adressVetCenter = formData.adressVetCenter;
-      formDataToSend.cityVetCenter = formData.cityVetCenter;
-      formDataToSend.departmentVetCenter = formData.departmentVetCenter;
-      formDataToSend.postalVetCenter = formData.postalVetCenter;
-      formDataToSend.phoneVetCenter = formData.phoneVetCenter;
-      formDataToSend.emailVetCenter = formData.emailVetCenter;
+    // 🔥 Si l'utilisateur a choisi "Autre" pour la race, gérer `customRace`
+    if (values.raceId === "other") {
+      formDataToSend.raceId = null; // Mettre à null car on utilise customRace
+      formDataToSend.customRace = values.customRace;
     }
 
     try {
-      const url = isEditMode
-        ? `/patients/${initialData.id}/edit`
-        : "/patients/add";
-      const response = await api.post(url, formDataToSend);
-      alert(isEditMode ? "Patient modifié avec succès !" : "Patient ajouté avec succès !");
-      // Réinitialiser les données du formulaire après la soumission
-      setFormData({
+      let response;
+      if (isEditing) {
+        response = await api.put(`/patients/${patientId}/edit`, formDataToSend);
+        alert("Patient modifié avec succès !");
+      } else {
+        response = await api.post("/patients/add", formDataToSend);
+        alert("Patient ajouté avec succès !");
+      }
+
+      // 🔥 Réinitialiser le formulaire
+      form.reset({
         name: "",
         birthYear: "",
+        weight: "",
         sexId: "",
         animalTypeId: "",
         customAnimalType: "",
         raceId: "",
         customRace: "",
-        customRaceStandalone: "",
         pathology: "",
         firstname: "",
         lastname: "",
@@ -163,527 +201,739 @@ export default function PatientForm({ initialData = {}, isEditMode = false }) {
         postal: "",
         department: "",
         clientSexId: "",
-        vetCenterId: "",
-        nameVetCenter: "",
-        adressVetCenter: "",
-        cityVetCenter: "",
-        departmentVetCenter: "",
-        postalVetCenter: "",
-        phoneVetCenter: "",
-        emailVetCenter: ""
+        vetCenters: [],
+        osteoCenters: [],
+        limbs: [],
       });
     } catch (error) {
-      console.error("Erreur lors de l'ajout ou de la modification du patient :", error);
-      alert("Erreur lors de la soumission du formulaire. Veuillez réessayer.");
+      console.error("Erreur lors de l'ajout du patient :", error);
+      alert("Erreur lors de l'ajout du patient. Veuillez réessayer.");
     }
   };
 
+  // 🔥 Observer les valeurs dynamiquement
+  const selectedAnimalType = form.watch("animalTypeId");
+  const selectedRace = form.watch("raceId");
+  // {
+  //   console.log("Valeur actuelle de limbs:", form.watch("limbs"));
+  // }
+
+  // 🔹 Trouver les races correspondantes directement en fonction du type d'animal sélectionné
+  const filteredRaces = selectedAnimalType
+    ? animalTypes.find((animal) => String(animal.id) === selectedAnimalType)
+        ?.races || []
+    : [];
+
+  //   const handleInputChange = (e) => {
+  //     const { name, value } = e.target;
+  //     form.setValue(name, value); // 🔥 Mettre à jour la valeur directement
+
+  //     // Gérer le champ "Autre" pour le type d'animal
+  //     if (name === "animalTypeId") {
+  //       if (value === "other") {
+  //         // 🔥 Réinitialiser les races et activer le champ personnalisé
+  //         form.setValue("raceId", "");
+  //         form.setValue("customAnimalType", "");
+  //         form.setValue("customRace", "");
+  //       } else if (value === "") {
+  //         // 🔥 Désactiver tout si rien n'est sélectionné
+  //         form.setValue("raceId", "");
+  //         form.setValue("customAnimalType", "");
+  //         form.setValue("customRace", "");
+  //       } else {
+  //         // 🔥 Mettre à jour les races en fonction du type
+  //         updateRaceOptions(value);
+  //         form.setValue("raceId", "");
+  //         form.setValue("customAnimalType", null);
+  //         form.setValue("customRace", null);
+  //       }
+  //     }
+
+  //     if (name === "raceId" && value === "other") {
+  //       // 🔥 Afficher le champ personnalisé pour la race
+  //       form.setValue("customRace", "");
+  //     } else if (name === "raceId") {
+  //       form.setValue("customRace", null); // Cacher le champ
+  //     }
+  //   };
+
+  // 🔹 Ajouter un centre vétérinaire à la liste
+  const addVetCenter = () => {
+    const currentCenters = form.getValues("vetCenters") || [];
+    form.setValue("vetCenters", [
+      ...currentCenters,
+      { id: "", selectedSpecialities: [] },
+    ]);
+  };
+
+  // 🔹 Ajouter un centre osteopathe à la liste
+  const addOsteoCenter = () => {
+    const currentCenters = form.getValues("osteoCenters") || [];
+    form.setValue("osteoCenters", [...currentCenters, { id: "" }]);
+  };
+
+  // 🔹 Supprimer un centre vétérinaire
+  const removeVetCenter = (index) => {
+    const updatedCenters = form
+      .getValues("vetCenters")
+      .filter((_, i) => i !== index);
+    form.setValue("vetCenters", updatedCenters);
+  };
+
+  // 🔹 Supprimer un centre osteopathe
+  const removeOsteoCenter = (index) => {
+    const updatedCenters = form
+      .getValues("osteoCenters")
+      .filter((_, i) => i !== index);
+    form.setValue("osteoCenters", updatedCenters);
+  };
+
+  const updateVetCenter = (index, field, value) => {
+    const currentVetCenters = form.getValues("vetCenters") || [];
+
+    if (field === "id") {
+      // 🔥 Trouver le centre sélectionné dans la liste `vetCenters`
+      const selectedCenter = vetCenters.find(
+        (vet) => vet.id === parseInt(value)
+      );
+
+      currentVetCenters[index] = {
+        id: value,
+        Specialities: selectedCenter ? selectedCenter.Specialities : [], // Liste des spécialités du VetCenter
+        selectedSpecialities: [], // Pour stocker les spécialités choisies par l'utilisateur
+      };
+    } else {
+      // Modifier simplement le champ concerné
+      if (typeof currentVetCenters[index] === "object") {
+        currentVetCenters[index][field] = value;
+      }
+    }
+
+    // 🔥 Mettre à jour le formulaire avec `form.setValue`
+    form.setValue("vetCenters", currentVetCenters);
+  };
+
+  //update osteo center
+  const updateOsteoCenter = (index, field, value) => {
+    const currentOsteoCenters = form.getValues("osteoCenters") || [];
+
+    if (field === "id") {
+      // 🔥 Trouver le centre sélectionné dans la liste `osteoCenters`
+      const selectedCenter = osteoCenters.find(
+        (osteo) => osteo.id === parseInt(value)
+      );
+
+      currentOsteoCenters[index] = {
+        id: value,
+      };
+    } else {
+      // Modifier simplement le champ concerné
+      if (typeof currentOsteoCenters[index] === "object") {
+        currentOsteoCenters[index][field] = value;
+      }
+    }
+
+    // 🔥 Mettre à jour le formulaire avec `form.setValue`
+    form.setValue("osteoCenters", currentOsteoCenters);
+  };
+
   return (
-    <section className="bg-gray-100 p-8 rounded-lg shadow-lg max-w-4xl mx-auto mt-6">
-        <h3 className="text-xl font-semibold text-gray-700 mb-4">
-            {isEditMode ? "Modifier le patient" : "Ajouter un patient"}
-        </h3>
-        <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-xl font-semibold text-gray-700 mb-4">
-                Informations du patient
-                </h3>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h3 className="text-xl font-semibold text-gray-700 mb-4">
+            Informations du patient
+          </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                    Nom
-                    </label>
-                    <input
-                    type="text"
-                    name="name"
-                    id="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    required
-                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm"
-                    />
-                </div>
+          {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormField
+              control={form.control}
+              name="name"
+              rules={{ required: "Nom obligatoire" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nom *</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Nom du patient" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
+            <FormField
+              control={form.control}
+              name="birthYear"
+              rules={{ required: "Année de naissance obligatoire" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Année de naissance *</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Année de naissance" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                <div>
-                    <label
-                        htmlFor="birthYear"
-                        className="block text-sm font-medium text-gray-700"
-                    >
-                        Date de naissance
-                    </label>
-                    <input
-                        type="text"
-                        name="birthYear"
-                        id="birthYear"
-                        value={formData.birthYear}
-                        onChange={handleInputChange}
-                        required
-                        className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    />
-                    </div>
+            {/* 🔹 Poids */}
+            <FormField
+              control={form.control}
+              name="weight"
+              rules={{ required: "Poids obligatoire" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Poids *</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Poids" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                    <div>
-                    <label
-                        htmlFor="sex"
-                        className="block text-sm font-medium text-gray-700"
-                    >
-                        Sexe
-                    </label>
-                    <select
-                        name="sexId"
-                        id="sex"
-                        value={formData.sexId}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    >
-                        <option value="">Sélectionnez un sexe</option>
-                        {sexes.map((sex) => (
-                        <option key={sex.id} value={sex.id}>
-                            {sex.name}
-                        </option>
-                        ))}
-                    </select>
-                    </div>
+            {/* 🔹 Sélection du sexe */}
+            <FormField
+              control={form.control}
+              name="sexId"
+              rules={{ required: "Veuillez choisir un sexe" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sexe *</FormLabel>
+                  <Select
+                    key={field.value || "default"}
+                    onValueChange={(val) => {
+                      // console.log("FFFFF", val);
+                      field.onChange(val);
+                    }}
+                    value={field.value || ""}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionnez un sexe" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {sexes.map((sex) => (
+                        <SelectItem key={sex.id} value={String(sex.id)}>
+                          {sex.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                    <div>
-                    <label
-                        htmlFor="animalType"
-                        className="block text-sm font-medium text-gray-700"
-                    >
-                        Type d'animal
-                    </label>
-                    <select
-                        name="animalTypeId"
-                        id="animalType"
-                        value={formData.animalTypeId}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    >
-                        <option value="">Sélectionnez un type</option>
-                        {animalTypes.map((animalType) => (
-                        <option key={animalType.id} value={animalType.id}>
-                            {animalType.name}
-                        </option>
-                        ))}
-                        <option value="other">Autre</option>
-                    </select>
-                    {showCustomAnimalType && (
-                        <div className="mt-4">
-                        <label
-                            htmlFor="customAnimalType"
-                            className="block text-sm font-medium text-gray-700"
+            {/* 🔹 Sélection du type d'animal */}
+            <FormField
+              control={form.control}
+              name="animalTypeId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Type d'animal</FormLabel>
+                  <Select
+                    key={field.value || "default"}
+                    onValueChange={(val) => {
+                      field.onChange(val === "none" ? null : val); // 🔥 Met à null si "none" est choisi
+                      form.setValue("raceId", null); // 🔥 Réinitialiser la race
+                    }}
+                    value={field.value || "none"} // 🔥 Si null, afficher "none"
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionnez un type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="none">Aucun</SelectItem>{" "}
+                      {/* ✅ Permet de réinitialiser */}
+                      {animalTypes.map((animalType) => (
+                        <SelectItem
+                          key={animalType.id}
+                          value={String(animalType.id)}
                         >
-                            Entrez le type d'animal
-                        </label>
+                          {animalType.name}
+                        </SelectItem>
+                      ))}
+                      <SelectItem value="other">Autre</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+
+            {/* 🔹 Champ personnalisé si "Autre" est sélectionné */}
+            {selectedAnimalType === "other" && (
+              <FormField
+                control={form.control}
+                name="customAnimalType"
+                render={({ field }) => (
+                  <FormItem className="mt-4">
+                    <FormLabel>Entrez le type d'animal</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ex: Chien, Chat..." {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {/* 🔹 Sélection de la race */}
+            <FormField
+              control={form.control}
+              name="raceId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Race</FormLabel>
+                  <Select
+                    key={field.value || "default"}
+                    onValueChange={(val) =>
+                      field.onChange(val === "none" ? null : val)
+                    }
+                    value={field.value || "none"}
+                    disabled={
+                      !selectedAnimalType || selectedAnimalType === "other"
+                    }
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionnez une race" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="none">Aucune</SelectItem>{" "}
+                      {/* ✅ Réinitialisation */}
+                      {filteredRaces.map((race) => (
+                        <SelectItem key={race.id} value={String(race.id)}>
+                          {race.name}
+                        </SelectItem>
+                      ))}
+                      <SelectItem value="other">Autre</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+
+            {/* 🔹 Champ personnalisé pour la race */}
+            {(selectedRace === "other" || selectedAnimalType === "other") && (
+              <FormField
+                control={form.control}
+                name="customRace"
+                render={({ field }) => (
+                  <FormItem className="mt-4">
+                    <FormLabel>Entrez la race</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ex: Husky, Chartreux..." {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            )}
+
+            <FormField
+              control={form.control}
+              name="limbs"
+              render={({ field }) => (
+                <FormItem className="mb-5">
+                  <FormLabel>Sélectionnez des membres</FormLabel>
+                  <div className="grid grid-cols-2 gap-2">
+                    {limbs.map((limb) => (
+                      <div
+                        key={limb.id}
+                        className="flex items-center space-x-2"
+                      >
                         <input
-                            type="text"
-                            name="customAnimalType"
-                            id="customAnimalType"
-                            value={formData.customAnimalType}
-                            onChange={handleInputChange}
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                          type="checkbox"
+                          id={`limb-${limb.id}`}
+                          value={limb.id}
+                          checked={(field.value || []).includes(limb.id)}
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            const currentValues = field.value || [];
+                            const newValues = checked
+                              ? [...currentValues, limb.id] // Ajout
+                              : currentValues.filter((id) => id !== limb.id); // Suppression
+
+                            field.onChange(newValues);
+                          }}
+                          className="w-4 h-4"
                         />
+                        <label htmlFor={`limb-${limb.id}`}>{limb.name}</label>
+                      </div>
+                    ))}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                        <label
-                            htmlFor="customRace"
-                            className="block text-sm font-medium text-gray-700"
-                        >
-                            Entrez la race
-                        </label>
-                        <input
-                            type="text"
-                            name="customRace"
-                            id="customRace"
-                            value={formData.customRace}
-                            onChange={handleInputChange}
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        />
-                        </div>
+            {/* 🔹 pathologie */}
+            <FormField
+              control={form.control}
+              name="pathology"
+              //   rules={{ required: "Poids obligatoire" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Pathologie</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Pathologie" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
 
-                        
-                        
-                    )}
-                    </div>
-
-                    <div>
-                    <label
-                        htmlFor="race"
-                        className="block text-sm font-medium text-gray-700"
-                    >
-                        Race
-                    </label>
-                    <select
-                        name="raceId"
-                        id="race"
-                        value={formData.raceId}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    >
-                        <option value="">Sélectionnez une race</option>
-                        {races.map((race) => (
-                        <option key={race.id} value={race.id}>
-                            {race.name}
-                        </option>
-                        ))}
-                        <option value="other">Autre</option>
-                    </select>
-                    {showCustomRace && (
-                        <div className="mt-4">
-                        <label
-                            htmlFor="customRace"
-                            className="block text-sm font-medium text-gray-700"
-                        >
-                            Entrez la race
-                        </label>
-                        <input
-                            type="text"
-                            name="customRaceStandalone"
-                            id="customRaceStandalone"
-                            value={formData.customRaceStandalone}
-                            onChange={handleInputChange}
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        />
-                        </div>
-                    )}
-                    </div>
-
-                    <div className="md:col-span-2">
-                    <label
-                        htmlFor="pathology"
-                        className="block text-sm font-medium text-gray-700"
-                    >
-                        Pathologie
-                    </label>
-                    <input
-                        type="text"
-                        name="pathology"
-                        id="pathology"
-                        value={formData.pathology}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    />
-                    </div>
-
-                    {/* CLIENT */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-xl font-semibold text-gray-700 mb-4">
             Informations du client
           </h3>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Sexe du client</label>
-            <div className="flex items-center space-x-6 mt-2">
-              {sexes.map((sex) => (
-                <div key={sex.id} className="flex items-center">
-                  <input
-                    id={sex.id}
-                    name="clientSexId"
-                    type="radio"
-                    value={sex.id}
-                    onChange={handleInputChange}
-                    className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
-                  />
-                  <label htmlFor={sex.id} className="ml-2 block text-sm text-gray-700">
-                    {sex.name}
-                  </label>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label
-                htmlFor="firstname"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Prénom du client
-              </label>
-              <input
-                type="text"
+
+          <div className="flex flex-col gap-4">
+            {/* 🔹 Sélection du sexe */}
+            <FormField
+              control={form.control}
+              name="clientSexId"
+              rules={{ required: "Veuillez choisir un sexe" }}
+              render={({ field }) => (
+                <FormItem className="w-1/4">
+                  <FormLabel>Sexe *</FormLabel>
+                  <Select
+                    key={field.value || "default"}
+                    onValueChange={(val) => field.onChange(val)}
+                    value={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sexe" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {sexes.map((sex) => (
+                        <SelectItem key={sex.id} value={String(sex.id)}>
+                          {sex.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+              <FormField
+                control={form.control}
                 name="firstname"
-                id="firstname"
-                value={formData.firstname}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                rules={{ required: "Prénom obligatoire" }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Prénom *</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Prénom du patient"
+                        className="w-full"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <div>
-              <label
-                htmlFor="lastname"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Nom du client
-              </label>
-              <input
-                type="text"
+              <FormField
+                control={form.control}
                 name="lastname"
-                id="lastname"
-                value={formData.lastname}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                rules={{ required: "Nom obligatoire" }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nom *</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Nom du patient"
+                        className="w-full"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
 
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email du client
-              </label>
-              <input
-                type="email"
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+              <FormField
+                control={form.control}
                 name="email"
-                id="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                rules={{ required: "Email obligatoire" }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email *</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Email du patient"
+                        {...field}
+                        onBlur={() => checkClientEmail(field.value)} // 🔥 Vérifie l'email quand on quitte le champ
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <div>
-              <label
-                htmlFor="phone"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Téléphone du client
-              </label>
-              <input
-                type="tel"
+              <FormField
+                control={form.control}
                 name="phone"
-                id="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                rules={{ required: "Téléphone obligatoire" }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Téléphone *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Téléphone du patient" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
 
-            <div className="md:col-span-2">
-              <label
-                htmlFor="adress"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Adresse du client
-              </label>
-              <input
-                type="text"
-                name="adress"
-                id="adress"
-                value={formData.adress}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              />
-            </div>
+            <FormField
+              controle={form.control}
+              name="adress"
+              rules={{ required: "Adresse obligatoire" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Adresse *</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Adresse du patient" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <div>
-              <label
-                htmlFor="city"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Ville
-              </label>
-              <input
-                type="text"
-                name="city"
-                id="city"
-                value={formData.city}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="postal"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Code Postal
-              </label>
-              <input
-                type="text"
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+              <FormField
+                controle={form.control}
                 name="postal"
-                id="postal"
-                value={formData.postal}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                rules={{ required: "Code postal obligatoire" }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Code postal *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Code postal du patient" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                controle={form.control}
+                name="city"
+                rules={{ required: "Ville obligatoire" }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Ville *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ville du patient" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
-
-            <div>
-              <label
-                htmlFor="department"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Département
-              </label>
-              <input
-                type="text"
-                name="department"
-                id="department"
-                value={formData.department}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              />
-            </div>
-
-            
           </div>
         </div>
-                    {/* CENTRE VETERINAIRE */}
+
+        {/* CENTRES VÉTÉRINAIRES */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-xl font-semibold text-gray-700 mb-4">
-            Informations sur le centre vétérinaire
+            Centres vétérinaires
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label
-                htmlFor="vetCenter"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Centre vétérinaire
-              </label>
-              <select
-                name="vetCenterId"
-                id="vetCenter"
-                value={formData.vetCenterId}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              >
-                <option value="">Sélectionnez un centre vétérinaire</option>
-                {vetCenters.map((vetCenter) => (
-                  <option key={vetCenter.id} value={vetCenter.id}>
-                    {vetCenter.name} à {vetCenter.city}
-                  </option>
-                ))}
-                <option value="other">Autres</option>
-              </select>
+          {form.watch("vetCenters").map((center, index) => (
+            <div
+              key={center.id || index}
+              className="mb-4 border-2 border-gray-300 p-4 rounded-lg shadow-sm bg-gray-50"
+            >
+              {/* Sélection du centre */}
+              <div className="flex gap-4 justify-items-center">
+                <select
+                  value={typeof center === "string" ? center : center.id}
+                  onChange={(e) => updateVetCenter(index, "id", e.target.value)}
+                  className="block w-full px-4 py-2 border rounded-md"
+                >
+                  <option value="">Sélectionnez un centre vétérinaire</option>
+                  {vetCenters.map((vetCenter) => (
+                    <option key={vetCenter.id} value={vetCenter.id}>
+                      {vetCenter.name} à {vetCenter.city}
+                    </option>
+                  ))}
+                  <option value="other">Autre</option>
+                </select>
+
+                {/* Bouton pour supprimer le centre */}
+                <button
+                  type="button"
+                  onClick={() => removeVetCenter(index)}
+                  className="mt-2 text-red-500"
+                >
+                  ❌
+                </button>
+              </div>
+
+              {center.Specialities && center.Specialities.length > 0 && (
+                <div className="mt-2">
+                  <h4 className="text-gray-700 font-medium">
+                    Spécialités disponibles :
+                  </h4>
+
+                  {center.Specialities.map((spec) => (
+                    <label
+                      key={spec.id}
+                      className="flex items-center space-x-2"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={(center.selectedSpecialities || []).includes(
+                          spec.id
+                        )} // ✅ Ajout de || []
+                        onChange={(e) => {
+                          const updatedSelectedSpecialities = e.target.checked
+                            ? [...(center.selectedSpecialities || []), spec.id] // ✅ Toujours un tableau
+                            : (center.selectedSpecialities || []).filter(
+                                (id) => id !== spec.id
+                              );
+
+                          updateVetCenter(
+                            index,
+                            "selectedSpecialities",
+                            updatedSelectedSpecialities
+                          );
+                        }}
+                        className="rounded border-gray-300"
+                      />
+
+                      <span>{spec.name}</span>
+                    </label>
+                  ))}
+                </div>
+              )}
             </div>
+          ))}
 
-            {enableVetFields && (
-              <>
-                <div className="md:col-span-2">
-                  <label
-                    htmlFor="nameVetCenter"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Nom du centre
-                  </label>
-                  <input
-                    type="text"
-                    name="nameVetCenter"
-                    id="nameVetCenter"
-                    value={formData.nameVetCenter}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  />
-                </div>
+          {/* Bouton pour ajouter un centre */}
+          <div className="flex  items-center justify-between">
+            <button
+              type="button"
+              onClick={addVetCenter}
+              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md"
+            >
+              + Associer un centre vétérinaire
+            </button>
 
-                <div>
-                  <label
-                    htmlFor="adressVetCenter"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Adresse
-                  </label>
-                  <input
-                    type="text"
-                    name="adressVetCenter"
-                    id="adressVetCenter"
-                    value={formData.adressVetCenter}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  />
-                </div>
+            <Dialog>
+              <DialogTrigger className="mt-4 p-2 bg-green-700 hover:bg-green-600 rounded-md text-white">
+                Ajouter un nouveau centre vétérinaire
+              </DialogTrigger>
 
-                <div>
-                  <label
-                    htmlFor="cityVetCenter"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Ville
-                  </label>
-                  <input
-                    type="text"
-                    name="cityVetCenter"
-                    id="cityVetCenter"
-                    value={formData.cityVetCenter}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="postalVetCenter"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Code postal
-                  </label>
-                  <input
-                    type="text"
-                    name="postalVetCenter"
-                    id="postalVetCenter"
-                    value={formData.postalVetCenter}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="phoneVetCenter"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Téléphone
-                  </label>
-                  <input
-                    type="text"
-                    name="phoneVetCenter"
-                    id="phoneVetCenter"
-                    value={formData.phoneVetCenter}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="emailVetCenter"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="emailVetCenter"
-                    id="emailVetCenter"
-                    value={formData.emailVetCenter}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  />
-                </div>
-              </>
-            )}
+              <DialogContent className="max-w-4xl h-[80vh] overflow-y-auto">
+                <CenterForm
+                  centerType="vétérinaire"
+                  staffLabel="Vétérinaire"
+                  initialData={{ ...formDataVetCenter, staff: vets }}
+                  enableSubmitBtn={true}
+                  onSubmit={submitVetCenter}
+                  isEditing={false}
+                  specialities={specialities}
+                  formPatient={true}
+                  // onNewCenterAdded={handleNewVetCenterAdded}
+                />
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
-            {/* Autres champs similaires à l'exemple */}
-            {/* Réutilisez les champs existants */}
-            </div>
-        </div>
+        {/* CENTRES Osteopathe */}
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h3 className="text-xl font-semibold text-gray-700 mb-4">
+            Centres ostéopathes
+          </h3>
 
-        <div className="mt-6 flex justify-end">
-            <button
-            type="submit"
-            className="bg-blue-600 text-white px-6 py-2 rounded-md shadow-sm hover:bg-blue-700"
+          {form.watch("osteoCenters").map((center, index) => (
+            <div
+              key={center.id || index}
+              className="mb-4 border-2 border-gray-300 p-4 rounded-lg shadow-sm bg-gray-50"
             >
-            {isEditMode ? "Modifier" : "Ajouter"}
+              {/* Sélection du centre */}
+              <div className="flex gap-4 justify-items-center">
+                <select
+                  value={typeof center === "string" ? center : center.id}
+                  onChange={(e) =>
+                    updateOsteoCenter(index, "id", e.target.value)
+                  }
+                  className="block w-full px-4 py-2 border rounded-md"
+                >
+                  <option value="">Sélectionnez un centre vétérinaire</option>
+                  {osteoCenters.map((osteoCenter) => (
+                    <option key={osteoCenter.id} value={osteoCenter.id}>
+                      {osteoCenter.name} à {osteoCenter.city}
+                    </option>
+                  ))}
+                  <option value="other">Autre</option>
+                </select>
+
+                {/* Bouton pour supprimer le centre */}
+                <button
+                  type="button"
+                  onClick={() => removeOsteoCenter(index)}
+                  className="mt-2 text-red-500"
+                >
+                  ❌
+                </button>
+              </div>
+            </div>
+          ))}
+
+          {/* Bouton pour ajouter un centre */}
+          <div className="flex  items-center justify-between">
+            <button
+              type="button"
+              onClick={addOsteoCenter}
+              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md"
+            >
+              + Associer un centre ostéopathe
             </button>
+
+            <Dialog>
+              <DialogTrigger className="mt-4 p-2 bg-green-700 hover:bg-green-600 rounded-md text-white">
+                Ajouter un nouveau centre ostéopathe
+              </DialogTrigger>
+
+              <DialogContent className="max-w-4xl h-[80vh] overflow-y-auto">
+                <CenterForm
+                  centerType="ostéopathe"
+                  staffLabel="Ostéopathe"
+                  initialData={{ ...formDataOsteoCenter, staff: osteos }}
+                  enableSubmitBtn={true}
+                  onSubmit={submitOsteoCenter}
+                  isEditing={false}
+                  formPatient={true}
+                  // onNewCenterAdded={handleNewVetCenterAdded}
+                />
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
-        </form>
-    </section>
+        <Button type="submit" className="mt-4 bg-green-700">
+          {isEditing ? "Modifier le patient" : "Ajouter le patient"}
+        </Button>
+      </form>
+    </Form>
   );
 }

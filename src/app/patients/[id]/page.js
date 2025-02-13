@@ -43,6 +43,18 @@ export default function PatientDetailsPage({ params }) {
     }
   }, [id]);
 
+  // const getPatientVetCenterSpecialities = (vetCenterId) => {
+  //   const patientsSpecialities = patient.PatientVetCenters.map(
+  //     (patientVetCenter) => {
+  //       if (patientVetCenter.vetCenterId === vetCenterId) {
+  //         return patientVetCenter.Specialities.map(
+  //           (speciality) => speciality.name
+  //         );
+  //       }
+  //     }
+  //   );
+  // };
+
   const fetchPatientDetails = async () => {
     try {
       const response = await api.get(`/patients/${id}`);
@@ -159,43 +171,60 @@ export default function PatientDetailsPage({ params }) {
   // };
 
   const handlePaymentTypeChange = async (paymentId, newPaymentTypeId) => {
-
     try {
-      await api.put(`/payment/${paymentId}/edit`, { paymentTypeId: newPaymentTypeId });
+      await api.put(`/payment/${paymentId}/edit`, {
+        paymentTypeId: newPaymentTypeId,
+      });
       fetchPatientDetails();
     } catch (error) {
-      console.error("Erreur lors de la mise à jour du type de paiement:", error);
+      console.error(
+        "Erreur lors de la mise à jour du type de paiement:",
+        error
+      );
     }
   };
-  
+
   const handlePaymentModeChange = async (paymentId, newPaymentModeId) => {
     try {
-      await api.put(`/payment/${paymentId}/edit`, { paymentModeId: newPaymentModeId });
+      await api.put(`/payment/${paymentId}/edit`, {
+        paymentModeId: newPaymentModeId,
+      });
       fetchPatientDetails();
     } catch (error) {
-      console.error("Erreur lors de la mise à jour du mode de paiement:", error);
+      console.error(
+        "Erreur lors de la mise à jour du mode de paiement:",
+        error
+      );
     }
   };
-  
+
   const handlePaymentStatusChange = async (paymentId, newPaymentStatusId) => {
     try {
-      await api.put(`/payment/${paymentId}/edit`, { paymentStatusId: newPaymentStatusId });
+      await api.put(`/payment/${paymentId}/edit`, {
+        paymentStatusId: newPaymentStatusId,
+      });
       fetchPatientDetails();
     } catch (error) {
-      console.error("Erreur lors de la mise à jour du statut de paiement:", error);
+      console.error(
+        "Erreur lors de la mise à jour du statut de paiement:",
+        error
+      );
     }
   };
-  
+
   const handlePaymentAmountChange = async (paymentId, newAmount) => {
     try {
       await api.put(`/payment/${paymentId}/edit`, { amount: newAmount });
       fetchPatientDetails();
     } catch (error) {
-      console.error("Erreur lors de la mise à jour du montant de paiement:", error);
+      console.error(
+        "Erreur lors de la mise à jour du montant de paiement:",
+        error
+      );
     }
   };
 
-   const handlePaymentDateChange = async (paymentId, newDate) => {
+  const handlePaymentDateChange = async (paymentId, newDate) => {
     try {
       await api.put(`/payment/${paymentId}/edit`, { date: newDate });
       fetchPatientDetails();
@@ -218,7 +247,6 @@ export default function PatientDetailsPage({ params }) {
       );
     }
   };
-  
 
   const handleButtonClick = () => {
     if (!amount || isNaN(amount)) {
@@ -430,7 +458,7 @@ export default function PatientDetailsPage({ params }) {
               </div>
             </div>
           </div>
-          <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-sm">
+          {/* <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-sm">
             <Link href={`/centres-veterinaires/${patient.vetCenterId}`}>
               <h2 className="text-xl font-semibold text-gray-800 mb-2">
                 Centre vétérinaire
@@ -524,12 +552,155 @@ export default function PatientDetailsPage({ params }) {
                   "Aucun ostéopathe"
                 )}
               </div>
-              <div>
+              <div> 
                 {patient.osteoCenter && patient.osteoCenter.email && (
                   <ContactEmail email={patient.osteoCenter.email} />
                 )}
               </div>
             </div>
+          </div>*/}
+          {/* 🏥 Affichage des centres vétérinaires */}
+          <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-sm">
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">
+              Centres vétérinaires
+            </h2>
+            {/* <h3>Spécialités choisies pour ce patient :</h3>
+            {patient.PatientVetCenters &&
+            patient.PatientVetCenters.length > 0 ? (
+              patient.PatientVetCenters.map(
+                (patientVetCenter) => (
+                  console.log(patientVetCenter),
+                  (
+                    <div key={patientVetCenter.id}>
+                      {patientVetCenter.Specialities.length > 0 ? (
+                        patientVetCenter.Specialities.map((speciality) => (
+                          <p key={speciality.id}>{speciality.name}</p>
+                        ))
+                      ) : (
+                        <p>Aucune spécialité spécifique</p>
+                      )}
+                    </div>
+                  )
+                )
+              )
+            ) : (
+              <p>Aucune spécialité spécifique pour ce patient</p>
+            )} */}
+
+            {patient.VetCenters && patient.VetCenters.length > 0 ? (
+                      
+
+              patient.VetCenters.map((center) => {
+                // 🔥 Trouver l'association Patient ↔ VetCenter
+                const patientVetCenter = patient.PatientVetCenters?.find(
+                  (pvc) => pvc.vetCenterId === center.id
+                );
+
+                // 🔥 Spécialités choisies pour ce patient dans ce VetCenter
+                const selectedSpecialities =
+                  patientVetCenter?.Specialities || [];
+
+                return (
+                  <div
+                    key={center.id}
+                    className="mb-4 p-4 bg-white shadow rounded-lg"
+                  >
+                    <Link href={`/centres-veterinaires/${center.id}`}>
+                      <p>
+                        <strong>Nom du centre :</strong>{" "}
+                        {center.name || "Non spécifié"}
+                      </p>
+                    </Link>
+
+                    <p>
+                      <strong>Adresse mail :</strong>{" "}
+                      {center.email || "Non spécifié"}
+                    </p>
+                    <p>
+                      <strong>Téléphone :</strong>{" "}
+                      {center.phone || "Non spécifié"}
+                    </p>
+
+                    {/* 🔥 Toutes les spécialités du VetCenter */}
+                    <p>
+                      <strong>Spécialités du centre :</strong>{" "}
+                      {center.Specialities?.map((s) => s.name).join(", ") ||
+                        "Aucune"}
+                    </p>
+
+                    {/* 🔥 Spécialités choisies par le patient */}
+                    <p>
+                      <strong>Spécialités choisies pour ce patient :</strong>{" "}
+                      {selectedSpecialities.length > 0
+                        ? selectedSpecialities.map((s) => s.name).join(", ")
+                        : "Aucune spécialité spécifique"}
+                    </p>
+
+                    <p>
+                      <strong>Vétérinaires :</strong>
+                    </p>
+                    {center.vets && center.vets.length > 0 ? (
+                      <ul>
+                        {center.vets.map((vet) => (
+                          <li key={vet.id}>
+                            Dr {vet.firstname} {vet.lastname}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p>Aucun vétérinaire</p>
+                    )}
+                  </div>
+                );
+              })
+            ) : (
+              <p>Aucun centre vétérinaire associé.</p>
+            )}
+          </div>
+
+          {/* 🌿 Affichage des centres ostéopathes */}
+          <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-sm">
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">
+              Centres ostéopathes
+            </h2>
+
+            {patient.OsteoCenters && patient.OsteoCenters.length > 0 ? (
+              patient.OsteoCenters.map((center) => (
+                <div
+                  key={center.id}
+                  className="mb-4 p-4 bg-white shadow rounded-lg"
+                >
+                  <p>
+                    <strong>Nom du centre :</strong>{" "}
+                    {center.name || "Non spécifié"}
+                  </p>
+                  <p>
+                    <strong>Adresse mail :</strong>{" "}
+                    {center.email || "Non spécifié"}
+                  </p>
+                  <p>
+                    <strong>Téléphone :</strong>{" "}
+                    {center.phone || "Non spécifié"}
+                  </p>
+                  <p>
+                    <strong>Ostéopathes :</strong>
+                  </p>
+                  {center.osteos && center.osteos.length > 0 ? (
+                    <ul>
+                      {center.osteos.map((osteo) => (
+                        <li key={osteo.id}>
+                          Dr {osteo.firstname} {osteo.lastname}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>Aucun ostéopathe</p>
+                  )}
+                </div>
+              ))
+            ) : (
+              <p>Aucun centre ostéopathe associé.</p>
+            )}
           </div>
 
           <div>
@@ -821,10 +992,10 @@ export default function PatientDetailsPage({ params }) {
                     }
                     className="border border-gray-300 rounded px-2 py-1"
                   />
-                </div> 
+                </div>
 
                 {/* Date de fin paiement */}
-                 <div>
+                <div>
                   <label className="block mb-2">Fin</label>
                   <input
                     type="date"

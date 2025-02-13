@@ -19,12 +19,14 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarFooter
+  SidebarFooter,
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import logoRondVert from "../../../public/icons/logoRondVert.png";
+import Image from "next/image";
 
 // Menu items.
 const items = [
@@ -87,9 +89,15 @@ export function AppSidebar() {
             <img
               src="https://static.wixstatic.com/media/d82522_d998c214c72c4b61b21095b20589be9b~mv2.png/v1/crop/x_0,y_208,w_3508,h_1876/fill/w_168,h_90,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/IMG_1978_PNG.png"
               alt="Logo O.P.A SUD"
-              className="mt-8"
-              style={{ width: "60%", alignSelf: "center" }}
+              className="mt-12"
+              style={{ width: "70%", alignSelf: "center" }}
             />
+            {/* <Image
+                        src={logoRondVert}
+                        alt="Logo OPA"
+                        width={100} // Ajuste la taille selon tes besoins
+                        height={100}
+                      /> */}
           </SidebarGroupLabel>
           <SidebarGroupContent className="mt-12">
             <SidebarMenu>
@@ -113,12 +121,15 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
-              
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter><Button variant="destructive" onClick={handleLogout}>Se déconnecter</Button></SidebarFooter>
+      <SidebarFooter>
+        <Button variant="destructive" onClick={handleLogout}>
+          Se déconnecter
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   );
 }

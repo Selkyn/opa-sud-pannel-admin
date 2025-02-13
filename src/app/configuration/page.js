@@ -24,6 +24,7 @@ export default function Configuration() {
   const [contacts, setContacts] = useState([]);
   const [animalTypes, setAnimalTypes] = useState([]);
   const [races, setRaces] = useState([]);
+  const [specialities, setSpecialities] = useState([]);
 
   const [newTask, setNewTask] = useState("");
   const [editingTaskId, setEditingTaskId] = useState(null);
@@ -61,6 +62,7 @@ export default function Configuration() {
       contacts,
       animalTypes,
       races,
+      specialities,
     ] = await Promise.all([
       api.get("/tasks"),
       api.get("/appointments"),
@@ -73,6 +75,7 @@ export default function Configuration() {
       api.get("/contacts"),
       api.get("/animalTypes"),
       api.get("/races"),
+      api.get("/specialities")
     ]);
 
     setTasks(tasks.data);
@@ -86,6 +89,7 @@ export default function Configuration() {
     setContacts(contacts.data);
     setAnimalTypes(animalTypes.data);
     setRaces(races.data);
+    setSpecialities(specialities.data);
   };
 
   return (
@@ -237,6 +241,19 @@ export default function Configuration() {
             <ConfigurationSection
               category={"paymentModes"}
               items={paymentModes}
+              fetchData={fetchData}
+            />
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="specialities">
+          <AccordionTrigger className="font-bold text-lg">
+            Spécialités vet
+          </AccordionTrigger>
+          <AccordionContent>
+            <ConfigurationSection
+              category={"specialities"}
+              items={specialities}
               fetchData={fetchData}
             />
           </AccordionContent>

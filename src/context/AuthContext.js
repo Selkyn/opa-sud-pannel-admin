@@ -109,7 +109,7 @@ export function AuthProvider({ children }) {
     // **Forcer la redirection vers /auth si l'utilisateur est déconnecté**
     useEffect(() => {
         if (!loading && user === null && pathname !== '/auth') {
-            console.log("🚀 Redirection vers /auth...");
+            // console.log("🚀 Redirection vers /auth...");
             router.push('/auth');
         }
     }, [loading, user, pathname]);

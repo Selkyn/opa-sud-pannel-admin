@@ -7,6 +7,7 @@ import { UserCog } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
+
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { logout, user } = useAuth();

@@ -44,6 +44,7 @@ export default function OsteoCentersPage () {
             staffLabel='Ostéopathe'
             callBackend="osteo-centers"
             refreshData={fetchOsteoCenters}
+            totalCenters={osteoCenters.length}
         />
     );
 }

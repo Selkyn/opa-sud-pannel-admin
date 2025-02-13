@@ -429,6 +429,7 @@ const Map = ({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
+
         {/* <MapEventHandler onMapMove={handleMapMove} /> */}
         <MapControls onAvoidMotorwaysChange={handleAvoidMotorwaysChange} />
         <LocateButton onLocate={(location) => setUserLocation(location)} />

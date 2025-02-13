@@ -14,7 +14,7 @@ import { dateInput } from "@nextui-org/react";
 import withAuth from "../../utils/withAuth";
 import api from "@/utils/apiCall";
 import { Payment, columns } from "./columns";
-import { DataTable } from "./data-table";
+import { DataTable } from "../components/data-table";
 import CardPatientList from "../components/CardPatientList";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "lucide-react";

@@ -30,7 +30,7 @@ export default function AddOsteoCenterForm() {
 
         try {
             const response = await api.post("/osteo-centers/add", formDataToSend);
-            alert("Centre vétérinaire ajouté avec succès !");
+            alert("Centre pstéopathe ajouté avec succès !");
             setFormData({
                 name: "",
                 email: "",
@@ -43,8 +43,8 @@ export default function AddOsteoCenterForm() {
             });
             setOsteos([{ firstname: "", lastname: "", email: "" }]);
         } catch (error) {
-            console.error("Erreur lors de l'ajout du centre vétérinaire :", error);
-            alert("Erreur lors de l'ajout du centre vétérinaire.");
+            console.error("Erreur lors de l'ajout du centre ostéopathe :", error);
+            alert("Erreur lors de l'ajout du centre ostéopathe.");
         }
     };
 
