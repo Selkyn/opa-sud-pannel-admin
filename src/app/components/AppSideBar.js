@@ -25,8 +25,6 @@ import { Button } from "@/components/ui/button";
 
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import logoRondVert from "../../../public/icons/logoRondVert.png";
-import Image from "next/image";
 
 // Menu items.
 const items = [
@@ -92,12 +90,7 @@ export function AppSidebar() {
               className="mt-12"
               style={{ width: "70%", alignSelf: "center" }}
             />
-            {/* <Image
-                        src={logoRondVert}
-                        alt="Logo OPA"
-                        width={100} // Ajuste la taille selon tes besoins
-                        height={100}
-                      /> */}
+
           </SidebarGroupLabel>
           <SidebarGroupContent className="mt-12">
             <SidebarMenu>
