@@ -26,7 +26,6 @@ import { Button } from "@/components/ui/button";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
-// Menu items.
 const items = [
   {
     title: "Accueil",
