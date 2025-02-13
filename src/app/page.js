@@ -36,8 +36,7 @@ export default function Home() {
     }
   };
 
-  const handleAddPersoTodo = async () => {};
-
+  
   return (
     <MainLayout>
       <div className=" w-full justify-items-center font-[family-name:var(--font-geist-sans)]">
