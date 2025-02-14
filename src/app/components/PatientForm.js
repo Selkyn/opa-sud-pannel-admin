@@ -403,12 +403,12 @@ export default function PatientForm({
                 <FormItem>
                   <FormLabel>Sexe *</FormLabel>
                   <Select
-                    key={field.value || "default"}
+                    key={String(field.value || "default")}
                     onValueChange={(val) => {
                       // console.log("FFFFF", val);
                       field.onChange(val);
                     }}
-                    value={field.value || ""}
+                    value={String(field.value || "default")}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -436,12 +436,12 @@ export default function PatientForm({
                 <FormItem>
                   <FormLabel>Type d'animal</FormLabel>
                   <Select
-                    key={field.value || "default"}
+                    key={String(field.value || "default")}
                     onValueChange={(val) => {
                       field.onChange(val === "none" ? null : val); // 🔥 Met à null si "none" est choisi
                       form.setValue("raceId", null); // 🔥 Réinitialiser la race
                     }}
-                    value={field.value || "none"} // 🔥 Si null, afficher "none"
+                    value={String(field.value || "none")} // 🔥 Si null, afficher "none"
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -490,11 +490,11 @@ export default function PatientForm({
                 <FormItem>
                   <FormLabel>Race</FormLabel>
                   <Select
-                    key={field.value || "default"}
+                    key={String(field.value || "default")}
                     onValueChange={(val) =>
                       field.onChange(val === "none" ? null : val)
                     }
-                    value={field.value || "none"}
+                    value={String(field.value || "none")}
                     disabled={
                       !selectedAnimalType || selectedAnimalType === "other"
                     }
