@@ -605,9 +605,9 @@ export default function PatientForm({
                 <FormItem className="w-1/4">
                   <FormLabel>Sexe *</FormLabel>
                   <Select
-                    key={field.value || "default"}
+                    key={String(field.value || "default")}
                     onValueChange={(val) => field.onChange(val)}
-                    value={field.value}
+                    value={String(field.value || "default")}
                   >
                     <FormControl>
                       <SelectTrigger>
