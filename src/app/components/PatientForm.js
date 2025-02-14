@@ -174,6 +174,8 @@ export default function PatientForm({
     try {
       let response;
       if (isEditing) {
+        console.log("🚀 Données envoyées :", JSON.stringify(formDataToSend, null, 2));
+
         response = await api.put(`/patients/${patientId}/edit`, formDataToSend);
         alert("Patient modifié avec succès !");
         router.push(`/patients/${patientId}`);
@@ -291,28 +293,28 @@ export default function PatientForm({
 
   const updateVetCenter = (index, field, value) => {
     const currentVetCenters = form.getValues("vetCenters") || [];
-
+  
     if (field === "id") {
-      // 🔥 Trouver le centre sélectionné dans la liste `vetCenters`
-      const selectedCenter = vetCenters.find(
-        (vet) => vet.id === parseInt(value)
-      );
-
+      const selectedCenter = vetCenters.find((vet) => vet.id === parseInt(value));
       currentVetCenters[index] = {
         id: value,
-        Specialities: selectedCenter ? selectedCenter.Specialities : [], // Liste des spécialités du VetCenter
-        selectedSpecialities: [], // Pour stocker les spécialités choisies par l'utilisateur
+        Specialities: selectedCenter ? selectedCenter.Specialities : [],
+        selectedSpecialities: [], 
       };
+    } else if (field === "selectedSpecialities") {
+
+  
+      currentVetCenters[index].selectedSpecialities = [...value]; // 🔥 Toujours un tableau
+  
     } else {
-      // Modifier simplement le champ concerné
       if (typeof currentVetCenters[index] === "object") {
         currentVetCenters[index][field] = value;
       }
     }
-
-    // 🔥 Mettre à jour le formulaire avec `form.setValue`
-    form.setValue("vetCenters", currentVetCenters);
+  
+    form.setValue("vetCenters", [...currentVetCenters]); // 🔥 Forcer une copie pour maj React
   };
+  
 
   //update osteo center
   const updateOsteoCenter = (index, field, value) => {

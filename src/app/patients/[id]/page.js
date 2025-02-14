@@ -610,7 +610,7 @@ export default function PatientDetailsPage({ params }) {
                                 ? selectedSpecialities
                                     .map((s) => s.name)
                                     .join(", ")
-                                : "Aucune spécialité spécifique"}
+                                : "Aucune spécialité"}
                             </p>
                           </div>
 
@@ -729,7 +729,7 @@ export default function PatientDetailsPage({ params }) {
                               ? selectedSpecialities
                                   .map((s) => s.name)
                                   .join(", ")
-                              : "Aucune spécialité spécifique"}
+                              : "Aucune spécialité"}
                           </p>
                         </div>
                       );
