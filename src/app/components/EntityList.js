@@ -60,7 +60,7 @@ export default function EntityList({
   };
 
   return (
-    <div className="container mx-auto py-2 w-full">
+    <div className="container mx-auto p-4 w-full">
       {/* <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">{title}</h2> */}
       <div className="flex justify-between gap-6">
         <div className="flex-1">

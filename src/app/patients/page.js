@@ -190,13 +190,9 @@ export default function PatientsPage() {
     selectedPaymentStatusFilters,
   ]);
 
-  const data = [
-    { id: "1", status: "pending", patient: "test@example.com", client: 100 },
-    { id: "2", status: "success", patient: "user@example.com", client: 200 },
-  ];
 
   return (
-    <div className="container mx-auto py-2 w-full">
+    <div className="container mx-auto p-4 w-full">
       {/* Conteneur principal : divisé en deux parties (contenu à gauche et filtres à droite) */}
       <div className="flex justify-between gap-6">
         {/* 🌍 Section principale (Barre de recherche, toggle, patients) */}
@@ -244,6 +240,7 @@ export default function PatientsPage() {
                 ) : (
                   <p className="text-center text-gray-500">
                     Aucun patient trouvé
+
                   </p>
                 )}
               </div>

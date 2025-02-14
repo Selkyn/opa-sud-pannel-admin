@@ -72,7 +72,7 @@ export default function RootLayout({ children }) {
               {!noHeaderRoutes.includes(pathname) && <Header />}{" "}
               {/* ✅ Header */}
               <ProtectedRoute>
-                <main className="flex-1 p-6 bg-gray-100 overflow-auto">
+                <main className="flex-1 bg-gray-100 overflow-auto">
                   {children}
                 </main>
               </ProtectedRoute>

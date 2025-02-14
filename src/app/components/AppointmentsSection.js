@@ -47,7 +47,7 @@ export default function AppointmentsSection({
 
   return (
     <>
-      <h3>Rendez-vous</h3>
+      <h3 className="font-bold">Rendez-vous</h3>
       <table className="table-auto w-full border-collapse border border-gray-300 rounded-lg">
         <thead className="bg-green-500 text-white">
           <tr>

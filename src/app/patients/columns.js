@@ -51,17 +51,19 @@ export const columns = [
     header: "Race",
     accessorKey: "race",
     cell: ({ row }) => {
+      const { animalType, race } = row.original;
+  
       return (
         <p>
-          {row.original.animalType
-            ? row.original.animalType.name === "Chien"
-              ? row.original.race.name
-              : row.original.animalType.name
-            : "Inconnu"}
+          {animalType?.name === "Chien"
+            ? race?.name || animalType?.name // Si race existe, on l'affiche, sinon on affiche "Chien"
+            : animalType?.name || "Inconnu" // Si l'animal n'est pas un chien, on affiche son type ou "Inconnu"
+          }
         </p>
       );
     },
   },
+  
 
   {
     header: "Status",

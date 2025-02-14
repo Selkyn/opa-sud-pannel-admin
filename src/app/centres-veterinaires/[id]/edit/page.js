@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import CenterForm from "@/app/components/CenterForm";
 import api from '@/utils/apiCall';
+import { useRouter } from "next/navigation";
+
 
 
 export default function EditVetCenterForm({ params }) {
@@ -12,6 +14,8 @@ export default function EditVetCenterForm({ params }) {
     const [selectedSpecialities, setSelectedSpecialities] = useState([]);
     const [loading, setLoading] = useState(true);
     const { id } = params;
+
+    const router = useRouter();
 
     useEffect(() => {
         const fetchSpecialities = async () => {
@@ -64,9 +68,11 @@ export default function EditVetCenterForm({ params }) {
         try {
             await api.put(`/vet-centers/${id}/edit`, {
                 ...data,
-                vets: data.staff // Renommez 'staff' en 'vets' pour correspondre à l'API
+                vets: data.staff, // Renommez 'staff' en 'vets' pour correspondre à l'API
+                specialities: selectedSpecialities 
             });
             alert("Centre vétérinaire mis à jour avec succès !");
+            router.push(`/centres-veterinaires/${id}`)
         } catch (error) {
             console.error("Erreur lors de la mise à jour :", error);
             alert("Erreur lors de la mise à jour.");

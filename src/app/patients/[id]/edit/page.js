@@ -21,6 +21,7 @@ export default function EditPatient() {
   const [races, setRaces] = useState([]);
   const [limbs, setLimbs] = useState([]);
    const [specialities, setSpecialities] = useState([]);
+   
 
   // ✅ Charger les données du patient
   useEffect(() => {
@@ -51,20 +52,20 @@ export default function EditPatient() {
           postal: patient.client?.postal || "",
           department: patient.client?.department || "",
           clientSexId: patient.client?.sexId || "",
-          vetCenters: patient.VetCenters.map((center) => {
-            // Trouver les spécialités sélectionnées par le patient pour ce centre
-            const selectedSpecialities = patient.PatientVetCenters?.find(
-              (pvc) => pvc.vetCenterId === center.id
-            )?.Specialities?.map((spec) => spec.id) || [];
-        
-            return {
-              id: center.id,
-              name: center.name,
-              city: center.city,
-              Specialities: center.Specialities || [], // ✅ Les spécialités générales du centre
-              selectedSpecialities: selectedSpecialities, // ✅ Spécialités choisies par le patient
-            };
-          }) || [],
+        vetCenters: patient.VetCenters.map((center) => {
+          const patientVetCenter = patient.PatientVetCenters?.find(
+            (pvc) => pvc.vetCenterId === center.id
+          );
+
+          return {
+            id: center.id,
+            name: center.name,
+            city: center.city,
+            isActive: patientVetCenter?.isActive || false, // ✅ On récupère la valeur
+            Specialities: center.Specialities || [],
+            selectedSpecialities: patientVetCenter?.Specialities?.map((spec) => spec.id) || [],
+          };
+        }),
           osteoCenters: patient.OsteoCenters || [],
           limbs: patient.Limbs ? patient.Limbs.map((limb) => limb.id) : [],
           // selectedSpecialities: patient.VetCenters.Specialities ? patient.VetCenters.Specialities.map((speciality) => speciality.id) : [],

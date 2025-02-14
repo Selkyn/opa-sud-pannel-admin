@@ -34,6 +34,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import CenterForm from "./CenterForm";
 import api from "@/utils/apiCall";
 import { select } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 
 export default function PatientForm({
   initialData,
@@ -93,6 +94,8 @@ export default function PatientForm({
   //     onSubmit(values);
   //   };
 
+  const router = useRouter();
+
   useEffect(() => {
     if (initialData && isEditing) {
       // console.log("Données rechargées dans le formulaire:", initialData); // 🔥 Debug
@@ -110,10 +113,8 @@ export default function PatientForm({
         animalTypeId: String(initialData.animalTypeId || ""),
         raceId: String(initialData.raceId || ""),
       });
-
     }
   }, [initialData, isEditing, form]);
-
 
   const checkClientEmail = async (email) => {
     try {
@@ -139,7 +140,6 @@ export default function PatientForm({
   };
 
   const handleSubmit = async (values) => {
-
     let formDataToSend = {
       ...values,
       vets: vetStaffList, // Liste des vétérinaires
@@ -156,7 +156,7 @@ export default function PatientForm({
           selectedSpecialities: center.selectedSpecialities || [],
         };
       }),
-      osteoCenters: values.osteoCenters, // Liste des centres ostéopathiques
+      osteoCenters: values.osteoCenters.map(({ id }) => ({ id })), // Liste des centres ostéopathiques
     };
 
     // 🔥 Si l'utilisateur a choisi "Autre" pour le type d'animal, gérer `customAnimalType`
@@ -176,6 +176,7 @@ export default function PatientForm({
       if (isEditing) {
         response = await api.put(`/patients/${patientId}/edit`, formDataToSend);
         alert("Patient modifié avec succès !");
+        router.push(`/patients/${patientId}`);
       } else {
         response = await api.post("/patients/add", formDataToSend);
         alert("Patient ajouté avec succès !");
@@ -262,7 +263,7 @@ export default function PatientForm({
     const currentCenters = form.getValues("vetCenters") || [];
     form.setValue("vetCenters", [
       ...currentCenters,
-      { id: "", selectedSpecialities: [] },
+      { id: "", selectedSpecialities: [], isActive: true },
     ]);
   };
 
@@ -759,10 +760,15 @@ export default function PatientForm({
           {form.watch("vetCenters").map((center, index) => (
             <div
               key={center.id || index}
-              className="mb-4 border-2 border-gray-300 p-4 rounded-lg shadow-sm bg-gray-50"
+              className={"mb-4 border-2 p-4 rounded-lg shadow-sm"}
             >
-              {/* Sélection du centre */}
-              <div className="flex gap-4 justify-items-center">
+              {/* 🔥 Afficher un message si le centre est inactif */}
+              {!center.isActive && isEditing && (
+                <p className="text-red-500 text-sm mt-2">
+                  ⚠️ Ancien Centre
+                </p>
+              )}
+              <div className="flex gap-4 justify-between">
                 <select
                   value={typeof center === "string" ? center : center.id}
                   onChange={(e) => updateVetCenter(index, "id", e.target.value)}
@@ -774,10 +780,8 @@ export default function PatientForm({
                       {vetCenter.name} à {vetCenter.city}
                     </option>
                   ))}
-                  <option value="other">Autre</option>
                 </select>
 
-                {/* Bouton pour supprimer le centre */}
                 <button
                   type="button"
                   onClick={() => removeVetCenter(index)}
@@ -787,12 +791,18 @@ export default function PatientForm({
                 </button>
               </div>
 
+              {/* 🔥 Afficher un message si le centre est inactif */}
+              {/* {!center.isActive && isEditing && (
+                <p className="text-red-500 text-sm mt-2">
+                  ⚠️ Ce centre est désactivé
+                </p>
+              )} */}
+
               {center.Specialities && center.Specialities.length > 0 && (
                 <div className="mt-2">
                   <h4 className="text-gray-700 font-medium">
                     Spécialités disponibles :
                   </h4>
-
                   {center.Specialities.map((spec) => (
                     <label
                       key={spec.id}
@@ -802,10 +812,10 @@ export default function PatientForm({
                         type="checkbox"
                         checked={(center.selectedSpecialities || []).includes(
                           spec.id
-                        )} // ✅ Ajout de || []
+                        )}
                         onChange={(e) => {
                           const updatedSelectedSpecialities = e.target.checked
-                            ? [...(center.selectedSpecialities || []), spec.id] // ✅ Toujours un tableau
+                            ? [...(center.selectedSpecialities || []), spec.id]
                             : (center.selectedSpecialities || []).filter(
                                 (id) => id !== spec.id
                               );
@@ -818,7 +828,6 @@ export default function PatientForm({
                         }}
                         className="rounded border-gray-300"
                       />
-
                       <span>{spec.name}</span>
                     </label>
                   ))}

@@ -93,7 +93,7 @@ export default function Configuration() {
   };
 
   return (
-    <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <div className="container mx-auto p-6 mt-4 bg-white shadow-lg rounded-lg">
       <Accordion type="single" collapsible>
         <AccordionItem value="Taches">
           <AccordionTrigger className="font-bold text-lg">
